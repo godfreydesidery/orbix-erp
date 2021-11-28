@@ -7,4 +7,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'orbix-erp';
+
+  public menu : string 
+
+  constructor(){
+    this.menu = ''
+    alert("check")
+  }
 }

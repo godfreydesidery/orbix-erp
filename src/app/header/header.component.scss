@@ -1,0 +1,9 @@
+.quote{
+    padding:8mm;
+    display:flex;
+    flex-direction:column;
+  }
+  
+  .quote span{
+    align-self: flex-end;
+  }
