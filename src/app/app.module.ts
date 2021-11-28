@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { StoreModule } from '@ngrx/store';
+
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -35,6 +37,7 @@ import { RoleManagerComponent } from './user/role-manager/role-manager.component
     AppRoutingModule,
     HttpClientModule,
     CommonModule,
+    StoreModule.forRoot({}, {}),
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
   providers: [],

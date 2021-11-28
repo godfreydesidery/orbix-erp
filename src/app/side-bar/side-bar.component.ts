@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MainMenuComponent } from '../menu/main-menu/main-menu.component';
+
 
 @Component({
   selector: 'app-side-bar',
@@ -7,9 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SideBarComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
 
-  ngOnInit(): void {
   }
 
+  ngOnInit(): void {
+
+  }
 }
+
+
+
