@@ -2,7 +2,29 @@
     <div class="" style="width: 100%;  height: 15mm; background-color: #888888;">
         <img src="favicon.ico" class="img-fluid" alt="App-Logo" style="padding: 12px;">
     </div>   
-    <div>
-        
+    <div *ngIf="mainMenuShown">
+        <div class="EnclosureBox">
+            <div class="SectionEnclosureBox">
+                <div class="SectionOnBox SectionOnBoxHeading">Main menu</div>
+                <a ><div class="SectionOnBox">Inventory</div></a>
+                <a ><div class="SectionOnBox">Mechandizing</div></a>  
+                <a ><div class="SectionOnBox">Reports</div></a>
+                <a ><div class="SectionOnBox">CRM</div></a>
+                <a ><div class="SectionOnBox">Promotions</div></a>
+                <a ><div class="SectionOnBox">BI</div></a>
+                <a (click)="showAdminMenu()"><div class="SectionOnBox">Admin</div></a>
+                <a ><div class="SectionOnBox">Web POS</div></a>
+                <a ><div class="SectionOnBox">Production</div></a>
+                <a ><div class="SectionOnBox">Settings</div></a>
+            </div>
+        </div>  
     </div>
+    <div *ngIf="adminMenuShown">
+        <div class="EnclosureBox">
+            <div class="SectionEnclosureBox">
+                <a  routerLink="/" (click)="showMainMenu()"><div class="SectionOnBoxBack">Back to Main Menu</div></a> 
+            </div>
+        </div>
+        <app-admin-menu></app-admin-menu>
+    </div>   
 </div>

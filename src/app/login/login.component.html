@@ -12,7 +12,9 @@
                     </table>
                     <table style="width: 100%;">
                         <tr>
-                            <td style="width:30%; height: 40mm; vertical-align: top; background-color: rgb(15, 15, 20);">login logo</td>
+                            <td style="width:30%; height: 40mm; background-color: rgb(15, 15, 20);">
+                                <img src="favicon.ico" class="img-fluid" alt="App-Logo" style="padding: 12px; width: 20mm;">
+                            </td>
                             <td style="width:70%; height: 40mm; vertical-align: top;">
                                 <table style="width: 100%; background-color: rgb(157, 171, 185);">
                                     <tr>
@@ -20,11 +22,11 @@
                                         <table style="width: 100%;">
                                             <tr>
                                                 <td style="width: 25%; padding-top: 2mm;"><label>Username</label></td>
-                                                <td style="width: 75%; padding-top: 2mm;"><input  type="text" class="form-control" style="height: 8mm;"></td>
+                                                <td style="width: 75%; padding-top: 2mm;"><input  type="text" name="username" [(ngModel)]="username" class="form-control" style="height: 8mm;"></td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 25%; padding-top: 2mm;"><label>Password</label></td>
-                                                <td style="width: 75%; padding-top: 2mm;"><input  type="password" class="form-control" style="height: 8mm;"></td>
+                                                <td style="width: 75%; padding-top: 2mm;"><input  type="password" name="password" [(ngModel)]="password" class="form-control" style="height: 8mm;"></td>
                                             </tr>
                                             <tr>
                                                 <td></td>
@@ -32,7 +34,7 @@
                                                     <table style="width: 100%;">
                                                         <tr>
                                                             <td style="width: 50%; padding-top: 2mm;">
-                                                                <button class="btn btn-success btn-sm">Login</button>
+                                                                <button (click)="loginUser()" class="btn btn-success btn-sm">Login</button>
                                                             </td>
                                                             <td style="width: 50%; padding-top: 2mm;">
                                                                 <button class="btn btn-danger btn-sm">Cancel</button>

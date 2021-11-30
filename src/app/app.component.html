@@ -1,11 +1,11 @@
 
 <section style="padding: 0mm; margin: 0mm; background-color: #eeeeee; overflow-y: hidden;">
 
-  <!--<div>
+  <div *ngIf="isLoggedIn===false" style="height: 100vh;">
     <app-login></app-login>
-  </div>-->
+  </div>
   
-  <table style="padding: 0mm; margin: 0mm; width: 100%; height: 100vh; min-width: 300mm; max-width: 300mm; max-width: 450mm;">
+  <table  *ngIf="isLoggedIn" style="padding: 0mm; margin: 0mm; width: 100%; height: 100vh; min-width: 300mm; max-width: 300mm; max-width: 450mm;">
     <tr>
       <td style="background-color: #eeeeee; width: 50mm; height: 100%; vertical-align:top; padding: 0mm; margin: 0mm;">
         <div style="padding: 0mm; margin: 0mm;">
@@ -19,8 +19,8 @@
         <div style="background-color: white; height: 84vh;"> 
           <!--<app-dashboard></app-dashboard>-->
           <!--<app-role-manager></app-role-manager>-->
-          <app-user-profile></app-user-profile>
-          <!--<router-outlet>body body</router-outlet>-->         
+          <!--<app-user-profile></app-user-profile>-->
+          <router-outlet></router-outlet>         
         </div>
         <div style="background-color: rgb(139, 163, 163);">
           <app-footer></app-footer>

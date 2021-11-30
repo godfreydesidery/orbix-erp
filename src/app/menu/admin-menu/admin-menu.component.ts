@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-admin-menu',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./admin-menu.component.scss']
 })
 export class AdminMenuComponent implements OnInit {
+
+  @Input() menu : string = ''
 
   constructor() { }
 

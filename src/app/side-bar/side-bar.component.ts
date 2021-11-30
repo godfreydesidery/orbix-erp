@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MainMenuComponent } from '../menu/main-menu/main-menu.component';
 
 
 @Component({
@@ -9,6 +8,9 @@ import { MainMenuComponent } from '../menu/main-menu/main-menu.component';
 })
 export class SideBarComponent implements OnInit {
 
+  mainMenuShown : boolean = true
+  adminMenuShown : boolean = false
+
   constructor() {
 
   }
@@ -16,6 +18,23 @@ export class SideBarComponent implements OnInit {
   ngOnInit(): void {
 
   }
+
+
+  showMainMenu(){
+    this.mainMenuShown = true
+
+    this.adminMenuShown = false
+  }
+  showAdminMenu(){
+    this.mainMenuShown = false
+
+    this.adminMenuShown = true
+
+
+  }
+
+
+  
 }
 
 
