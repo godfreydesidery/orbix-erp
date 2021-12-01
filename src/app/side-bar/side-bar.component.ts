@@ -19,22 +19,20 @@ export class SideBarComponent implements OnInit {
 
   }
 
-
-  showMainMenu(){
-    this.mainMenuShown = true
-
+  hideAll(){
+    this.mainMenuShown = false
     this.adminMenuShown = false
   }
-  showAdminMenu(){
-    this.mainMenuShown = false
 
-    this.adminMenuShown = true
-
-
+  showMainMenu(){
+    this.hideAll()
+    this.mainMenuShown = true
   }
-
-
-  
+  showAdminMenu(){
+    this.hideAll()
+    this.adminMenuShown = true
+  } 
+   
 }
 
 

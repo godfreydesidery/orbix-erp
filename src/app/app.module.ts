@@ -3,7 +3,8 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { StoreModule } from '@ngrx/store';
 import { FormsModule } from '@angular/forms';
-
+import { JwtInterceptor, JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { HttpErrorInterceptor } from 'src/error-interceptor';
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -40,12 +41,17 @@ import { RouterModule } from '@angular/router';
     FormsModule,
     StoreModule.forRoot({}, {}),
     RouterModule.forRoot([
-      {path : '', component : DashboardComponent},
+      {path : 'home', component : DashboardComponent},
       {path : 'user-profile', component :UserProfileComponent}
     ]),
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
-  providers: [],
+  providers: [
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+    JwtHelperService,
+   // { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+   // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,9 +1,14 @@
 export class User {
-    id?: string
-    username?: string
-    password?: string
-    firstName?: string
-    secondName?: string
-    lastName?: string
-    token?: string
+    constructor(
+        public username : string,
+        public accessToken : string,
+        public expirationDate : Date
+    ){} 
+    
+    getToken(){
+        if(this.expirationDate || new Date() > this.expirationDate){
+            return null
+        }
+        return this.accessToken
+    }
 }

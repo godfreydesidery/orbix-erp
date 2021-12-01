@@ -1,11 +1,17 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
+
+  helper = new JwtHelperService()
+
     constructor(
+        private http :HttpClient,
         private router: Router,
         private authService: AuthService
     ) { }
@@ -14,11 +20,58 @@ export class AuthGuard implements CanActivate {
         const currentUser = this.authService.currentUserValue;
         if (currentUser) {
             // logged in so return true
+            let currentUser : {
+                username : string, 
+                access_token : string, 
+                refresh_token : string
+              } = JSON.parse(localStorage.getItem('current-user')!)
+
+              if(currentUser == null){
+                return false
+              }
+
+              if(this.tokenExpired(currentUser.refresh_token) == true){
+                //clear the user session
+                //reload application
+
+                localStorage.removeItem('current-user')
+                window.location.reload()
+                return false
+              }
+
+              if(this.tokenExpired(currentUser.access_token) == true){                
+                  //request for a new token using the refresh token
+                  var header = {
+                    headers: new HttpHeaders()
+                      .set('Authorization',  'Bearer '+currentUser.refresh_token)
+                  }
+
+                  this.http.get<any>('/api/token/refresh', header)
+                  .subscribe(
+                      data => {
+                        currentUser.access_token = data['refresh_token']
+                        localStorage.removeItem('current-user')
+                        localStorage.setItem('current-user', JSON.stringify(currentUser))
+                      },
+                      error => {
+                        console.log('not authenticated, reloading')
+                        window.location.reload();
+                        return false
+                      }
+                  )       
+                  //if token request successiful, continue, if unsuccesiful, redirect to login with error
+              }
             return true;
         }
 
         // not logged in so redirect to login page with the return url
-        this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+        window.location.reload();
         return false;
     }
+
+    private tokenExpired(token: string) {
+      return this.helper.isTokenExpired(token)
+    }
+
+
 }

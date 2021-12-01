@@ -1,29 +1,36 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from './../environments/environment';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'orbix-erp';
 
   public isLoggedIn = false
 
-  constructor(private http  : HttpClient){
-    this.getData()
-
-    //console.log(environment.production);
-    //console.log(environment.apiUrl); // Logs false for default environment
+  constructor(private http  : HttpClient,
+    private auth : AuthService,
+    private router: Router){   
   }
-
-  getData(){
-    return this.http.get<[]>('/api/users')
-    .subscribe(
-      data =>{
-      console.log(data)
-    });
+   
+  ngOnInit(): void {
+    var currentUser = null
+    if(localStorage.getItem('current-user') != null){
+      currentUser = localStorage.getItem('current-user')
+    }
+     
+    if(currentUser != null){
+      this.isLoggedIn = true
+      this.router.navigate(['home'])
+    }else{
+      this.router.navigate([''])
+      this.isLoggedIn = false
+    }
   }
 }
