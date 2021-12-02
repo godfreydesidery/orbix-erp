@@ -25,7 +25,6 @@ export class AuthGuard implements CanActivate {
                 access_token : string, 
                 refresh_token : string
               } = JSON.parse(localStorage.getItem('current-user')!)
-
               if(currentUser == null){
                 return false
               }
@@ -34,12 +33,15 @@ export class AuthGuard implements CanActivate {
                 //clear the user session
                 //reload application
 
+                alert('Session has expired, ya fresh login is required')
+
                 localStorage.removeItem('current-user')
                 window.location.reload()
                 return false
               }
 
-              if(this.tokenExpired(currentUser.access_token) == true){                
+              if(this.tokenExpired(currentUser.access_token) == true){ 
+                
                   //request for a new token using the refresh token
                   var header = {
                     headers: new HttpHeaders()

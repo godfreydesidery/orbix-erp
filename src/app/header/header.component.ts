@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,9 @@ export class HeaderComponent implements OnInit {
   public userName    : string
   public systemDate  : string
 
-  constructor(private router: Router) {
+  constructor(private router: Router,
+    private auth : AuthService) {
+
     if(localStorage.getItem('user-name') != null){
       this.userName = localStorage.getItem('user-name')!
     }else{
@@ -24,8 +27,12 @@ export class HeaderComponent implements OnInit {
     }  
   }
 
-  ngOnInit(): void {}
-
+  ngOnInit(): void {
+    if(localStorage.getItem('user-name') == null){
+      
+    }
+  }
+    
   public logOut() : any{
     localStorage.removeItem('current-user')
     alert('You have logged out!')

@@ -5,6 +5,17 @@ import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from './models/user'
 import { map } from 'rxjs/operators'
 import { JwtHelperService } from '@auth0/angular-jwt'
+import { DatePipe } from '@angular/common'
+
+interface IUserData{
+  firstName : string
+  secondName : string
+  lastName : string
+}
+
+interface IDayData{
+  bussinessDate : String
+}
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +23,16 @@ import { JwtHelperService } from '@auth0/angular-jwt'
 export class AuthService {
 
   helper = new JwtHelperService()
+  
 
   private currentUserSubject: BehaviorSubject<User>
   public currentUser: Observable<User>
 
 
-  constructor(private http : HttpClient) {
+  constructor(
+    private http : HttpClient,
+    private datePipe : DatePipe
+    ) {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('current-user') || '{}'));
     this.currentUser = this.currentUserSubject.asObservable()
   }
@@ -33,26 +48,27 @@ export class AuthService {
 
     let options = {
       headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
-    };
+    }
 
     return this.http.post<any>('/api/login', user, options)
       .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem('current-user', JSON.stringify(user))
-        this.currentUserSubject.next(user)
-
+       // this.currentUserSubject.next(user)
         let currentUser : {
           username : string, 
           access_token : string, 
           refresh_token : string
         } = JSON.parse(localStorage.getItem('current-user')!)
-
+        
         if(this.tokenExpired(currentUser.access_token)){
           //should clear user information
           return
         }
+                
         return user
-      }));  
+      })); 
+
   }
 
   autoLogin(){
@@ -77,4 +93,40 @@ export class AuthService {
     return this.helper.isTokenExpired(token)
   }
 
+  public async loadUserSession(username : string){
+      
+    let currentUser : {
+      username : string, 
+      access_token : string, 
+      refresh_token : string
+    } = JSON.parse(localStorage.getItem('current-user')!)    
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+    }
+
+    await this.http.get<IUserData>('/api/users/get_user?username='+username, options)
+    .toPromise()
+    .then(
+      data => {
+        localStorage.setItem('user-name', data?.firstName!+' '+data?.lastName)        
+      }
+    )
+
+    //await this.http.get<IDayData>('/api/days/get_bussiness_date', options)
+    //.toPromise()
+   // .then(
+    //  data => {
+      //  alert(data?.bussinessDate)
+      //  localStorage.setItem('system-date', data?.bussinessDate!+'')        
+     // }
+   // )
+   localStorage.setItem('system-date', '2021-12-02')
+  }
+
+  public unloadUserSession(){
+    localStorage.removeItem('user-name')
+    localStorage.removeItem('system-date')
+  }
 }
+
+

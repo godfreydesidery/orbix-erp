@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { StoreModule } from '@ngrx/store';
@@ -48,6 +48,7 @@ import { RouterModule } from '@angular/router';
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
   providers: [
     { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+    DatePipe,
     JwtHelperService,
    // { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
    // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
