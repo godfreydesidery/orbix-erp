@@ -2,15 +2,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import * as moment from "moment"
 import { BehaviorSubject, Observable } from 'rxjs'
-import { User } from './models/user'
+import { IUser } from './models/user'
 import { map } from 'rxjs/operators'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import { DatePipe } from '@angular/common'
 
 interface IUserData{
-  firstName : string
-  secondName : string
-  lastName : string
+  alias : string
 }
 
 interface IDayData{
@@ -25,19 +23,19 @@ export class AuthService {
   helper = new JwtHelperService()
   
 
-  private currentUserSubject: BehaviorSubject<User>
-  public currentUser: Observable<User>
+  private currentUserSubject: BehaviorSubject<IUser>
+  public currentUser: Observable<IUser>
 
 
   constructor(
     private http : HttpClient,
     private datePipe : DatePipe
     ) {
-    this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('current-user') || '{}'));
+    this.currentUserSubject = new BehaviorSubject<IUser>(JSON.parse(localStorage.getItem('current-user') || '{}'));
     this.currentUser = this.currentUserSubject.asObservable()
   }
 
-  public get currentUserValue(): User {
+  public get currentUserValue(): IUser {
     return this.currentUserSubject.value
   }
 
@@ -86,12 +84,14 @@ export class AuthService {
   logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('current-user')
-    this.currentUserSubject.next(new User('', '', new Date))
+    //this.currentUserSubject.next(new User('', '', new Date))
   }
 
   private tokenExpired(token: string) {
     return this.helper.isTokenExpired(token)
   }
+
+
 
   public async loadUserSession(username : string){
       
@@ -108,19 +108,21 @@ export class AuthService {
     .toPromise()
     .then(
       data => {
-        localStorage.setItem('user-name', data?.firstName!+' '+data?.lastName)        
+        localStorage.setItem('user-name', data?.alias!+'')        
       }
     )
 
-    //await this.http.get<IDayData>('/api/days/get_bussiness_date', options)
-    //.toPromise()
-   // .then(
-    //  data => {
-      //  alert(data?.bussinessDate)
-      //  localStorage.setItem('system-date', data?.bussinessDate!+'')        
-     // }
-   // )
-   localStorage.setItem('system-date', '2021-12-02')
+    await this.http.get<IDayData>('/api/days/get_bussiness_date', options)
+    .toPromise()
+    .then(
+      data => {
+        localStorage.setItem('system-date', data?.bussinessDate!+'')        
+      },
+      error => {
+        console.log(error)
+      }
+    )
+   //localStorage.setItem('system-date', '2021-12-02')
   }
 
   public unloadUserSession(){

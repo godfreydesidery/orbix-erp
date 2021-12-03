@@ -66,6 +66,14 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
+                                        <label>*Alias</label>                               
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="text" name="alias" required class="form-control input-sm special" placeholder="Unique flag name that identify the user">                               
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 float-end" style="text-align: right;">
                                         <label>Status</label>                               
                                     </div>
                                     <div class="col-8">
@@ -78,37 +86,29 @@
                                         <label>Check Roles</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="checkbox" id="admin" name="admin" value="admin"><label for="admin"> ADMIN</label><br>
-                                        <input type="checkbox" id="manager" name="manager" value="manager"><label for="manager"> MANAGER</label><br>
+                                        <div class="row">
+                                            <div class="col-12" *ngFor="let role of roles">
+                                                <input type="checkbox" id="role.name" name="role.name" value="role.name"><label for={{role.name}}>{{role.name}}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <hr>
                             </div>
                           <div class="col-6">
                               <div class="row">
-                                  <div class="col-2">
-
-                                  </div>
+                                  <div class="col-2"></div>
                                   <div class="col-4">
                                     <button class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
                                     <button class="btn btn-success" style="margin: 2px; width: 25mm;">Edit</button><br>
                                     <button class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
-                                    <button class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
+                                    <button (click)="saveUser()" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                   </div>
                               </div>
                           </div>                                              
                         </div>
-                      </div>
-                    
-
-
-
+                    </div>                   
                 </td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td style="vertical-align: top;"><font style="font-size: smaller;">Status: </font></td>
             </tr>
         </table>
     </div>

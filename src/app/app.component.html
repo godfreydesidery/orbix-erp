@@ -1,13 +1,13 @@
 
-<section style="padding: 0mm; margin: 0mm; background-color: #eeeeee; overflow-y: hidden;">
+<section style="padding: 0mm; margin: 0mm; background-color: #eeeeee;">
 
-  <div *ngIf="isLoggedIn===false" style="height: 100vh;">
+  <div *ngIf="isLoggedIn===false">
     <app-login></app-login>
   </div>
   
-  <table  *ngIf="isLoggedIn" style="padding: 0mm; margin: 0mm; width: 100%; height: 100vh; min-width: 300mm; max-width: 300mm; max-width: 450mm;">
+  <table  *ngIf="isLoggedIn" style="padding: 0mm; margin: 0mm; width: 100%; min-width: 300mm; max-width: 300mm; max-width: 450mm;">
     <tr>
-      <td style="background-color: #eeeeee; width: 50mm; height: 100%; vertical-align:top; padding: 0mm; margin: 0mm;">
+      <td style="width: 50mm; height: auto; vertical-align:top; padding: 0mm; margin: 0mm;">
         <div style="padding: 0mm; margin: 0mm;">
           <app-side-bar></app-side-bar>
         </div>
@@ -16,17 +16,13 @@
         <div style="background-color: rgb(187, 175, 175);">
           <app-header></app-header>
         </div>
-        <div style="background-color: white; height: 84vh;"> 
-          <!--<app-dashboard></app-dashboard>-->
-          <!--<app-role-manager></app-role-manager>-->
-          <!--<app-user-profile></app-user-profile>-->
+        <div style="background-color: white;"> 
           <router-outlet></router-outlet>         
         </div>
-        <div style="background-color: rgb(139, 163, 163);">
+        <div>
           <app-footer></app-footer>
         </div>
       </td>
     </tr>
-  </table>
-  
+  </table> 
 </section>
