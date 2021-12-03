@@ -11,4 +11,9 @@ export interface IUser {
     alias      : string
     active     : number
     roles      : IRole[]
+
+    saveUser() : void
+    getUsers() : IUser[]
+    getUser(username : string) : IUser
+    deleteUser() : boolean
 }
