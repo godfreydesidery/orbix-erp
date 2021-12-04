@@ -18,6 +18,7 @@ interface IiRole{
 
 export class UserProfileComponent implements OnInit, IUser {
 
+  public searchKey       : any
   public id              : any
   public username        : string
   public password        : string
@@ -27,11 +28,12 @@ export class UserProfileComponent implements OnInit, IUser {
   public secondName      : string
   public lastName        : string
   public alias           : string
-  public active          : number
+  public active          : boolean
 
   public roles           : IRole[]
  
   constructor(private http : HttpClient) {
+    this.searchKey       = ''
     this.id              = ''
     this.username        = ''
     this.password        = ''
@@ -41,36 +43,32 @@ export class UserProfileComponent implements OnInit, IUser {
     this.secondName      = ''
     this.lastName        = ''
     this.alias           = ''
-    this.active          = 1
+    this.active          = true
     this.roles           = []
   }  
+  getUserData(): any {
+    return {
+      id          : this.id,
+      username    : this.username,
+      password    : this.password,
+      rollNo      : this.rollNo,
+      firstName   : this.firstName,
+      secondName  : this.secondName,
+      lastName    : this.lastName,
+      alias       : this.alias,
+      active      : this.active,
+      roles       : this.roles
+    }
+  }
   
   ngOnInit(): void {
     this.getRoles()
   }
- 
+
   async saveUser(){
-    if(this.id == '' || this.id == null){
-      alert('New user')
-    }else{
-      alert('Existing user')
-    }
     /**
       * Create a single user
       */
-    var user = {
-      id         : this.id,
-      username   : this.username,
-      password   : this.password,
-      rollNo     : this.rollNo,
-      firstName  : this.firstName,
-      secondName : this.secondName,
-      lastName   : this.lastName,
-      alias      : this.alias,
-      active     : this.active,
-      roles      : this.roles
-    }
-
     let currentUser : {
       username       : string, 
       access_token   : string, 
@@ -80,20 +78,40 @@ export class UserProfileComponent implements OnInit, IUser {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
     }
-
-    await this.http.post('/api/users/save', user, options)
-    .toPromise()
-    .then(
-      data => {
-        console.log(data)
-        alert('New user created successifully')
-      }
-    )
-    .catch(
-      error => {
-        console.log(error);
-      }
-    )   
+    if (this.id == null || this.id == ''){
+      //create a new user
+      await this.http.post('/api/users/create', this.getUserData(), options)
+      .toPromise()
+      .then(
+        data => {
+          console.log(data)
+          alert('User created successifully')
+        }
+      )
+      .catch(
+        error => {
+          console.log(error);
+          alert('Could not create user')
+        }
+      )   
+    }else{
+      //update an existing user
+      await this.http.put('/api/users/update', this.getUserData(), options)
+      .toPromise()
+      .then(
+        data => {
+          console.log(data)
+          alert('User updated successifully')
+        }
+      )
+      .catch(
+        error => {
+          console.log(error);
+          alert('Could not update user')
+        }
+      )   
+    }
+    
   }
  
   async getRoles(){
@@ -125,11 +143,65 @@ export class UserProfileComponent implements OnInit, IUser {
   getUsers(): IUser[] {
     throw new Error('Method not implemented.');
   }
-  getUser(username: string): IUser {
-    throw new Error('Method not implemented.');
+  async getUser(key: string) {
+    this.searchKey = key
+    this.clearFields()
+    this.username = this.searchKey
+    await this.http.get("api/users/get_user?username="+this.searchKey)
+    .toPromise()
+    .then(
+      data=>{
+        this.showUser(data)
+      }
+    )
+    .catch(
+      error=>{
+        alert('No matching record')
+      }
+    )
   }
   deleteUser(): boolean {
     throw new Error('Method not implemented.');
   }
 
+  showUser(user : any){
+    this.id         = user['id']
+    this.username   = user['username']
+    this.rollNo     = user['rollNo']
+    this.firstName  = user['firstName']
+    this.secondName = user['secondName']
+    this.lastName   = user['lastName']
+    this.alias      = user['alias']
+    this.active     = user['active']
+    this.roles.forEach(role => {
+      user['roles'].array.forEach((userRole: IRole) => {
+        if(userRole == role){
+          role.granted = true
+        }
+      });
+    });
+  }
+
+  showUserRoles(roles : IRole[], userRoles : IRole[]){
+    //to show the user roles
+    roles.forEach(role => {
+      userRoles.forEach(userRole => {
+        if(role.granted==false){
+
+        }
+      })
+    });
+  }
+
+  clearFields(){
+    this.id         = ''
+    this.username   = ''
+    this.rollNo     = ''
+    this.firstName  = ''
+    this.secondName = ''
+    this.lastName   = ''
+    this.alias      = ''
+    this.active     = false
+    this.getRoles()
+  }
 }

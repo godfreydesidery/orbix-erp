@@ -11,17 +11,17 @@
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
                         <div class="row">
-                            <input type="hidden" name="id">
+                            <input type="hidden" name="id" [(ngModel)]="id">
                             <div class="col-6">
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
                                         <label>*Username</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" name="username" required class="form-control input-sm special">                               
+                                        <input type="text" name="username" [(ngModel)]="username" required class="form-control input-sm special">                               
                                     </div>
                                     <div class="col-3">
-                                        <button class="btn btn-success form-control">Search</button>                               
+                                        <button (click)="getUser(username)" class="btn btn-success form-control">Search</button>                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -29,7 +29,15 @@
                                         <label>*Password</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="password" name="password" required class="form-control input-sm special">                               
+                                        <input type="password" name="password" [(ngModel)]="password" required class="form-control input-sm special" autocomplete="new-password">                               
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 float-end" style="text-align: right;">
+                                        <label>*Confirm Password</label>                               
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required class="form-control input-sm special" autocomplete="new-password">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -37,7 +45,7 @@
                                         <label>*Roll No</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="rollNo" required class="form-control input-sm special" placeholder="Unique employee/personnel number">                               
+                                        <input type="text" name="rollNo" [(ngModel)]="rollNo" required class="form-control input-sm special" placeholder="Unique employee/personnel number">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -45,7 +53,7 @@
                                         <label>*First Name</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="firstName" required class="form-control input-sm special">                               
+                                        <input type="text" name="firstName" [(ngModel)]="firstName" required class="form-control input-sm special">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -53,7 +61,7 @@
                                         <label>Second Name</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="secondName" class="form-control input-sm special">                               
+                                        <input type="text" name="secondName" [(ngModel)]="secondName" class="form-control input-sm special">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -61,7 +69,7 @@
                                         <label>*Last Name</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="lastName" required class="form-control input-sm special">                               
+                                        <input type="text" name="lastName" [(ngModel)]="lastName" required class="form-control input-sm special">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -69,7 +77,7 @@
                                         <label>*Alias</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="alias" required class="form-control input-sm special" placeholder="Unique flag name that identify the user">                               
+                                        <input type="text" name="alias" [(ngModel)]="alias" required class="form-control input-sm special" placeholder="Unique flag name that identify the user">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -77,7 +85,7 @@
                                         <label>Status</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="checkbox" id="active" name="active" value="active"><label for="active"> Active</label><br>
+                                        <input type="checkbox" id="active" name="active" [(ngModel)]="active"><label for="active"> Active</label><br>
                                     </div>
                                 </div>
                                 <hr>

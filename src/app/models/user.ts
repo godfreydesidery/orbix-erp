@@ -9,11 +9,11 @@ export interface IUser {
     secondName : string
     lastName   : string
     alias      : string
-    active     : number
+    active     : boolean
     roles      : IRole[]
 
     saveUser() : void
     getUsers() : IUser[]
-    getUser(username : string) : IUser
+    getUser(username : string) : any
     deleteUser() : boolean
 }
