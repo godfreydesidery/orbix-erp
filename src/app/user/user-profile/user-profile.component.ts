@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { IUser } from 'src/app/models/user';
 import { IRole } from 'src/app/models/role';
+import { ThrowStmt } from '@angular/compiler';
 
 interface IiRole{
   name: string 
@@ -47,6 +48,12 @@ export class UserProfileComponent implements OnInit, IUser {
     this.roles           = []
   }  
   getUserData(): any {
+    var userRoles : IRole[] = []
+    this.roles.forEach(role => { //Get the roles
+      if(role.granted == true){
+        userRoles.push(role)
+      }
+    })
     return {
       id          : this.id,
       username    : this.username,
@@ -57,7 +64,7 @@ export class UserProfileComponent implements OnInit, IUser {
       lastName    : this.lastName,
       alias       : this.alias,
       active      : this.active,
-      roles       : this.roles
+      roles       : userRoles
     }
   }
   
@@ -69,6 +76,10 @@ export class UserProfileComponent implements OnInit, IUser {
     /**
       * Create a single user
       */
+    //validate inputs
+    if(this.validateInputs() == false){
+      return
+    }
     let currentUser : {
       username       : string, 
       access_token   : string, 
@@ -84,6 +95,7 @@ export class UserProfileComponent implements OnInit, IUser {
       .toPromise()
       .then(
         data => {
+          this.showUser(data)
           console.log(data)
           alert('User created successifully')
         }
@@ -138,6 +150,9 @@ export class UserProfileComponent implements OnInit, IUser {
         )
       }
     )
+    .catch(error => {
+      console.log(error)
+    })
   }
 
   getUsers(): IUser[] {
@@ -156,15 +171,50 @@ export class UserProfileComponent implements OnInit, IUser {
     )
     .catch(
       error=>{
+        console.log(error)        
         alert('No matching record')
       }
     )
   }
-  deleteUser(): boolean {
-    throw new Error('Method not implemented.');
+  async deleteUser(){
+    if(this.id == null || this.id == ''){
+      alert('No user selected, please select a user to delete')
+      return
+    }
+    if(!confirm('Confirm delete the selected user. This action can not be undone')){
+      return
+    }
+    let currentUser : {
+      username : string, 
+      access_token : string, 
+      refresh_token : string
+    } = JSON.parse(localStorage.getItem('current-user')!)    
+    let options = {
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+    }
+    await this.http.delete('api/users/delete?id='+this.id, options)
+    .toPromise()
+    .then(
+      () => {
+        this.clearFields()
+        alert('Record deleted succesifully')
+        return true
+      }
+    )
+    .catch(
+      error => {
+        console.log(error)
+        alert('Could not delete record')
+        return false
+      }
+    )
   }
 
   showUser(user : any){
+    /**
+     * Display user details, takes a json user object
+     * Args: user object
+     */
     this.id         = user['id']
     this.username   = user['username']
     this.rollNo     = user['rollNo']
@@ -173,35 +223,77 @@ export class UserProfileComponent implements OnInit, IUser {
     this.lastName   = user['lastName']
     this.alias      = user['alias']
     this.active     = user['active']
-    this.roles.forEach(role => {
-      user['roles'].array.forEach((userRole: IRole) => {
-        if(userRole == role){
-          role.granted = true
-        }
-      });
-    });
+    this.showUserRoles(this.roles, user['roles'])
   }
 
   showUserRoles(roles : IRole[], userRoles : IRole[]){
-    //to show the user roles
-    roles.forEach(role => {
-      userRoles.forEach(userRole => {
-        if(role.granted==false){
-
+    /**
+     * Display user roles, the roles for that particular user are checked
+     * args: roles-global user roles, userRoles-roles for a specific user
+     */
+    //first uncheck all roles
+    this.clearRoles()
+    //Now, check the respective  roles
+    userRoles.forEach(userRole => {
+      roles.forEach(role => {        
+        if(role.name === userRole.name){
+          role.granted = true
         }
       })
-    });
+    })
+    this.roles = roles
+  }
+
+  clearRoles(){
+    /**
+     * Uncheck all the roles
+     */
+    this.roles.forEach(role => {
+      role.granted = false
+    })
   }
 
   clearFields(){
-    this.id         = ''
-    this.username   = ''
-    this.rollNo     = ''
-    this.firstName  = ''
-    this.secondName = ''
-    this.lastName   = ''
-    this.alias      = ''
-    this.active     = false
-    this.getRoles()
+    /**
+     * Clear all the fields
+     */
+    this.id               = ''
+    this.username         = ''
+    this.password         = ''
+    this.confirmPassword  = ''
+    this.rollNo           = ''
+    this.firstName        = ''
+    this.secondName       = ''
+    this.lastName         = ''
+    this.alias            = ''
+    this.active           = false
+    this.clearRoles()
+  }
+
+  validateInputs() : boolean{
+    let valid : boolean = true
+    //validate username
+    if(this.username == ''){
+      alert('Empty username not allowed, please fill in the username field')
+      return false
+    }
+
+    //validate passwords
+    if(this.id == null || this.id == ''){
+      if(this.password == ''){
+        alert('Empty password not allowed for new user')
+        return false
+      }
+      if(this.password != this.confirmPassword){
+        alert('Password and Password confirmation do not match')
+        return false
+      }
+    }else{
+      if(this.password != this.confirmPassword && (this.password != '' || this.confirmPassword != '')){
+        alert('Password and Password confirmation do not match')
+        return false
+      }
+    }
+    return valid
   }
 }

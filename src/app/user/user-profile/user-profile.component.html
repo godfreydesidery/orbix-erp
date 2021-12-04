@@ -15,10 +15,10 @@
                             <div class="col-6">
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*Username</label>                               
+                                        <label>Username*</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" name="username" [(ngModel)]="username" required class="form-control input-sm special">                               
+                                        <input type="text" name="username" [(ngModel)]="username" required class="form-control input-sm special" autocomplete="off">                               
                                     </div>
                                     <div class="col-3">
                                         <button (click)="getUser(username)" class="btn btn-success form-control">Search</button>                               
@@ -26,23 +26,23 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*Password</label>                               
+                                        <label>Password*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="password" name="password" [(ngModel)]="password" required class="form-control input-sm special" autocomplete="new-password">                               
+                                        <input type="password" name="password" [(ngModel)]="password" required class="form-control input-sm special" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*Confirm Password</label>                               
+                                        <label>Confirm Password*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required class="form-control input-sm special" autocomplete="new-password">                               
+                                        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required class="form-control input-sm special" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*Roll No</label>                               
+                                        <label>Roll No*</label>                               
                                     </div>
                                     <div class="col-8">
                                         <input type="text" name="rollNo" [(ngModel)]="rollNo" required class="form-control input-sm special" placeholder="Unique employee/personnel number">                               
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*First Name</label>                               
+                                        <label>First Name*</label>                               
                                     </div>
                                     <div class="col-8">
                                         <input type="text" name="firstName" [(ngModel)]="firstName" required class="form-control input-sm special">                               
@@ -66,7 +66,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*Last Name</label>                               
+                                        <label>Last Name*</label>                               
                                     </div>
                                     <div class="col-8">
                                         <input type="text" name="lastName" [(ngModel)]="lastName" required class="form-control input-sm special">                               
@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*Alias</label>                               
+                                        <label>Alias*</label>                               
                                     </div>
                                     <div class="col-8">
                                         <input type="text" name="alias" [(ngModel)]="alias" required class="form-control input-sm special" placeholder="Unique flag name that identify the user">                               
@@ -82,7 +82,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>Status</label>                               
+                                        <label>Active/Inactive</label>                               
                                     </div>
                                     <div class="col-8">
                                         <input type="checkbox" id="active" name="active" [(ngModel)]="active"><label for="active"> Active</label><br>
@@ -96,7 +96,7 @@
                                     <div class="col-8">
                                         <div class="row">
                                             <div class="col-12" *ngFor="let role of roles">
-                                                <input type="checkbox" id="role.name" name="role.name" value="role.name"><label for={{role.name}}>{{role.name}}</label>
+                                                <input type="checkbox" id="role.name" name="role.name" [(ngModel)]="role.granted"><label for="{{role.name}}">{{role.name}}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -107,9 +107,9 @@
                               <div class="row">
                                   <div class="col-2"></div>
                                   <div class="col-4">
-                                    <button class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                    <button class="btn btn-success" style="margin: 2px; width: 25mm;">Edit</button><br>
-                                    <button class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                    <button  (click)="clearFields()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                    <button class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
+                                    <button (click)="deleteUser()" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
                                     <button (click)="saveUser()" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                   </div>
                               </div>

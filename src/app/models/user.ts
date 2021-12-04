@@ -15,5 +15,5 @@ export interface IUser {
     saveUser() : void
     getUsers() : IUser[]
     getUser(username : string) : any
-    deleteUser() : boolean
+    deleteUser() : any
 }

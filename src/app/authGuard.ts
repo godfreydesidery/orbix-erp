@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
                 //clear the user session
                 //reload application
 
-                alert('Session has expired, ya fresh login is required')
+                alert('Session has expired, a fresh login is required')
 
                 localStorage.removeItem('current-user')
                 window.location.reload()

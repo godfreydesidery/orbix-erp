@@ -8,6 +8,7 @@ import { UserProfileComponent } from './user/user-profile/user-profile.component
 
 const routes: Routes = [
   {path: 'home', component: DashboardComponent, canActivate: [AuthGuard]},
+  {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({
