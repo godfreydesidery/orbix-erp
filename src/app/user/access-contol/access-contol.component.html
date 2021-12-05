@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="col">
+        <table style="width: 100%;">
+            <tr style="width: 100%; background-color: #eeeeee;">
+                <td style="width: 100mm; vertical-align: top;"><p class="h6">Admin / Access Control</p></td>
+                <td></td>                                   
+            </tr>
+        </table>
+        <table style="width: 100%;">
+            <tr style="width: 100%;">
+                <td style="vertical-align: top; height: 75vh;">
+                    <div class="container-fluid">
+                        <div class="row">  
+                            <div class="col-3">
+                                <label>Select Role:</label><br>
+                                <select class="form-control">
+                                    <option></option>
+                                    <option>ROLE 1</option>
+                                    <option>ROLE 2</option>
+                                    <option>ROLE 3</option>
+                                    <option>ROLE 4</option>
+                                </select><br>
+                                <button class="btn btn-success">Save</button>
+                            </div>     
+                            <div class="col-9">
+                                <label>Update Priviledges for [ROLE]</label><br>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td>Object</td>
+                                            <td>Actions</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let object of objects">
+                                            <td style="vertical-align: top;">{{object}}</td>
+                                            <td style="vertical-align: top;">
+                                                <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox"><label>{{operation}}</label></button>
+                                            </td>
+                                        </tr> 
+                                    </tbody>
+                                </table>
+                            </div>                                         
+                        </div><hr>
+                        <div class="row">    
+                            <div class="col-12">
+                                <label>Access Summary</label><br>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td>Role</td>
+                                            <td>Privileges</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>ROLE 1</td>
+                                            <td>
+                                                [CREATE LPO][APPROVE LPO][CANCEL LPO]
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>                                         
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

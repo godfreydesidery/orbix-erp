@@ -12,4 +12,20 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  loadShortcuts(){
+
+  }
+
+  loadMessages(){
+
+  }
+
+  removeShortcut(){
+    alert('clear shortcut!')
+  }
+
+  removeAllShortcuts(){
+    alert('clear all shortcuts!')
+  }
+
 }

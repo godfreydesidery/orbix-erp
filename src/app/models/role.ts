@@ -4,7 +4,7 @@ export interface IRole{
     granted :boolean
 
     saveRole() : void
-    getRoles() : IRole[]
-    getRole(roleName : string) : IRole
+    getRoles() : any
+    getRole(roleName : string) : any
     deleteRole() : boolean
 }

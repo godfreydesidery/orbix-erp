@@ -19,6 +19,7 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 import { UserProfileComponent } from './user/user-profile/user-profile.component';
 import { RoleManagerComponent } from './user/role-manager/role-manager.component';
 import { RouterModule } from '@angular/router';
+import { AccessContolComponent } from './user/access-contol/access-contol.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { RouterModule } from '@angular/router';
     AdminMenuComponent,
     SideBarComponent,
     UserProfileComponent,
-    RoleManagerComponent,   
+    RoleManagerComponent,
+    AccessContolComponent,
   ],
   exports: [ UserProfileComponent ],
   imports: [
@@ -42,7 +44,9 @@ import { RouterModule } from '@angular/router';
     StoreModule.forRoot({}, {}),
     RouterModule.forRoot([
       {path : 'home', component : DashboardComponent},
-      {path : 'user-profile', component :UserProfileComponent}
+      {path : 'user-profile', component :UserProfileComponent},
+      {path : 'role-manager', component :RoleManagerComponent},
+      {path : 'access-control', component :AccessContolComponent}
     ]),
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
