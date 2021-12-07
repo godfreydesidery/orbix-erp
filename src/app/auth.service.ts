@@ -26,6 +26,12 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<IUser>
   public currentUser: Observable<IUser>
 
+  public user : {
+    username : string, 
+    access_token : string, 
+    refresh_token : string
+  } = JSON.parse(localStorage.getItem('current-user')!) 
+
 
   constructor(
     private http : HttpClient,

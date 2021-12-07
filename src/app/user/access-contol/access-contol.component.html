@@ -13,17 +13,13 @@
                         <div class="row">  
                             <div class="col-3">
                                 <label>Select Role:</label><br>
-                                <select class="form-control">
+                                <select [ngModel]="selectedRole" (ngModelChange)="selectRole($event)" class="form-control">
                                     <option></option>
-                                    <option>ROLE 1</option>
-                                    <option>ROLE 2</option>
-                                    <option>ROLE 3</option>
-                                    <option>ROLE 4</option>
-                                </select><br>
-                                <button class="btn btn-success">Save</button>
+                                    <option *ngFor="let role of roles">{{role}}</option>
+                                </select>
                             </div>     
                             <div class="col-9">
-                                <label>Update Priviledges for [ROLE]</label><br>
+                                <label><b>{{selectedRoleMessage}}</b></label><br>
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -35,11 +31,22 @@
                                         <tr *ngFor="let object of objects">
                                             <td style="vertical-align: top;">{{object}}</td>
                                             <td style="vertical-align: top;">
-                                                <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox"><label>{{operation}}</label></button>
+                                                <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox" (change)="addOrRemovePrivilege($event, object, operation)"><label>{{operation}}</label></button>
                                             </td>
                                         </tr> 
                                     </tbody>
                                 </table>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td><button class="btn btn-success">Save</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>                                         
                         </div><hr>
                         <div class="row">    
@@ -53,11 +60,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>ROLE 1</td>
-                                            <td>
-                                                [CREATE LPO][APPROVE LPO][CANCEL LPO]
-                                            </td>
+                                        <tr *ngFor="let item of privileges | keyvalue">
+                                            <td>{{item.key | json}}</td>
+                                            <td>{{item.value | json}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
