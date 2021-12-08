@@ -4,6 +4,7 @@ import { Component, OnInit, Pipe} from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { IObject } from 'src/app/models/object';
 import { IOperation } from 'src/app/models/operation';
+import { IPrivilege } from 'src/app/models/privilege';
 import { IRole } from 'src/app/models/role';
 
 @Component({
@@ -21,30 +22,27 @@ export class AccessContolComponent implements OnInit {
   public privileges   : {[key : string] : string[]}
   public selectedRole : string
   public selectedRoleMessage : string
-
   keys = []
-
   objectKeys = Object.keys;
+  public privilegeToRole!: {
+    role: string;
+    privilege: {
+      object: string;
+      operations: string[];
+    };
+  };
 
   constructor(
-    private http : HttpClient,
-    private auth :AuthService
-    ) {
+      private http : HttpClient,
+      private auth :AuthService) {
     this.object       = ''
     this.operation    = ''
     this.objects      = []
     this.operations   = []
     this.roles        = []
-    this.privileges   = {
-      'GRN' : [],
-      'LPO' : [],
-      'PRODUCT' : [],
-      'REPORT' : []
-    }
-
+    this.privileges   = {}
     this.selectedRole = ''
     this.selectedRoleMessage = 'Select role to update'
-    
   }
 
   ngOnInit(): void {
@@ -54,16 +52,13 @@ export class AccessContolComponent implements OnInit {
   }
 
   async getAllObjects(){
+    this.objects = []
+    this.privileges = {}
     /**
      * Get all the objects
-     */
-     let currentUser : {
-      username : string, 
-      access_token : string, 
-      refresh_token : string
-    } = JSON.parse(localStorage.getItem('current-user')!)    
+     */   
     let options = {
-      headers : new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
     await this.http.get<string[]>('/api/objects', options)
@@ -72,6 +67,7 @@ export class AccessContolComponent implements OnInit {
       data => {
         data?.forEach(
           element => {
+            this.privileges[element] = []
             this.objects.push(element)
           }
         )
@@ -87,13 +83,8 @@ export class AccessContolComponent implements OnInit {
     /**
      * Get all the operations
      */
-     let currentUser : {
-      username : string, 
-      access_token : string, 
-      refresh_token : string
-    } = JSON.parse(localStorage.getItem('current-user')!)    
     let options = {
-      headers : new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
     await this.http.get<string[]>('/api/operations', options)
@@ -115,7 +106,7 @@ export class AccessContolComponent implements OnInit {
   async getRoles(){
     /**
      * Get all the roles
-     */   
+     */
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
@@ -138,23 +129,47 @@ export class AccessContolComponent implements OnInit {
 
   selectRole(role : string){
     if(role != ''){
+      this.selectedRole = role
       this.selectedRoleMessage = 'Update priviledges for '+role
+      this.loadPrivileges(role)
     }else{
       this.selectedRoleMessage = 'Select role to update'
     }
   }
 
-  loadPrivileges(role : string){
-
+  async loadPrivileges(role : string){
+    this.getAllObjects()
+    /**
+     * Get all the privileges
+     */
+    let options = {
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+ 
+    await this.http.get<IPrivilege[]>('/api/privileges?role='+role, options)
+    .toPromise()
+    .then(
+      data => {
+        data?.forEach(element => {
+          this.addPrivilege(element.object, element.operation)
+        })
+      }
+    )
+    .catch(error => {
+      console.log(error)
+    })
   }
 
   addOrRemovePrivilege(action : any, object : string, operation : string){
     if(action.target.checked == true){
       this.addPrivilege(object, operation)
-    }else{
+    }else if(action.target.checked == false){
       this.removePrivilege(object, operation)
     }
-    console.log(this.privileges)
+  }
+
+  clearPrivileges(){
+    this.privileges = {}
   }
 
   addPrivilege(object : string, operation : string){
@@ -191,7 +206,88 @@ export class AccessContolComponent implements OnInit {
     }
   }
 
+  privilegeChecked1(object_ : string, operation_ : string){
+    var present = false
+    for (const [key, value] of Object.entries(this.privileges)){
+      value.forEach(element => {
+        if(key === object_ && element === operation_){
+          present = true
+        }
+      })
+    } 
+    return present 
+  }
 
+  privilegeChecked(object_ : string, operation_ : string){
+    var present = false
+    for (const [key] of Object.entries(this.privileges)){
+      if(key === object_){
+        this.privileges[key].forEach(element => {
+          if(element === operation_){
+            present = true
+          }
+        })
+      }   
+    } 
+    return present 
+  }
+
+  async addPrivilegeToRole(role : string){
+    if(role == null || role == ''){
+      alert('Please select Role')
+      return
+    }
+    var accessForm : AccessForm = new AccessForm
+    accessForm.role = role
+    var privileges = this.privileges
+    var privilegeForms = new Array<PrivilegeForm>()
+    for (const [key] of Object.entries(privileges)){
+      var privilegeForm = new PrivilegeForm()
+      privilegeForm.object = key
+      privilegeForm.operations = this.privileges[key]
+      privilegeForms.push(privilegeForm)
+    }
+    accessForm.privileges = privilegeForms
+    
+    let options = {
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+
+    await this.http.post('/api/privileges/addtorole', accessForm, options)
+    .toPromise()
+    .then(
+      data => {
+        console.log(data)
+        alert('Role created successifully')
+      }
+    )
+    .catch(
+      error => {
+        console.log(error);
+        alert('Could not create role')
+      }
+    )   
+  }
+}
+
+export class AccessForm{
+  role : string
+  privileges : PrivilegeForm[]
+
+  constructor(){
+    this.role = ''
+    this.privileges =new Array<PrivilegeForm>()
+  }
+}
+
+export class PrivilegeForm{
+  object : string
+  operations : string[]
+
+  constructor(){
+    this.object = ''
+    this.operations = []
+  }
 }
 
 

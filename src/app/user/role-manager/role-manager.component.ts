@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/auth.service';
 import { IRole } from 'src/app/models/role';
 
 @Component({
@@ -8,43 +9,37 @@ import { IRole } from 'src/app/models/role';
   styleUrls: ['./role-manager.component.scss']
 })
 export class RoleManagerComponent implements OnInit, IRole {
+
   searchKey : any
   id        : any;
   name      : string;
   granted   : boolean;
   active    : boolean
 
-  public roles: IRole[]
+  public roles : IRole[]
 
-  constructor(private http : HttpClient) {
-    this.id = ''
-    this.name = ''
+  constructor(private http : HttpClient, private auth : AuthService) {
+    this.id      = ''
+    this.name    = ''
     this.granted = false
-    this.active = false
-    this.roles = []
+    this.active  = false
+    this.roles   = []
   }
 
   ngOnInit(): void {
     this.getRoles()
-    console.log(this.roles)
   }
   
   async saveRole(): Promise<void> {
     /**
       * Create a single role
       */
-    //validate inputs
-    if(this.validateInputs() == false){
+    if(this.validateInputs() == false){//validate inputs
       return
     }
-    let currentUser : {
-      username       : string, 
-      access_token   : string, 
-      refresh_token  : string
-    } = JSON.parse(localStorage.getItem('current-user')!)
-
+    
     let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     if (this.id == null || this.id == ''){
       //create a new role
@@ -61,8 +56,11 @@ export class RoleManagerComponent implements OnInit, IRole {
       )
       .catch(
         error => {
-          console.log(error);
-          alert('Could not create role')
+          if(error['status'] === 409){
+            alert(error['error'])
+          }else{
+            alert('Could not create role')
+          }
         }
       )   
     }else{
@@ -79,23 +77,19 @@ export class RoleManagerComponent implements OnInit, IRole {
       )
       .catch(
         error => {
-          console.log(error);
-          alert('Could not update role')
+          if(error['status'] === 409){
+            alert(error['error'])
+          }else{
+            alert('Could not update role')
+          }
         }
       )   
     }
   }
+
   async getRoles() {
-    /**
-     * Get all the roles
-     */
-     let currentUser : {
-      username : string, 
-      access_token : string, 
-      refresh_token : string
-    } = JSON.parse(localStorage.getItem('current-user')!)    
     let options = {
-      headers : new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
     await this.http.get<IRole[]>('/api/roles', options)
@@ -113,17 +107,10 @@ export class RoleManagerComponent implements OnInit, IRole {
       console.log(error)
     })
   }
+  
   async getRole(key: string): Promise<any> {
-    /**
-     * Get a specified role
-     */
-     let currentUser : {
-      username : string, 
-      access_token : string, 
-      refresh_token : string
-    } = JSON.parse(localStorage.getItem('current-user')!)    
     let options = {
-      headers : new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
     this.searchKey = key
@@ -143,11 +130,10 @@ export class RoleManagerComponent implements OnInit, IRole {
       }
     )
   }
+
   deleteRole(): boolean {
     throw new Error('Method not implemented.');
   }
-
-  
 
   validateInputs() : boolean{
     let valid : boolean = true
@@ -160,7 +146,6 @@ export class RoleManagerComponent implements OnInit, IRole {
   }
 
   getRoleData(): any {
-    
     return {
       id   : this.id,
       name : this.name

@@ -31,7 +31,7 @@
                                         <tr *ngFor="let object of objects">
                                             <td style="vertical-align: top;">{{object}}</td>
                                             <td style="vertical-align: top;">
-                                                <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox" (change)="addOrRemovePrivilege($event, object, operation)"><label>{{operation}}</label></button>
+                                                <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox" [checked]="privilegeChecked(object, operation)" (change)="addOrRemovePrivilege($event, object, operation)"><label>{{operation}}</label></button>
                                             </td>
                                         </tr> 
                                     </tbody>
@@ -41,7 +41,7 @@
                                         <table class="table">
                                             <tbody>
                                                 <tr>
-                                                    <td><button class="btn btn-success">Save</button></td>
+                                                    <td><button class="btn btn-success" (click)="addPrivilegeToRole(selectedRole)">Save</button></td>
                                                 </tr>
                                             </tbody>
                                         </table>
