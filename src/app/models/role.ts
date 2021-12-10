@@ -6,5 +6,5 @@ export interface IRole{
     saveRole() : void
     getRoles() : any
     getRole(roleName : string) : any
-    deleteRole() : boolean
+    deleteRole(role : string) : any
 }

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { IRole } from 'src/app/models/role';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 
 @Component({
   selector: 'app-role-manager',
@@ -9,6 +10,12 @@ import { IRole } from 'src/app/models/role';
   styleUrls: ['./role-manager.component.scss']
 })
 export class RoleManagerComponent implements OnInit, IRole {
+
+  lockedName : boolean = true
+
+  enableSearch : boolean = false
+  enableSave   : boolean = false
+  enableDelete : boolean = false
 
   searchKey : any
   id        : any;
@@ -47,6 +54,7 @@ export class RoleManagerComponent implements OnInit, IRole {
       .toPromise()
       .then(
         data => {
+          this.lockedName = true
           this.showRole(data)
           console.log(data)
           this.roles = []
@@ -56,11 +64,8 @@ export class RoleManagerComponent implements OnInit, IRole {
       )
       .catch(
         error => {
-          if(error['status'] === 409){
-            alert(error['error'])
-          }else{
-            alert('Could not create role')
-          }
+          console.log(error)
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not create role')
         }
       )   
     }else{
@@ -77,11 +82,8 @@ export class RoleManagerComponent implements OnInit, IRole {
       )
       .catch(
         error => {
-          if(error['status'] === 409){
-            alert(error['error'])
-          }else{
-            alert('Could not update role')
-          }
+          console.log(error)
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update role')
         }
       )   
     }
@@ -120,19 +122,40 @@ export class RoleManagerComponent implements OnInit, IRole {
     .toPromise()
     .then(
       data=>{
+        this.lockedName = true
         this.showRole(data)
       }
     )
     .catch(
       error=>{
-        console.log(error)        
-        alert('No matching record')
+        console.log(error) 
+        this.name = ''       
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'No matching role')
       }
     )
   }
 
-  deleteRole(): boolean {
-    throw new Error('Method not implemented.');
+  async deleteRole(id : string) : Promise<any>{
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    await this.http.delete<IRole[]>("api/roles/delete?id="+id, options)
+    .toPromise()
+    .then(data => {
+      this.id    = ''
+      this.name  = ''
+      this.roles = []
+      this.lockedName = true
+      this.getRoles()
+    })
+    .catch(
+      error => {
+        console.log(error)        
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not delete role')
+        return false
+      }
+    )
+    return true
   }
 
   validateInputs() : boolean{
@@ -158,7 +181,8 @@ export class RoleManagerComponent implements OnInit, IRole {
      * Args: role object
      */
     this.id   = role['id']
-    this.name = role['name']    
+    this.name = role['name'] 
+    this.enableDelete = true   
   }
 
   clearFields(){
@@ -167,5 +191,12 @@ export class RoleManagerComponent implements OnInit, IRole {
      */
     this.id   = ''
     this.name = ''
+    this.enableSave = true
+    this.enableDelete = false
+    this.lockedName = false
+  }
+
+  edit(){
+    this.lockedName = false
   }
 }

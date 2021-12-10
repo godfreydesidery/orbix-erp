@@ -22,15 +22,15 @@ export class AccessContolComponent implements OnInit {
   public privileges   : {[key : string] : string[]}
   public selectedRole : string
   public selectedRoleMessage : string
-  keys = []
-  objectKeys = Object.keys;
-  public privilegeToRole!: {
-    role: string;
-    privilege: {
-      object: string;
-      operations: string[];
-    };
-  };
+  public keys = []
+  objectKeys = Object.keys
+  public privilegeToRole! : {
+    role      : string
+    privilege : {
+      object     : string
+      operations : string[]
+    }
+  }
 
   constructor(
       private http : HttpClient,
@@ -52,7 +52,7 @@ export class AccessContolComponent implements OnInit {
   }
 
   async getAllObjects(){
-    this.objects = []
+    this.objects    = []
     this.privileges = {}
     /**
      * Get all the objects
@@ -258,7 +258,7 @@ export class AccessContolComponent implements OnInit {
     .then(
       data => {
         console.log(data)
-        alert('Role created successifully')
+        alert('Updated successifully')
       }
     )
     .catch(
@@ -289,5 +289,3 @@ export class PrivilegeForm{
     this.operations = []
   }
 }
-
-

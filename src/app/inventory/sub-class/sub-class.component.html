@@ -2,7 +2,7 @@
     <div class="col">
         <table style="width: 100%;">
             <tr style="width: 100%; background-color: #eeeeee;">
-                <td style="width: 100mm; vertical-align: top;"><p class="h6">Admin / Role Manager</p></td>
+                <td style="width: 100mm; vertical-align: top;"><p class="h6">Inventory / Class</p></td>
                 <td></td>                                   
             </tr>
         </table>
@@ -11,21 +11,43 @@
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
                         <div class="row">
-                            <input type="hidden" name="id" [(ngModel)]="id">
+                            <!--<input type="hidden" name="id" [(ngModel)]="id">-->
                             <div class="col-9">
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>*Role Name</label>                               
+                                        <label>Sub-Class Name</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" name="username" [readonly]="lockedName" required  [(ngModel)]="name" list="role_names" class="form-control input-sm special">   
+                                        <input type="text" name="username" required class="form-control input-sm special" autocomplete="off">   
                                     </div>
-                                    <datalist id="role_names" style="padding: 0px;">
+                                    <!--<datalist id="role_names" style="padding: 0px;">
                                         <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
-                                    </datalist>
+                                    </datalist>-->
                                     <div class="col-3">
-                                        <button (click)="getRole(name)" class="btn btn-success form-control">Search</button>                               
+                                        <button class="btn btn-success form-control">Search</button>                               
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 float-end" style="text-align: right;">
+                                        <label>Department</label>                               
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" name="username" required class="form-control input-sm special" autocomplete="off">   
+                                    </div>
+                                    <!--<datalist id="role_names" style="padding: 0px;">
+                                        <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
+                                    </datalist>-->
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 float-end" style="text-align: right;">
+                                        <label>Class</label>                               
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" name="username" required class="form-control input-sm special" autocomplete="off">   
+                                    </div>
+                                    <!--<datalist id="role_names" style="padding: 0px;">
+                                        <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
+                                    </datalist>-->
                                 </div>
                                 <!--<div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
@@ -39,21 +61,22 @@
                                 <br>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
-                                        <label>Role List</label>                               
+                                        <label>Sub-Class List</label>                               
                                     </div>
                                     <div class="col-8">
                                         <table class="table table-sm table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <td>Role Name</td>
+                                                    <td>Class</td>
+                                                    <td>Department</td>
                                                     <td>Select</td>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let role of roles">
+                                                <!--<tr *ngFor="let role of roles">
                                                     <td style="vertical-align: top;">{{role.name}}</td>
                                                     <td style="vertical-align: top;"><font (click)="getRole(role.name)" style="cursor: pointer; color: rgb(35, 32, 224);">Select</font></td>
-                                                </tr>
+                                                </tr>-->
                                             </tbody>
                                         </table>
                                     </div>
@@ -62,15 +85,15 @@
                             <div class="col-3">
                                 <div class="row">
                                     <div class="col-8">
-                                        <button (click)="clearFields()"  class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                        <button (click)="edit()" class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
-                                        <button (click)="deleteRole(id)" class="btn btn-danger" [disabled]="enableDelete === false" style="margin: 2px; width: 25mm;">Delete</button><br>
-                                        <button (click)="saveRole()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
+                                        <button class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                        <button class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
+                                        <button class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                        <button class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                     </div>
                                 </div>
                             </div>                                              
                         </div>
-                    </div>
+                    </div>                   
                 </td>
             </tr>
         </table>

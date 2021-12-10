@@ -5,6 +5,8 @@ import { Component, OnInit } from '@angular/core';
 import { IUser } from 'src/app/models/user';
 import { IRole } from 'src/app/models/role';
 import { ThrowStmt } from '@angular/compiler';
+import { AuthService } from 'src/app/auth.service';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 
 interface IiRole{
   name: string 
@@ -19,6 +21,10 @@ interface IiRole{
 
 export class UserProfileComponent implements OnInit, IUser {
 
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   public searchKey       : any
   public id              : any
   public username        : string
@@ -32,8 +38,10 @@ export class UserProfileComponent implements OnInit, IUser {
   public active          : boolean
 
   public roles           : IRole[]
+
+  public users           : IUser[]
  
-  constructor(private http : HttpClient) {
+  constructor(private http : HttpClient, private auth : AuthService) {
     this.searchKey       = ''
     this.id              = ''
     this.username        = ''
@@ -46,6 +54,7 @@ export class UserProfileComponent implements OnInit, IUser {
     this.alias           = ''
     this.active          = true
     this.roles           = []
+    this.users           = []
   }  
   getUserData(): any {
     var userRoles : IRole[] = []
@@ -69,6 +78,7 @@ export class UserProfileComponent implements OnInit, IUser {
   }
   
   ngOnInit(): void {
+    this.getUsers()
     this.getRoles()
   }
 
@@ -80,14 +90,9 @@ export class UserProfileComponent implements OnInit, IUser {
     if(this.validateInputs() == false){
       return
     }
-    let currentUser : {
-      username       : string, 
-      access_token   : string, 
-      refresh_token  : string
-    } = JSON.parse(localStorage.getItem('current-user')!)
-
+    
     let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     if (this.id == null || this.id == ''){
       //create a new user
@@ -96,14 +101,13 @@ export class UserProfileComponent implements OnInit, IUser {
       .then(
         data => {
           this.showUser(data)
-          console.log(data)
           alert('User created successifully')
         }
       )
       .catch(
         error => {
-          console.log(error);
-          alert('Could not create user')
+          console.log(error)
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not create user')
         }
       )   
     }else{
@@ -119,7 +123,7 @@ export class UserProfileComponent implements OnInit, IUser {
       .catch(
         error => {
           console.log(error);
-          alert('Could not update user')
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update user')
         }
       )   
     }
@@ -130,13 +134,9 @@ export class UserProfileComponent implements OnInit, IUser {
    /**
     * Get all the roles
     */
-    let currentUser : {
-      username : string, 
-      access_token : string, 
-      refresh_token : string
-    } = JSON.parse(localStorage.getItem('current-user')!)    
+    
     let options = {
-      headers : new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
     await this.http.get<IRole[]>('/api/roles', options)
@@ -155,9 +155,29 @@ export class UserProfileComponent implements OnInit, IUser {
     })
   }
 
-  getUsers(): IUser[] {
-    throw new Error('Method not implemented.');
+  async getUsers(){
+    this.users = []
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+
+    await this.http.get<IUser[]>('/api/users', options)
+    .toPromise()
+    .then(
+      data => {
+        data?.forEach(
+          element => {
+            this.users.push(element)
+          }
+        )
+      }
+    )
+    .catch(error => {
+      console.log(error)
+    })
+    return 
   }
+  
   async getUser(key: string) {
     this.searchKey = key
     this.clearFields()
@@ -176,6 +196,7 @@ export class UserProfileComponent implements OnInit, IUser {
       }
     )
   }
+
   async deleteUser(){
     if(this.id == null || this.id == ''){
       alert('No user selected, please select a user to delete')
@@ -184,13 +205,8 @@ export class UserProfileComponent implements OnInit, IUser {
     if(!confirm('Confirm delete the selected user. This action can not be undone')){
       return
     }
-    let currentUser : {
-      username : string, 
-      access_token : string, 
-      refresh_token : string
-    } = JSON.parse(localStorage.getItem('current-user')!)    
     let options = {
-      headers : new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     await this.http.delete('api/users/delete?id='+this.id, options)
     .toPromise()
@@ -204,7 +220,7 @@ export class UserProfileComponent implements OnInit, IUser {
     .catch(
       error => {
         console.log(error)
-        alert('Could not delete record')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not delete user profile')
         return false
       }
     )
@@ -253,22 +269,7 @@ export class UserProfileComponent implements OnInit, IUser {
     })
   }
 
-  clearFields(){
-    /**
-     * Clear all the fields
-     */
-    this.id               = ''
-    this.username         = ''
-    this.password         = ''
-    this.confirmPassword  = ''
-    this.rollNo           = ''
-    this.firstName        = ''
-    this.secondName       = ''
-    this.lastName         = ''
-    this.alias            = ''
-    this.active           = false
-    this.clearRoles()
-  }
+  
 
   validateInputs() : boolean{
     let valid : boolean = true
@@ -295,5 +296,23 @@ export class UserProfileComponent implements OnInit, IUser {
       }
     }
     return valid
+  }
+
+  clearFields(){
+    /**
+     * Clear all the fields
+     */
+    this.id               = ''
+    this.username         = ''
+    this.password         = ''
+    this.confirmPassword  = ''
+    this.rollNo           = ''
+    this.firstName        = ''
+    this.secondName       = ''
+    this.lastName         = ''
+    this.alias            = ''
+    this.active           = false
+    this.clearRoles()
+    this.enableSave = true
   }
 }

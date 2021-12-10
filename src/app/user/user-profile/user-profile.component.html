@@ -18,8 +18,11 @@
                                         <label>Username*</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" name="username" [(ngModel)]="username" required class="form-control input-sm special" autocomplete="off">                               
+                                        <input type="text" name="username" [(ngModel)]="username" list="users" required class="form-control input-sm special" autocomplete="off">                               
                                     </div>
+                                    <datalist id="users" style="padding: 0px;">
+                                        <option *ngFor="let user of users" [ngValue]="user">{{user.username}}</option>
+                                    </datalist>
                                     <div class="col-3">
                                         <button (click)="getUser(username)" class="btn btn-success form-control">Search</button>                               
                                     </div>
@@ -29,7 +32,7 @@
                                         <label>Password*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="password" name="password" [(ngModel)]="password" required class="form-control input-sm special" autocomplete="off">                               
+                                        <input type="password" name="password" [(ngModel)]="password" required class="form-control input-sm special" autocomplete="new-password">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -109,8 +112,8 @@
                                   <div class="col-4">
                                     <button  (click)="clearFields()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
                                     <button class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
-                                    <button (click)="deleteUser()" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
-                                    <button (click)="saveUser()" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
+                                    <button (click)="deleteUser()" [disabled]="enableSave === false" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                    <button (click)="saveUser()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                   </div>
                               </div>
                           </div>                                              

@@ -10,6 +10,8 @@ export class SideBarComponent implements OnInit {
 
   mainMenuShown : boolean = true
   adminMenuShown : boolean = false
+  inventoryMenuShown : boolean = false
+  mechandizerMenuShown : boolean = false
 
   constructor() {
 
@@ -22,6 +24,8 @@ export class SideBarComponent implements OnInit {
   hideAll(){
     this.mainMenuShown = false
     this.adminMenuShown = false
+    this.inventoryMenuShown = false
+    this.mechandizerMenuShown = false
   }
 
   showMainMenu(){
@@ -31,6 +35,15 @@ export class SideBarComponent implements OnInit {
   showAdminMenu(){
     this.hideAll()
     this.adminMenuShown = true
+  } 
+  showInventoryMenu(){
+    this.hideAll()
+    this.inventoryMenuShown = true
+  } 
+
+  showMechandizerMenu(){
+    this.hideAll()
+    this.mechandizerMenuShown = true
   } 
    
 }

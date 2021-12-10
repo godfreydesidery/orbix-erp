@@ -6,13 +6,13 @@
         <div class="EnclosureBox">
             <div class="SectionEnclosureBox">
                 <div class="SectionOnBox SectionOnBoxHeading">Main menu</div>
-                <a ><div class="SectionOnBox">Inventory</div></a>
-                <a ><div class="SectionOnBox">Mechandizing</div></a>  
+                <a (click)="showAdminMenu()"><div class="SectionOnBox">Admin</div></a>
+                <a (click)="showInventoryMenu()"><div class="SectionOnBox">Inventory</div></a>
+                <a (click)="showMechandizerMenu()" ><div class="SectionOnBox">Mechandizing</div></a>  
                 <a ><div class="SectionOnBox">Reports</div></a>
                 <a ><div class="SectionOnBox">CRM</div></a>
                 <a ><div class="SectionOnBox">Promotions</div></a>
-                <a ><div class="SectionOnBox">BI</div></a>
-                <a (click)="showAdminMenu()"><div class="SectionOnBox">Admin</div></a>
+                <a ><div class="SectionOnBox">BI</div></a>           
                 <a ><div class="SectionOnBox">Web POS</div></a>
                 <a ><div class="SectionOnBox">Production</div></a>
                 <a ><div class="SectionOnBox">Settings</div></a>
@@ -26,5 +26,21 @@
             </div>
         </div>
         <app-admin-menu></app-admin-menu>
-    </div>   
+    </div> 
+    <div *ngIf="inventoryMenuShown">
+        <div class="EnclosureBox">
+            <div class="SectionEnclosureBox">
+                <a  routerLink="home" (click)="showMainMenu()"><div class="SectionOnBoxBack">Back to Main Menu</div></a> 
+            </div>
+        </div>
+        <app-inventory-menu></app-inventory-menu>
+    </div>  
+    <div *ngIf="mechandizerMenuShown">
+        <div class="EnclosureBox">
+            <div class="SectionEnclosureBox">
+                <a  routerLink="home" (click)="showMainMenu()"><div class="SectionOnBoxBack">Back to Main Menu</div></a> 
+            </div>
+        </div>
+        <app-mechandizer-menu></app-mechandizer-menu>
+    </div>  
 </div>

@@ -13,7 +13,7 @@ export interface IUser {
     roles      : IRole[]
 
     saveUser() : void
-    getUsers() : IUser[]
+    getUsers() : void
     getUser(username : string) : any
     deleteUser() : any
 }

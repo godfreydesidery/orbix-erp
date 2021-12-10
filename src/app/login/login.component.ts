@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { delay } from 'rxjs';
 import { first } from 'rxjs/internal/operators/first';
 import { AuthService } from '../auth.service';
+import { ErrorHandlerService } from '../services/error-handler.service';
 
 @Component({
   selector: 'app-login',
@@ -12,10 +13,10 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent implements OnInit {
 
-  loading   : boolean  = false;
   submitted : boolean  = false;
   returnUrl : string   = '';
-  error     : string   = '';
+
+  status : string = ''
 
   username  : string
   password  : string
@@ -31,7 +32,9 @@ export class LoginComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.status = ''
+  }
 
   async loginUser(){
     localStorage.removeItem('user-name')
@@ -41,25 +44,26 @@ export class LoginComponent implements OnInit {
       alert('Please fill in the required fields')
       return
     }
+    this.status = 'Loading... Please wait.'
     await this.auth.loginUser(this.username, this.password)
       .pipe(first())
       .toPromise()
       .then(
         async data => {
+          this.status = 'Authenticated'
           await this.auth.loadUserSession(this.username)
           console.log(data);
           console.log('Login success')
           window.location.reload()
-        },
-        error => {
-          this.error = error
-          this.loading = false
-          console.log('Login failed')
-          localStorage.removeItem('current-user')
-          alert('Could not log in')
-          return
         }
-      )    
+      )
+      .catch(error => {
+        this.status = ''
+        console.log(error)
+        localStorage.removeItem('current-user')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not log in, Invalid username and password')
+        return
+      })    
   }
   
   clearFields(){
