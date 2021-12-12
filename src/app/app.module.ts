@@ -29,9 +29,24 @@ import { DepartmentComponent } from './inventory/department/department.component
 import { ClassComponent } from './inventory/class/class.component';
 import { SubClassComponent } from './inventory/sub-class/sub-class.component';
 import { MaterialMasterComponent } from './inventory/material-master/material-master.component';
-import { MaterialCategoryComponent } from './inventory/material-category/material-category.component';
-import { MaterialSubCategoryComponent } from './inventory/material-sub-category/material-sub-category.component';
+import { CategoryComponent } from './inventory/category/category.component';
+import { SubCategoryComponent } from './inventory/sub-category/sub-category.component';
 import { MechandizerMenuComponent } from './menu/mechandizer-menu/mechandizer-menu.component';
+import { SupplierRelationsMenuComponent } from './menu/supplier-relations-menu/supplier-relations-menu.component';
+import { CustomerRelationsMenuComponent } from './menu/customer-relations-menu/customer-relations-menu.component';
+import { HumanResourceMenuComponent } from './menu/human-resource-menu/human-resource-menu.component';
+import { MaterialInquiryComponent } from './inventory/material-inquiry/material-inquiry.component';
+import { BiometricsComponent } from './user/biometrics/biometrics.component';
+import { TillAdministrationComponent } from './till/till-administration/till-administration.component';
+import { CompanyProfileComponent } from './company/company-profile/company-profile.component';
+import { DescriptionAttributesComponent } from './inventory/description-attributes/description-attributes.component';
+import { ProductMassManagerComponent } from './inventory/product-mass-manager/product-mass-manager.component';
+import { MaterialMassManagerComponent } from './inventory/material-mass-manager/material-mass-manager.component';
+import { WebPosComponent } from './web-pos/web-pos.component';
+import { ReportMenuComponent } from './menu/report-menu/report-menu.component';
+import { SalesReportsSubMenuComponent } from './reports/sales-reports-sub-menu/sales-reports-sub-menu.component';
+import { InventoryReportsSubMenuComponent } from './reports/inventory-reports-sub-menu/inventory-reports-sub-menu.component';
+import { ProductionReportsSubMenuComponent } from './reports/production-reports-sub-menu/production-reports-sub-menu.component';
 
 @NgModule({
   declarations: [
@@ -52,9 +67,24 @@ import { MechandizerMenuComponent } from './menu/mechandizer-menu/mechandizer-me
     ClassComponent,
     SubClassComponent,
     MaterialMasterComponent,
-    MaterialCategoryComponent,
-    MaterialSubCategoryComponent,
+    CategoryComponent,
+    SubCategoryComponent,
     MechandizerMenuComponent,
+    SupplierRelationsMenuComponent,
+    CustomerRelationsMenuComponent,
+    HumanResourceMenuComponent,
+    MaterialInquiryComponent,
+    BiometricsComponent,
+    TillAdministrationComponent,
+    CompanyProfileComponent,
+    DescriptionAttributesComponent,
+    ProductMassManagerComponent,
+    MaterialMassManagerComponent,
+    WebPosComponent,
+    ReportMenuComponent,
+    SalesReportsSubMenuComponent,
+    InventoryReportsSubMenuComponent,
+    ProductionReportsSubMenuComponent,
   ],
   exports: [ UserProfileComponent ],
   imports: [
@@ -69,14 +99,25 @@ import { MechandizerMenuComponent } from './menu/mechandizer-menu/mechandizer-me
       {path : 'user-profile', component :UserProfileComponent},
       {path : 'role-manager', component :RoleManagerComponent},
       {path : 'access-control', component :AccessContolComponent},
+      {path : 'boimetrics', component :BiometricsComponent},
+      {path : 'till-administration', component :TillAdministrationComponent},
+      {path : 'company-profile', component :CompanyProfileComponent},
       {path : 'product-master', component :ProductMasterComponent},
       {path : 'product-inquiry', component :ProductInquiryComponent},
       {path : 'department', component :DepartmentComponent},
       {path : 'class', component :ClassComponent},
       {path : 'sub-class', component :SubClassComponent},
       {path : 'material-master', component :MaterialMasterComponent},
-      {path : 'material-category', component :MaterialCategoryComponent},
-      {path : 'material-sub-category', component :MaterialSubCategoryComponent}
+      {path : 'material-inquiry', component :MaterialInquiryComponent},
+      {path : 'category', component :CategoryComponent},
+      {path : 'sub-category', component :SubCategoryComponent},
+      {path : 'description-attributes', component :DescriptionAttributesComponent},
+      {path : 'product-mass-manager', component :ProductMassManagerComponent},
+      {path : 'material-mass-manager', component :MaterialMassManagerComponent},
+      {path : 'web-pos', component :WebPosComponent},
+      {path : 'sales-reports-sub-menu', component :SalesReportsSubMenuComponent},
+      {path : 'inventory-reports-sub-menu', component :InventoryReportsSubMenuComponent},
+      {path : 'production-reports-sub-menu', component :ProductionReportsSubMenuComponent}
     ]),
     BrowserAnimationsModule,
   ],

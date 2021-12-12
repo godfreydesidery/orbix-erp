@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MaterialSubCategoryComponent } from './material-sub-category.component';
+import { SubCategoryComponent } from './sub-category.component';
 
 describe('MaterialSubCategoryComponent', () => {
-  let component: MaterialSubCategoryComponent;
-  let fixture: ComponentFixture<MaterialSubCategoryComponent>;
+  let component: SubCategoryComponent;
+  let fixture: ComponentFixture<SubCategoryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MaterialSubCategoryComponent ]
+      declarations: [ SubCategoryComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MaterialSubCategoryComponent);
+    fixture = TestBed.createComponent(SubCategoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

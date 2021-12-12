@@ -12,6 +12,10 @@ export class SideBarComponent implements OnInit {
   adminMenuShown : boolean = false
   inventoryMenuShown : boolean = false
   mechandizerMenuShown : boolean = false
+  supplierRelationsMenuShown : boolean = false
+  customerRelationsMenuShown : boolean = false
+  humanResourceMenuShown : boolean = false
+  reportMenuShown : boolean = false
 
   constructor() {
 
@@ -26,6 +30,10 @@ export class SideBarComponent implements OnInit {
     this.adminMenuShown = false
     this.inventoryMenuShown = false
     this.mechandizerMenuShown = false
+    this.supplierRelationsMenuShown = false
+    this.customerRelationsMenuShown = false
+    this.humanResourceMenuShown = false
+    this.reportMenuShown = false
   }
 
   showMainMenu(){
@@ -44,6 +52,26 @@ export class SideBarComponent implements OnInit {
   showMechandizerMenu(){
     this.hideAll()
     this.mechandizerMenuShown = true
+  } 
+
+  showSupplierRelationsMenu(){
+    this.hideAll()
+    this.supplierRelationsMenuShown = true
+  } 
+
+  showCustomerRelationsMenu(){
+    this.hideAll()
+    this.customerRelationsMenuShown = true
+  } 
+
+  showHumanResourceMenu(){
+    this.hideAll()
+    this.humanResourceMenuShown = true
+  } 
+
+  showReportMenu(){
+    this.hideAll()
+    this.reportMenuShown = true
   } 
    
 }
