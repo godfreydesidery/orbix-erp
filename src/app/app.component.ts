@@ -29,8 +29,8 @@ export class AppComponent implements OnInit{
       this.isLoggedIn = true
       this.router.navigate(['home'])
     }else{
-      this.router.navigate([''])
       this.isLoggedIn = false
+      this.router.navigate([''])
     }
   }
 }

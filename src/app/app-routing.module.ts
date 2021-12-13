@@ -26,6 +26,24 @@ import { WebPosComponent } from './web-pos/web-pos.component';
 import { SalesReportsSubMenuComponent } from './reports/sales-reports-sub-menu/sales-reports-sub-menu.component';
 import { InventoryReportsSubMenuComponent } from './reports/inventory-reports-sub-menu/inventory-reports-sub-menu.component';
 import { ProductionReportsSubMenuComponent } from './reports/production-reports-sub-menu/production-reports-sub-menu.component';
+import { LpoComponent } from './mechandizer/lpo/lpo.component';
+import { GrnComponent } from './mechandizer/grn/grn.component';
+import { QuotationComponent } from './mechandizer/quotation/quotation.component';
+import { SalesInvoiceComponent } from './mechandizer/sales-invoice/sales-invoice.component';
+import { SalesReceiptComponent } from './mechandizer/sales-receipt/sales-receipt.component';
+import { AllocationComponent } from './mechandizer/allocation/allocation.component';
+import { SalesLedgeComponent } from './mechandizer/sales-ledge/sales-ledge.component';
+import { SalesJournalComponent } from './mechandizer/sales-journal/sales-journal.component';
+import { BillReprintComponent } from './mechandizer/bill-reprint/bill-reprint.component';
+import { PackingListComponent } from './mechandizer/packing-list/packing-list.component';
+import { CustomerReturnComponent } from './mechandizer/customer-return/customer-return.component';
+import { CustomerClaimComponent } from './mechandizer/customer-claim/customer-claim.component';
+import { ReturnToVendorComponent } from './mechandizer/return-to-vendor/return-to-vendor.component';
+import { VendorCreditNoteComponent } from './mechandizer/vendor-credit-note/vendor-credit-note.component';
+import { CustomerCreditNoteComponent } from './mechandizer/customer-credit-note/customer-credit-note.component';
+import { SupplierMasterComponent } from './supplier/supplier-master/supplier-master.component';
+import { CustomerMasterComponent } from './customer/customer-master/customer-master.component';
+import { PersonnelRegisterComponent } from './human-resource/personnel-register/personnel-register.component';
 
 const routes: Routes = [
   {path: 'home', component: DashboardComponent, canActivate: [AuthGuard]},
@@ -50,6 +68,24 @@ const routes: Routes = [
   {path: 'sales-reports-sub-menu', component: SalesReportsSubMenuComponent, canActivate: [AuthGuard]},
   {path: 'inventory-reports-sub-menu', component: InventoryReportsSubMenuComponent, canActivate: [AuthGuard]},
   {path: 'production-reports-sub-menu', component: ProductionReportsSubMenuComponent, canActivate: [AuthGuard]},
+  {path: 'lpo', component: LpoComponent, canActivate: [AuthGuard]},
+  {path: 'grn', component: GrnComponent, canActivate: [AuthGuard]},
+  {path: 'quotations', component: QuotationComponent, canActivate: [AuthGuard]},
+  {path: 'sales-invoices', component: SalesInvoiceComponent, canActivate: [AuthGuard]},
+  {path: 'sales-receipts', component: SalesReceiptComponent, canActivate: [AuthGuard]},
+  {path: 'allocations', component: AllocationComponent, canActivate: [AuthGuard]},
+  {path: 'sales-ledge', component: SalesLedgeComponent, canActivate: [AuthGuard]},
+  {path: 'sales-journal', component: SalesJournalComponent, canActivate: [AuthGuard]},
+  {path: 'bill-reprint', component: BillReprintComponent, canActivate: [AuthGuard]},
+  {path: 'packing-list', component: PackingListComponent, canActivate: [AuthGuard]},
+  {path: 'customer-returns', component: CustomerReturnComponent, canActivate: [AuthGuard]},
+  {path: 'customer-claims', component: CustomerClaimComponent, canActivate: [AuthGuard]},
+  {path: 'return-to-vendor', component: ReturnToVendorComponent, canActivate: [AuthGuard]},
+  {path: 'vendor-cr-note', component: VendorCreditNoteComponent, canActivate: [AuthGuard]},
+  {path: 'customer-cr-note', component: CustomerCreditNoteComponent, canActivate: [AuthGuard]},
+  {path: 'supplier-master', component: SupplierMasterComponent, canActivate: [AuthGuard]},
+  {path: 'customer-master', component: CustomerMasterComponent, canActivate: [AuthGuard]},
+  {path: 'personnel-register', component: PersonnelRegisterComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({

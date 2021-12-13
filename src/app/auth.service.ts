@@ -114,7 +114,8 @@ export class AuthService {
     .toPromise()
     .then(
       data => {
-        localStorage.setItem('user-name', data?.alias!+'')        
+        localStorage.setItem('user-name', data?.alias!+'')  
+        localStorage.setItem('username', username)  
       }
     )
 
@@ -132,6 +133,7 @@ export class AuthService {
   }
 
   public unloadUserSession(){
+    localStorage.removeItem('username')
     localStorage.removeItem('user-name')
     localStorage.removeItem('system-date')
   }

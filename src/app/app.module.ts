@@ -47,6 +47,24 @@ import { ReportMenuComponent } from './menu/report-menu/report-menu.component';
 import { SalesReportsSubMenuComponent } from './reports/sales-reports-sub-menu/sales-reports-sub-menu.component';
 import { InventoryReportsSubMenuComponent } from './reports/inventory-reports-sub-menu/inventory-reports-sub-menu.component';
 import { ProductionReportsSubMenuComponent } from './reports/production-reports-sub-menu/production-reports-sub-menu.component';
+import { LpoComponent } from './mechandizer/lpo/lpo.component';
+import { GrnComponent } from './mechandizer/grn/grn.component';
+import { QuotationComponent } from './mechandizer/quotation/quotation.component';
+import { SalesInvoiceComponent } from './mechandizer/sales-invoice/sales-invoice.component';
+import { SalesReceiptComponent } from './mechandizer/sales-receipt/sales-receipt.component';
+import { SalesLedgeComponent } from './mechandizer/sales-ledge/sales-ledge.component';
+import { SalesJournalComponent } from './mechandizer/sales-journal/sales-journal.component';
+import { BillReprintComponent } from './mechandizer/bill-reprint/bill-reprint.component';
+import { PackingListComponent } from './mechandizer/packing-list/packing-list.component';
+import { CustomerReturnComponent } from './mechandizer/customer-return/customer-return.component';
+import { CustomerClaimComponent } from './mechandizer/customer-claim/customer-claim.component';
+import { ReturnToVendorComponent } from './mechandizer/return-to-vendor/return-to-vendor.component';
+import { VendorCreditNoteComponent } from './mechandizer/vendor-credit-note/vendor-credit-note.component';
+import { CustomerCreditNoteComponent } from './mechandizer/customer-credit-note/customer-credit-note.component';
+import { AllocationComponent } from './mechandizer/allocation/allocation.component';
+import { SupplierMasterComponent } from './supplier/supplier-master/supplier-master.component';
+import { CustomerMasterComponent } from './customer/customer-master/customer-master.component';
+import { PersonnelRegisterComponent } from './human-resource/personnel-register/personnel-register.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +103,24 @@ import { ProductionReportsSubMenuComponent } from './reports/production-reports-
     SalesReportsSubMenuComponent,
     InventoryReportsSubMenuComponent,
     ProductionReportsSubMenuComponent,
+    LpoComponent,
+    GrnComponent,
+    QuotationComponent,
+    SalesInvoiceComponent,
+    SalesReceiptComponent,
+    SalesLedgeComponent,
+    SalesJournalComponent,
+    BillReprintComponent,
+    PackingListComponent,
+    CustomerReturnComponent,
+    CustomerClaimComponent,
+    ReturnToVendorComponent,
+    VendorCreditNoteComponent,
+    CustomerCreditNoteComponent,
+    AllocationComponent,
+    SupplierMasterComponent,
+    CustomerMasterComponent,
+    PersonnelRegisterComponent,
   ],
   exports: [ UserProfileComponent ],
   imports: [
@@ -117,7 +153,25 @@ import { ProductionReportsSubMenuComponent } from './reports/production-reports-
       {path : 'web-pos', component :WebPosComponent},
       {path : 'sales-reports-sub-menu', component :SalesReportsSubMenuComponent},
       {path : 'inventory-reports-sub-menu', component :InventoryReportsSubMenuComponent},
-      {path : 'production-reports-sub-menu', component :ProductionReportsSubMenuComponent}
+      {path : 'production-reports-sub-menu', component :ProductionReportsSubMenuComponent},
+      {path : 'lpo', component: LpoComponent},
+      {path : 'grn', component: GrnComponent},
+      {path : 'quotations', component: QuotationComponent},
+      {path : 'sales-invoices', component: SalesInvoiceComponent},
+      {path : 'sales-receipts', component: SalesReceiptComponent},
+      {path : 'allocations', component: AllocationComponent},
+      {path : 'sales-ledge', component: SalesLedgeComponent},
+      {path : 'sales-journal', component: SalesJournalComponent},
+      {path : 'bill-reprint', component: BillReprintComponent},
+      {path : 'packing-list', component: PackingListComponent},
+      {path : 'customer-returns', component: CustomerReturnComponent},
+      {path : 'customer-claims', component: CustomerClaimComponent},
+      {path : 'return-to-vendor', component: ReturnToVendorComponent},
+      {path : 'vendor-cr-note', component: VendorCreditNoteComponent},
+      {path : 'customer-cr-note', component: CustomerCreditNoteComponent},
+      {path : 'supplier-master', component: SupplierMasterComponent},
+      {path : 'customer-master', component: CustomerMasterComponent},
+      {path : 'personnel-registetr', component: PersonnelRegisterComponent}
     ]),
     BrowserAnimationsModule,
   ],

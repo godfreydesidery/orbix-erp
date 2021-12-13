@@ -14,9 +14,7 @@
                             <div class="col-4">
                                 <span class="badge bg-primary" style="width: 50mm; border-radius: 0px;">My Shortcuts</span><font (click)="removeAllShortcuts()" style="color: rgb(6, 13, 56); font-style: italic; cursor: pointer;">  Clear all shortcuts</font>
                                 <ul>
-                                    <li><a href=""><font style="font-size: smaller;">Local Purchase Order (LPO)</font></a><font (click)="removeShortcut()" style="color: rgb(233, 98, 98); font-style: italic; cursor: pointer;">  Remove</font></li>
-                                    <li><a href=""><font style="font-size: smaller;">Goods Received Note (GRN)</font></a><font (click)="removeShortcut()" style="color: rgb(233, 98, 98); font-style: italic; cursor: pointer;">  Remove</font></li>
-                                    <li><a href=""><font style="font-size: smaller;">Web POS</font></a><font (click)="removeShortcut()" style="color: rgb(233, 98, 98); font-style: italic; cursor: pointer;">  Remove</font></li>
+                                    <li *ngFor="let shortcut of shortcuts"><a routerLink='/{{shortcut.link}}'>{{shortcut.name}}</a></li>
                                 </ul>
                             </div>
                             <div class="col-4">
