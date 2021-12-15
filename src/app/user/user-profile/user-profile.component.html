@@ -12,7 +12,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <input type="hidden" name="id" [(ngModel)]="id">
-                            <div class="col-6">
+                            <div class="col-5">
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;">
                                         <label>Username*</label>                               
@@ -106,14 +106,35 @@
                                 </div>
                                 <hr>
                             </div>
-                          <div class="col-6">
+                          <div class="col-7">
                               <div class="row">
-                                  <div class="col-2"></div>
-                                  <div class="col-4">
+                                  <div class="col-2">
                                     <button  (click)="clearFields()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
                                     <button class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
                                     <button (click)="deleteUser()" [disabled]="enableSave === false" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
                                     <button (click)="saveUser()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
+                                  </div>
+                                  <div class="col-10">
+                                      <table class="table table-stripped">
+                                          <thead>
+                                              <tr>
+                                                  <td>Roll #</td>
+                                                  <td>Name</td>
+                                                  <td>Alias</td>
+                                                  <td>Active</td>
+                                                  <td>Select</td>
+                                              </tr>
+                                          </thead>
+                                          <tbody>
+                                              <tr *ngFor="let user of users">
+                                                  <td>{{user.rollNo}}</td>
+                                                  <td>{{user.lastName}}, {{user.firstName}}</td>
+                                                  <td>{{user.alias}}</td>
+                                                  <td>{{user.active}}</td>
+                                                  <td>[<a (click)="getUser(user.username)" style="cursor: pointer;">Select</a>]</td>
+                                              </tr>
+                                          </tbody>
+                                      </table>
                                   </div>
                               </div>
                           </div>                                              

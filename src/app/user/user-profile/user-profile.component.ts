@@ -102,6 +102,7 @@ export class UserProfileComponent implements OnInit, IUser {
         data => {
           this.showUser(data)
           alert('User created successifully')
+          this.getUsers()
         }
       )
       .catch(
@@ -118,6 +119,7 @@ export class UserProfileComponent implements OnInit, IUser {
         data => {
           console.log(data)
           alert('User updated successifully')
+          this.getUsers()
         }
       )
       .catch(
@@ -294,6 +296,10 @@ export class UserProfileComponent implements OnInit, IUser {
         alert('Password and Password confirmation do not match')
         return false
       }
+    }
+    if(this.firstName == '' || this.lastName == '' || this.alias == ''){
+      alert('First name, last name and alias are required fields')
+      return false
     }
     return valid
   }
