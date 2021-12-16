@@ -26,14 +26,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>0000</td>
-                                            <td>Godfrey Desidery Shirima</td>
+                                        <tr *ngFor="let user of users">
+                                            <td>{{user.rollNo}}</td>
+                                            <td>{{user.lastName}}, {{user.firstName}}</td>
                                             <td>[Present]</td>
                                             <td>
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                                                    Add/Edit
-                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary" (click)="open(content,user.username)">Add/Edit</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -48,22 +46,28 @@
     </div>
 </div>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add/Edit Biometric for {{name}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span aria-hidden="true">&times;</span></button>
     </div>
-  </div>
+    <div class="modal-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td>Roll No</td><td><input type="text" [(ngModel)]="rollNo" readonly></td>
+                </tr>
+                <tr>
+                    <td>Name</td><td><input type="text" [(ngModel)]="name"  readonly></td>
+                </tr>
+                <tr>
+                    <td>Biometric</td><td><input type="file"></td>
+                </tr>
+            </tbody>
+        </table>
+      
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>

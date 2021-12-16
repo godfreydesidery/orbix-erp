@@ -11,7 +11,37 @@
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
                         <div class="row">
-                                                                        
+                            
+                            <div class="col-2"></div>
+                            <div class="col-8">
+                                <br>
+                                <br>
+                                <button class="btn btn-sm btn-success" (click)="open(content)" style="margin-left: 2mm;">Add New Till</button>
+                                <hr>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td>Till No</td>
+                                            <td>Computer Name</td>
+                                            <td>Till Info</td>
+                                            <td>Action</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>01</td>
+                                            <td>DESKTOP-BQ-123</td>
+                                            <td>Enabled</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" (click)="open(content)" style="margin-left: 2mm;">Edit</button>
+                                                <button class="btn btn-sm btn-outline-primary" style="margin-left: 2mm;">Enable</button>
+                                                <button class="btn btn-sm btn-outline-danger" style="margin-left: 2mm;">Delete</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div> 
+                            <div class="col-2"></div>                                      
                         </div>
                     </div>
                 </td>
@@ -19,4 +49,31 @@
         </table>
     </div>
 </div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add/Edit Till Information</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td>Till No</td><td><input type="text" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Computer Name</td><td><input type="text" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td></td><td></td>
+                </tr>
+            </tbody>
+        </table>
+      
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+    </div>
+</ng-template>
+
 
