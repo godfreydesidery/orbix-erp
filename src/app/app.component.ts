@@ -24,7 +24,7 @@ export class AppComponent implements OnInit{
     if(localStorage.getItem('current-user') != null){
       currentUser = localStorage.getItem('current-user')
     }
-     
+
     if(currentUser != null){
       this.isLoggedIn = true
       this.router.navigate(['home'])

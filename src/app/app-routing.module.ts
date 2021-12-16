@@ -46,7 +46,6 @@ import { CustomerMasterComponent } from './customer/customer-master/customer-mas
 import { PersonnelRegisterComponent } from './human-resource/personnel-register/personnel-register.component';
 
 const routes: Routes = [
-  {path: 'home', component: DashboardComponent, canActivate: [AuthGuard]},
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
   {path: 'role-manager', component: RoleManagerComponent, canActivate: [AuthGuard]},
   {path: 'access-control', component: AccessContolComponent, canActivate: [AuthGuard]},

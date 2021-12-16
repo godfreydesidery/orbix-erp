@@ -24,7 +24,7 @@
                                         <option *ngFor="let user of users" [ngValue]="user">{{user.username}}</option>
                                     </datalist>
                                     <div class="col-3">
-                                        <button (click)="getUser(username)" class="btn btn-success form-control">Search</button>                               
+                                        <button *ngIf="grant(['USER-READ'])" (click)="getUser(username)" class="btn btn-success form-control">Search</button>                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -109,10 +109,10 @@
                           <div class="col-7">
                               <div class="row">
                                   <div class="col-2">
-                                    <button  (click)="clearFields()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                    <button class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
-                                    <button (click)="deleteUser()" [disabled]="enableSave === false" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
-                                    <button (click)="saveUser()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
+                                    <button *ngIf="grant(['USER-CREATE'])" (click)="clearFields()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                    <button *ngIf="grant(['USER-UPDATE'])" class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
+                                    <button *ngIf="grant(['USER-DELETE'])" (click)="deleteUser()" [disabled]="enableSave === false" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                    <button *ngIf="grant(['USER-CREATE','USER-UPDATE'])" (click)="saveUser()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                   </div>
                                   <div class="col-10">
                                       <table class="table table-stripped">

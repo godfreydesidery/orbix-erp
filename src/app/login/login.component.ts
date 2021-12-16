@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
         this.status = ''
         console.log(error)
         localStorage.removeItem('current-user')
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not log in, Invalid username and password')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Invalid username and password')
         return
       })    
   }

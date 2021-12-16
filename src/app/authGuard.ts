@@ -28,7 +28,6 @@ export class AuthGuard implements CanActivate {
               if(currentUser == null){
                 return false
               }
-
               if(this.tokenExpired(currentUser.refresh_token) == true){
                 //clear the user session
                 //reload application
@@ -49,18 +48,22 @@ export class AuthGuard implements CanActivate {
                   }
 
                   this.http.get<any>('/api/token/refresh', header)
-                  .subscribe(
+                  .toPromise()
+                  .then(
                       data => {
                         currentUser.access_token = data['refresh_token']
                         localStorage.removeItem('current-user')
                         localStorage.setItem('current-user', JSON.stringify(currentUser))
-                      },
-                      error => {
-                        console.log('not authenticated, reloading')
-                        window.location.reload();
-                        return false
                       }
-                  )       
+                  ).catch(
+                    error => {
+                      console.log('not authenticated, reloading')
+                      alert('User verification failed. Please log in afresh.')
+                      localStorage.removeItem('current-user')
+                      window.location.reload();
+                      return false
+                    }
+                  )      
                   //if token request successiful, continue, if unsuccesiful, redirect to login with error
               }
             return true;

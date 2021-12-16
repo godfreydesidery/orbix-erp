@@ -6,6 +6,7 @@ import { IUser } from './models/user'
 import { map } from 'rxjs/operators'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import { DatePipe } from '@angular/common'
+import { primitivesAreNotAllowedInProps } from '@ngrx/store/src/models'
 
 interface IUserData{
   alias : string
@@ -110,7 +111,7 @@ export class AuthService {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
     }
 
-    await this.http.get<IUserData>('/api/users/get_user?username='+username, options)
+    await this.http.get<IUserData>('/api/users/load_user?username='+username, options)
     .toPromise()
     .then(
       data => {
@@ -137,6 +138,31 @@ export class AuthService {
     localStorage.removeItem('user-name')
     localStorage.removeItem('system-date')
   }
+
+  public checkPrivilege(priv : string) : boolean{
+    /**
+     * Return true if a user has a certain privilege
+     */
+    var granted : boolean = false
+    let currentUser : {
+      username : string, 
+      access_token : string, 
+      refresh_token : string
+    } = JSON.parse(localStorage.getItem('current-user')!)
+    var privs : {
+      privileges : string[]
+    } = this.helper.decodeToken(currentUser.access_token)
+    privs.privileges.forEach(
+      element => {
+        if(element == priv){
+          granted = true
+          //add code to exit from loop to enhance perfomance
+        }
+      }
+    )
+    return granted
+  }
+
 }
 
 

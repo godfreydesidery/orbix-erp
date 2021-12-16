@@ -40,6 +40,7 @@ export class UserProfileComponent implements OnInit, IUser {
   public roles           : IRole[]
 
   public users           : IUser[]
+
  
   constructor(private http : HttpClient, private auth : AuthService) {
     this.searchKey       = ''
@@ -175,7 +176,7 @@ export class UserProfileComponent implements OnInit, IUser {
       }
     )
     .catch(error => {
-      console.log(error)
+      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load users')
     })
     return 
   }
@@ -184,7 +185,12 @@ export class UserProfileComponent implements OnInit, IUser {
     this.searchKey = key
     this.clearFields()
     this.username = this.searchKey
-    await this.http.get("api/users/get_user?username="+this.searchKey)
+
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+
+    await this.http.get("api/users/get_user?username="+this.searchKey, options)
     .toPromise()
     .then(
       data=>{
@@ -305,6 +311,10 @@ export class UserProfileComponent implements OnInit, IUser {
   }
 
   clearFields(){
+    if(!this.grant(['USER-CREATE'])){
+      alert('Access denied')
+      return
+    }
     /**
      * Clear all the fields
      */
@@ -320,5 +330,21 @@ export class UserProfileComponent implements OnInit, IUser {
     this.active           = false
     this.clearRoles()
     this.enableSave = true
+  }
+
+  public grant(privilege : string[]) : boolean{
+    /**
+     * Allows a user to perform an action if the user has that privilege
+     */
+    var granted : boolean = false
+    privilege.forEach(
+      element => {
+        if(this.auth.checkPrivilege(element)){
+          granted = true
+        }
+      }
+    )
+    return granted
+    
   }
 }

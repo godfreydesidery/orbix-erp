@@ -6,7 +6,7 @@
                 <td></td>                                   
             </tr>
         </table>
-        <table style="width: 100%;">
+        <table  style="width: 100%;">
             <tr style="width: 100%;">
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
@@ -24,7 +24,7 @@
                                         <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
                                     </datalist>
                                     <div class="col-3">
-                                        <button (click)="getRole(name)" class="btn btn-success form-control">Search</button>                               
+                                        <button *ngIf="grant(['ROLE-READ'])" (click)="getRole(name)" class="btn btn-success form-control">Search</button>                               
                                     </div>
                                 </div>
                                 <!--<div class="row">
@@ -49,7 +49,7 @@
                                                     <td>Select</td>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody *ngIf="grant(['ROLE-CREATE','ROLE-READ','ROLE-UPDATE'])">
                                                 <tr *ngFor="let role of roles">
                                                     <td style="vertical-align: top;">{{role.name}}</td>
                                                     <td style="vertical-align: top;"><font (click)="getRole(role.name)" style="cursor: pointer; color: rgb(35, 32, 224);">Select</font></td>
@@ -62,10 +62,10 @@
                             <div class="col-3">
                                 <div class="row">
                                     <div class="col-8">
-                                        <button (click)="clearFields()"  class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                        <button (click)="edit()" class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
-                                        <button (click)="deleteRole(id)" class="btn btn-danger" [disabled]="enableDelete === false" style="margin: 2px; width: 25mm;">Delete</button><br>
-                                        <button (click)="saveRole()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
+                                        <button *ngIf="grant(['ROLE-CREATE','ROLE-READ','ROLE-UPDATE','ROLE-DELETE'])" (click)="clearFields()"  class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                        <button *ngIf="grant(['ROLE-CREATE','ROLE-READ','ROLE-UPDATE'])" (click)="edit()" class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
+                                        <button *ngIf="grant(['USER-CREATE','ROLE-DELETE'])" (click)="deleteRole(id)" class="btn btn-danger" [disabled]="enableDelete === false" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                        <button *ngIf="grant(['USER-CREATE','ROLE-DELETE'])" (click)="saveRole()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                     </div>
                                 </div>
                             </div>                                              

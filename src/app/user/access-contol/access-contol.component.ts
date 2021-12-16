@@ -133,6 +133,7 @@ export class AccessContolComponent implements OnInit {
       this.selectedRoleMessage = 'Update priviledges for '+role
       this.loadPrivileges(role)
     }else{
+      this.selectedRole = ''
       this.selectedRoleMessage = 'Select role to update'
     }
   }
@@ -161,6 +162,10 @@ export class AccessContolComponent implements OnInit {
   }
 
   addOrRemovePrivilege(action : any, object : string, operation : string){
+    if(this.selectedRole == ''){
+      alert('Please select role')
+      return
+    }
     if(action.target.checked == true){
       this.addPrivilege(object, operation)
     }else if(action.target.checked == false){
@@ -248,7 +253,7 @@ export class AccessContolComponent implements OnInit {
       privilegeForms.push(privilegeForm)
     }
     accessForm.privileges = privilegeForms
-    
+    console.log(accessForm)
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
@@ -264,9 +269,25 @@ export class AccessContolComponent implements OnInit {
     .catch(
       error => {
         console.log(error);
-        alert('Could not create role')
+        alert('Could not update role')
       }
     )   
+  }
+
+  public grant(privilege : string[]) : boolean{
+    /**
+     * Allows a user to perform an action if the user has that privilege
+     */
+    var granted : boolean = false
+    privilege.forEach(
+      element => {
+        if(this.auth.checkPrivilege(element)){
+          granted = true
+        }
+      }
+    )
+    return granted
+    
   }
 }
 

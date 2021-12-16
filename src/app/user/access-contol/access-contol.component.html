@@ -13,7 +13,7 @@
                         <div class="row">  
                             <div class="col-3">
                                 <label>Select Role:</label><br>
-                                <select [ngModel]="selectedRole" (ngModelChange)="selectRole($event)" class="form-control">
+                                <select *ngIf="grant(['ROLE-CREATE','ROLE-UPDATE','ROLE-DELETE'])" [ngModel]="selectedRole" (ngModelChange)="selectRole($event)" class="form-control">
                                     <option></option>
                                     <option *ngFor="let role of roles">{{role}}</option>
                                 </select>
@@ -31,7 +31,7 @@
                                         <tr *ngFor="let object of objects">
                                             <td style="vertical-align: top;">{{object}}</td>
                                             <td style="vertical-align: top;">
-                                                <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox" [checked]="privilegeChecked(object, operation)" (change)="addOrRemovePrivilege($event, object, operation)"><label>{{operation}}</label></button>
+                                                <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox" [checked]="privilegeChecked(object, operation)" (change)="addOrRemovePrivilege($event, object, operation)" style="height: 5mm; width: 5mm;"><label>{{operation}}</label></button>
                                             </td>
                                         </tr> 
                                     </tbody>
@@ -41,7 +41,7 @@
                                         <table class="table">
                                             <tbody>
                                                 <tr>
-                                                    <td><button class="btn btn-success" (click)="addPrivilegeToRole(selectedRole)">Save</button></td>
+                                                    <td><button *ngIf="grant(['ROLE-CREATE','ROLE-UPDATE','ROLE-DELETE'])" class="btn btn-success" (click)="addPrivilegeToRole(selectedRole)">Save</button></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -50,7 +50,7 @@
                             </div>                                         
                         </div><hr>
                         <div class="row">    
-                            <div class="col-12">
+                            <div *ngIf="grant(['ROLE-CREATE','ROLE-READ','ROLE-UPDATE','ROLE-DELETE'])" class="col-12">
                                 <label>Access Summary</label><br>
                                 <table class="table table-bordered">
                                     <thead>

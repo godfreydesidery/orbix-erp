@@ -9,21 +9,26 @@ export class ErrorHandlerService {
   constructor() { }
 
   public static showHttpErrorMessage(httpError : HttpErrorResponse, message : string, defaultMessage :  string) : void{
+    var displayMessage = ''
     if(message != ''){
-      alert(message)
+      displayMessage = message
     }else{
       let errorCode = httpError['status']
       let errorMessage = httpError['error']
       let errorStatusText = httpError['statusText']
       if(typeof errorMessage === 'string'){
         if(errorMessage.includes('/')){
-          alert(errorCode+': '+errorStatusText)
+          displayMessage = errorStatusText
         }else{
-          alert(errorMessage)
+          displayMessage = errorMessage       
         }
       }else{
-        alert(defaultMessage)
+        displayMessage = defaultMessage
       }
     }
+    if(httpError.statusText == 'Forbidden'){
+      displayMessage = 'Access denied. '+displayMessage
+    }
+    alert(displayMessage)
   }
 }
