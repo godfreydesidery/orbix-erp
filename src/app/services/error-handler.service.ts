@@ -27,7 +27,7 @@ export class ErrorHandlerService {
       }
     }
     if(httpError.statusText == 'Forbidden'){
-      displayMessage = 'Access denied. '+displayMessage
+      displayMessage = displayMessage+'. Access denied.'
     }
     alert(displayMessage)
   }

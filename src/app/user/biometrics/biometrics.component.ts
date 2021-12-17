@@ -7,13 +7,15 @@ import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
 
+
+
+
 @Component({
   selector: 'app-biometrics',
   templateUrl: './biometrics.component.html',
   styleUrls: ['./biometrics.component.scss']
 })
 export class BiometricsComponent implements OnInit {
-
   closeResult = ''
 
   public rollNo : string = ''
@@ -22,7 +24,9 @@ export class BiometricsComponent implements OnInit {
 
   public users           : IUser[] = []
 
-  constructor(private auth : AuthService, private http : HttpClient, private modalService: NgbModal) { }
+  constructor(private auth : AuthService, private http : HttpClient, private modalService: NgbModal) {
+    
+   }
 
   ngOnInit(): void {
     this.getUsers()

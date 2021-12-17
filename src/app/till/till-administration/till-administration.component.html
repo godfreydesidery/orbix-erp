@@ -16,26 +16,26 @@
                             <div class="col-8">
                                 <br>
                                 <br>
-                                <button class="btn btn-sm btn-success" (click)="open(content)" style="margin-left: 2mm;">Add New Till</button>
+                                <button class="btn btn-sm btn-success" (click)="open(content, '')" style="margin-left: 2mm;">Add New Till</button>
                                 <hr>
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <td>Till No</td>
                                             <td>Computer Name</td>
-                                            <td>Till Info</td>
+                                            <td>Enabled?</td>
                                             <td>Action</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>01</td>
-                                            <td>DESKTOP-BQ-123</td>
-                                            <td>Enabled</td>
+                                        <tr *ngFor="let till of tills">
+                                            <td>{{till.tillNo}}</td>
+                                            <td>{{till.computerName}}</td>
+                                            <td>{{till.active}}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-outline-primary" (click)="open(content)" style="margin-left: 2mm;">Edit</button>
+                                                <button class="btn btn-sm btn-outline-primary" (click)="open(content, till.id)" style="margin-left: 2mm;">Edit</button>
                                                 <button class="btn btn-sm btn-outline-primary" style="margin-left: 2mm;">Enable</button>
-                                                <button class="btn btn-sm btn-outline-danger" style="margin-left: 2mm;">Delete</button>
+                                                <button class="btn btn-sm btn-outline-danger" (click)="deleteTill(till.id)" style="margin-left: 2mm;">Delete</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -59,10 +59,11 @@
         <table class="table table-bordered">
             <tbody>
                 <tr>
-                    <td>Till No</td><td><input type="text" class="form-control"></td>
+                    <input type="hidden" [(ngModel)]="id">
+                    <td>Till No</td><td><input type="text" [(ngModel)]="tillNo" class="form-control"></td>
                 </tr>
                 <tr>
-                    <td>Computer Name</td><td><input type="text" class="form-control"></td>
+                    <td>Computer Name</td><td><input type="text" [(ngModel)]="computerName" class="form-control"></td>
                 </tr>
                 <tr>
                     <td></td><td></td>
@@ -72,7 +73,8 @@
       
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+      <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
+      <button type="button" class="btn btn-outline-dark" (click)="saveTill()">Save</button>
     </div>
 </ng-template>
 
