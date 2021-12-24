@@ -19,7 +19,6 @@ import { UserProfileComponent } from './user/user-profile/user-profile.component
 import { BiometricsComponent } from './user/biometrics/biometrics.component';
 import { TillAdministrationComponent } from './till/till-administration/till-administration.component';
 import { CompanyProfileComponent } from './company/company-profile/company-profile.component';
-import { DescriptionAttributesComponent } from './inventory/description-attributes/description-attributes.component';
 import { ProductMassManagerComponent } from './inventory/product-mass-manager/product-mass-manager.component';
 import { MaterialMassManagerComponent } from './inventory/material-mass-manager/material-mass-manager.component';
 import { WebPosComponent } from './web-pos/web-pos.component';
@@ -44,6 +43,12 @@ import { CustomerCreditNoteComponent } from './mechandizer/customer-credit-note/
 import { SupplierMasterComponent } from './supplier/supplier-master/supplier-master.component';
 import { CustomerMasterComponent } from './customer/customer-master/customer-master.component';
 import { PersonnelRegisterComponent } from './human-resource/personnel-register/personnel-register.component';
+import { GroupLevel1Component } from './inventory/group-level1/group-level1.component';
+import { GroupLevel2Component } from './inventory/group-level2/group-level2.component';
+import { GroupLevel3Component } from './inventory/group-level3/group-level3.component';
+import { GroupLevel4Component } from './inventory/group-level4/group-level4.component';
+import { EndDayComponent } from './day/end-day/end-day.component';
+import { CustomDateComponent } from './day/custom-date/custom-date.component';
 
 const routes: Routes = [
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
@@ -85,6 +90,12 @@ const routes: Routes = [
   {path: 'supplier-master', component: SupplierMasterComponent, canActivate: [AuthGuard]},
   {path: 'customer-master', component: CustomerMasterComponent, canActivate: [AuthGuard]},
   {path: 'personnel-register', component: PersonnelRegisterComponent, canActivate: [AuthGuard]},
+  {path: 'group-level1', component: GroupLevel1Component, canActivate: [AuthGuard]},
+  {path: 'group-level2', component: GroupLevel2Component, canActivate: [AuthGuard]},
+  {path: 'group-level3', component: GroupLevel3Component, canActivate: [AuthGuard]},
+  {path: 'group-level4', component: GroupLevel4Component, canActivate: [AuthGuard]},
+  {path: 'end-day', component: EndDayComponent, canActivate: [AuthGuard]},
+  {path: 'custom-date', component: CustomDateComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({

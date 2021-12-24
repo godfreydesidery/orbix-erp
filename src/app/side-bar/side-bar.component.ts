@@ -4,7 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
-  styleUrls: ['./side-bar.component.scss']
+  styleUrls: ['./side-bar.component.scss'],
 })
 export class SideBarComponent implements OnInit {
 
@@ -16,6 +16,7 @@ export class SideBarComponent implements OnInit {
   customerRelationsMenuShown : boolean = false
   humanResourceMenuShown : boolean = false
   reportMenuShown : boolean = false
+  dayMenuShown : boolean = false
 
   constructor() {
 
@@ -72,6 +73,11 @@ export class SideBarComponent implements OnInit {
   showReportMenu(){
     this.hideAll()
     this.reportMenuShown = true
+  } 
+
+  showDayMenu(){
+    this.hideAll()
+    this.dayMenuShown = true
   } 
    
 }

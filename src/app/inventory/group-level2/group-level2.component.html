@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col">
+        <table style="width: 100%;">
+            <tr style="width: 100%; background-color: #eeeeee;">
+                <td style="width: 100mm; vertical-align: top;"><p class="h6">Inventory / Group Level 2</p></td>
+                <td></td>                                   
+            </tr>
+        </table>
+        <table style="width: 100%;">
+            <tr style="width: 100%;">
+                <td style="vertical-align: top; height: 75vh;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <input type="hidden" name="id" [(ngModel)]="id">
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="col-4 float-end" style="text-align: right;">
+                                        <label>Group Name</label>                               
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" name="username" [(ngModel)]="name" required class="form-control input-sm special" autocomplete="off">   
+                                    </div>
+                                    <!--<datalist id="role_names" style="padding: 0px;">
+                                        <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
+                                    </datalist>-->
+                                    <div class="col-3">
+                                        <button (click)="getByName(name)" class="btn btn-success form-control">Search</button>                               
+                                    </div>
+                                </div>
+                                <br>
+                                <br>
+                                <div class="row">
+                                    <div class="col-4 float-end" style="text-align: right;">
+                                        <label>Group List</label>                               
+                                    </div>
+                                    <div class="col-8">
+                                        <table class="table table-sm table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <td>Group Name</td>
+                                                    <td>Select</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let g of levelTwos">
+                                                    <td style="vertical-align: top;">{{g.name}}</td>
+                                                    <td style="vertical-align: top;"><font (click)="get(g.id)" style="cursor: pointer; color: rgb(35, 32, 224);">Select</font></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <button (click)="clearData()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                        <button class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
+                                        <button (click)="delete(id)" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                        <button (click)="save()" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
+                                    </div>
+                                </div>
+                            </div>                                              
+                        </div>
+                    </div>                   
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

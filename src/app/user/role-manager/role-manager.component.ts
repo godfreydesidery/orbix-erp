@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
@@ -7,7 +8,15 @@ import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 @Component({
   selector: 'app-role-manager',
   templateUrl: './role-manager.component.html',
-  styleUrls: ['./role-manager.component.scss']
+  styleUrls: ['./role-manager.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0
+      })),
+      transition('void <=> *', animate(500)),
+    ]),
+  ]
 })
 export class RoleManagerComponent implements OnInit, IRole {
 

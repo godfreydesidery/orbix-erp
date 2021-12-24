@@ -7,6 +7,7 @@ import { IRole } from 'src/app/models/role';
 import { ThrowStmt } from '@angular/compiler';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 interface IiRole{
   name: string 
@@ -16,7 +17,15 @@ interface IiRole{
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss']
+  styleUrls: ['./user-profile.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0
+      })),
+      transition('void <=> *', animate(1000)),
+    ]),
+  ]
 })
 
 export class UserProfileComponent implements OnInit, IUser {

@@ -5,13 +5,23 @@ import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-till-administration',
   templateUrl: './till-administration.component.html',
-  styleUrls: ['./till-administration.component.scss']
+  styleUrls: ['./till-administration.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0
+      })),
+      transition('void <=> *', animate(500)),
+    ]),
+  ]
 })
 export class TillAdministrationComponent implements OnInit, ITill {
+  closeResult : string = ''
   
   public id           : any
   public tillNo       : string
@@ -20,7 +30,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
 
   public tills : ITill[]
   
-  closeResult : string = ''
+  
   constructor(
     private auth : AuthService,
     private http :HttpClient,

@@ -12,6 +12,7 @@
                 <a (click)="showSupplierRelationsMenu()" ><div class="SectionOnBox">Supplier Relations</div></a>
                 <a (click)="showCustomerRelationsMenu()" ><div class="SectionOnBox">Customer Relations</div></a>  
                 <a (click)="showHumanResourceMenu()" ><div class="SectionOnBox">Human Resource</div></a>   
+                <a (click)="showDayMenu()"><div class="SectionOnBox">Day Operations</div></a>
                 <a (click)="showReportMenu()"><div class="SectionOnBox">Reports</div></a>
                 <!--<a ><div class="SectionOnBox">CRM..</div></a>
                 <a ><div class="SectionOnBox">Promotions..</div></a>
@@ -77,5 +78,13 @@
             </div>
         </div>
         <app-report-menu></app-report-menu>
+    </div>
+    <div *ngIf="dayMenuShown">
+        <div class="EnclosureBox">
+            <div class="SectionEnclosureBox">
+                <a  routerLink="home" (click)="showMainMenu()"><div class="SectionOnBoxBack">Back to Main Menu</div></a> 
+            </div>
+        </div>
+        <app-day-menu></app-day-menu>
     </div>
 </div>

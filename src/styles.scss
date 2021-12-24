@@ -84,3 +84,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     color: rgb(5, 5, 66);
     cursor: pointer;
 }
+
+.table-input {
+    > td {
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 4px;
+    }
+  }

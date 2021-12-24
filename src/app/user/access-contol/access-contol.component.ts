@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { KeyValue } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, Pipe} from '@angular/core';
@@ -10,7 +11,15 @@ import { IRole } from 'src/app/models/role';
 @Component({
   selector: 'app-access-contol',
   templateUrl: './access-contol.component.html',
-  styleUrls: ['./access-contol.component.scss']
+  styleUrls: ['./access-contol.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0
+      })),
+      transition('void <=> *', animate(500)),
+    ]),
+  ]
 })
 export class AccessContolComponent implements OnInit {
 

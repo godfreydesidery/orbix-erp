@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { JwtInterceptor, JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { HttpErrorInterceptor } from 'src/error-interceptor';
 import { MatAutocompleteModule} from '@angular/material/autocomplete'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -22,7 +23,6 @@ import { RoleManagerComponent } from './user/role-manager/role-manager.component
 import { RouterModule } from '@angular/router';
 import { AccessContolComponent } from './user/access-contol/access-contol.component';
 import { InventoryMenuComponent } from './menu/inventory-menu/inventory-menu.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProductMasterComponent } from './inventory/product-master/product-master.component';
 import { ProductInquiryComponent } from './inventory/product-inquiry/product-inquiry.component';
 import { DepartmentComponent } from './inventory/department/department.component';
@@ -39,7 +39,6 @@ import { MaterialInquiryComponent } from './inventory/material-inquiry/material-
 import { BiometricsComponent } from './user/biometrics/biometrics.component';
 import { TillAdministrationComponent } from './till/till-administration/till-administration.component';
 import { CompanyProfileComponent } from './company/company-profile/company-profile.component';
-import { DescriptionAttributesComponent } from './inventory/description-attributes/description-attributes.component';
 import { ProductMassManagerComponent } from './inventory/product-mass-manager/product-mass-manager.component';
 import { MaterialMassManagerComponent } from './inventory/material-mass-manager/material-mass-manager.component';
 import { WebPosComponent } from './web-pos/web-pos.component';
@@ -65,6 +64,14 @@ import { AllocationComponent } from './mechandizer/allocation/allocation.compone
 import { SupplierMasterComponent } from './supplier/supplier-master/supplier-master.component';
 import { CustomerMasterComponent } from './customer/customer-master/customer-master.component';
 import { PersonnelRegisterComponent } from './human-resource/personnel-register/personnel-register.component';
+import { GroupLevel1Component } from './inventory/group-level1/group-level1.component';
+import { GroupLevel2Component } from './inventory/group-level2/group-level2.component';
+import { GroupLevel3Component } from './inventory/group-level3/group-level3.component';
+import { GroupLevel4Component } from './inventory/group-level4/group-level4.component';
+import { DayMenuComponent } from './menu/day-menu/day-menu.component';
+import { EndDayComponent } from './day/end-day/end-day.component';
+import { CustomDateComponent } from './day/custom-date/custom-date.component';
+
 
 @NgModule({
   declarations: [
@@ -95,7 +102,6 @@ import { PersonnelRegisterComponent } from './human-resource/personnel-register/
     BiometricsComponent,
     TillAdministrationComponent,
     CompanyProfileComponent,
-    DescriptionAttributesComponent,
     ProductMassManagerComponent,
     MaterialMassManagerComponent,
     WebPosComponent,
@@ -121,10 +127,18 @@ import { PersonnelRegisterComponent } from './human-resource/personnel-register/
     SupplierMasterComponent,
     CustomerMasterComponent,
     PersonnelRegisterComponent,
+    GroupLevel1Component,
+    GroupLevel2Component,
+    GroupLevel3Component,
+    GroupLevel4Component,
+    DayMenuComponent,
+    EndDayComponent,
+    CustomDateComponent,
   ],
   exports: [ UserProfileComponent ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
     CommonModule,
@@ -147,7 +161,6 @@ import { PersonnelRegisterComponent } from './human-resource/personnel-register/
       {path : 'material-inquiry', component :MaterialInquiryComponent},
       {path : 'category', component :CategoryComponent},
       {path : 'sub-category', component :SubCategoryComponent},
-      {path : 'description-attributes', component :DescriptionAttributesComponent},
       {path : 'product-mass-manager', component :ProductMassManagerComponent},
       {path : 'material-mass-manager', component :MaterialMassManagerComponent},
       {path : 'web-pos', component :WebPosComponent},
@@ -171,7 +184,13 @@ import { PersonnelRegisterComponent } from './human-resource/personnel-register/
       {path : 'customer-cr-note', component: CustomerCreditNoteComponent},
       {path : 'supplier-master', component: SupplierMasterComponent},
       {path : 'customer-master', component: CustomerMasterComponent},
-      {path : 'personnel-registetr', component: PersonnelRegisterComponent}
+      {path : 'personnel-registetr', component: PersonnelRegisterComponent},
+      {path : 'group-level1', component: GroupLevel1Component},
+      {path : 'group-level2', component: GroupLevel2Component},
+      {path : 'group-level3', component: GroupLevel3Component},
+      {path : 'group-level4', component: GroupLevel4Component},
+      {path : 'end-day', component: EndDayComponent},
+      {path : 'custom-date', component:CustomDateComponent}
     ]),
     BrowserAnimationsModule,
   ],

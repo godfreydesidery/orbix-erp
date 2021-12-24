@@ -5,15 +5,20 @@ import { IUser } from 'src/app/models/user';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
-
-
-
-
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-biometrics',
   templateUrl: './biometrics.component.html',
-  styleUrls: ['./biometrics.component.scss']
+  styleUrls: ['./biometrics.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0
+      })),
+      transition('void <=> *', animate(500)),
+    ]),
+  ]
 })
 export class BiometricsComponent implements OnInit {
   closeResult = ''

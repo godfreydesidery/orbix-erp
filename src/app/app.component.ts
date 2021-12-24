@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AfterContentInit, AfterViewInit, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from './../environments/environment';
 import { AuthService } from './auth.service';
+import {trigger,state,style,animate,transition} from '@angular/animations'; 
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,7 @@ export class AppComponent implements OnInit{
   }
    
   ngOnInit(): void {
+    this.loadDay()
     var currentUser = null
     if(localStorage.getItem('current-user') != null){
       currentUser = localStorage.getItem('current-user')
@@ -33,4 +35,23 @@ export class AppComponent implements OnInit{
       this.router.navigate([''])
     }
   }
+
+  async loadDay(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    await this.http.get<IDayData>('/api/days/get_bussiness_date', options)
+    .toPromise()
+    .then(
+      data => {
+        localStorage.setItem('system-date', data?.bussinessDate!+'')        
+      },
+      error => {
+        console.log(error)
+      }
+    )
+  }
+}
+interface IDayData{
+  bussinessDate : String
 }
