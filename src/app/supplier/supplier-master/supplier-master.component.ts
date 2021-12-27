@@ -12,6 +12,7 @@ import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.servi
 export class SupplierMasterComponent implements OnInit, ISupplier {
 
   id                  : any
+  code                : string
   name                : string
   contactName         : string
   active              : boolean
@@ -36,6 +37,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
 
   constructor(private shortcut : ShortCutHandlerService, private http : HttpClient, private auth : AuthService) {
     this.id                  = ''
+    this.code                = ''
     this.name                = ''
     this.contactName         = ''
     this.active              = true
@@ -71,6 +73,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
 
     var data = {
       id                  : this.id,
+      code                : this.code,
       name                : this.name,
       contactName         : this.contactName,
       active              : this.active,
@@ -139,6 +142,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
      * Args: customer object
      */
     this.id                  = supplier['id']
+    this.code                = supplier['code']
     this.name                = supplier['name']
     this.contactName         = supplier['contactName']
     this.active              = supplier['active']
@@ -173,6 +177,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
      * Clear all the fields
      */
      this.id                  = ''
+     this.code                = ''
      this.name                = ''
      this.contactName         = ''
      this.tin                 = ''
@@ -295,6 +300,7 @@ export interface ISupplier {
    * Basic Inf
    */
   id         : any
+  code : string
   name   : string
   contactName   : string 
   active : boolean 

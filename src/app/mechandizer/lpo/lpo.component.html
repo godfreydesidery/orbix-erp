@@ -19,7 +19,14 @@
                                             <td style="text-align: right;">LPO #</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Supplier</td><td style="padding: 0;"><input type="text" [(ngModel)]="supplierCode" class="form-control special" placeholder="Supplier Code"><input type="text" [(ngModel)]="supplierName" class="form-control special" placeholder="Supplier Name"></td>
+                                            <td style="text-align: right;">Supplier</td>
+                                            <td style="padding: 0;">
+                                                <input type="text" [(ngModel)]="supplierCode" class="form-control special" placeholder="Supplier Code" readonly>
+                                                <select [(ngModel)]="supplierName" (ngModelChange)="searchSupplier(supplierName)" class="form-control input-sm">
+                                                    <option></option>
+                                                    <option *ngFor="let s of supplierNames">{{s}}</option>
+                                                </select>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Order Date</td><td style="padding: 0;"><input type="date" [(ngModel)]="orderDate" class="form-control special"></td>
@@ -28,7 +35,7 @@
                                             <td style="text-align: right;">Validity Days</td><td style="padding: 0;"><input type="number" [(ngModel)]="validityDays" class="form-control special"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Valid Until</td><td style="padding: 0;"><input type="date" [(ngModel)]="validUntil" class="form-control special"></td>
+                                            <td style="text-align: right;">Valid Until</td><td style="padding: 0;"><input type="date" [(ngModel)]="validUntil" class="form-control special"  readonly></td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Created</td><td>{{created}}</td>
@@ -41,24 +48,22 @@
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Comments</td>
-                                            <td style="padding: 0;"><textarea [(ngModel)]="comments" class="form-control special"></textarea></td>
-                                            
+                                            <td style="padding: 0;"><textarea [(ngModel)]="comments" class="form-control special"></textarea></td>          
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="col-1">
                                 <button class="btn btn-success" (click)="getByNo(no)" style="margin: 2px; width: 25mm;">Search</button><br><br>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">New</button><br>
+                                <button class="btn btn-success" (click)="clear()" style="margin: 2px; width: 25mm;">New</button><br>
                                 <button class="btn btn-success"style="margin: 2px; width: 25mm;">Edit</button><br>
-                                <button class="btn btn-danger"style="margin: 2px; width: 25mm;">Delete</button><br>
                                 <button (click)="save()" class="btn btn-success"style="margin: 2px; width: 25mm;">Save</button><br>
                             </div>
                             <div class="col-1"></div>
-                            <div class="col-5">
-                                <table class="table table-stripped">
-                                    <thead>
-                                        <tr>
+                            <div class="col-5" style="height: 7cm; overflow: auto;">
+                                <table class="table table-bordered">
+                                    <thead style="position: sticky; top: 0;">
+                                        <tr class="table-dark">
                                             <td>LPO#</td>
                                             <td>LPO Date</td>
                                             <td>Status</td>
@@ -77,11 +82,13 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6">
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;" (click)="open(content, '')">+Product</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Approve</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Print</button>
-                                <button class="btn btn-danger"style="margin: 2px; width: 25mm;">Cancel</button>
+                            <div class="col-12">
+                                <button class="btn btn-success" style="margin: 2px; width: 25mm;" (click)="open(content, '', '')">+Product</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 25mm;" (click)="approve(id)">Approve</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 25mm;" (click)="print(id)">Print</button>
+                                <button class="btn btn-danger"style="margin: 2px; width: 25mm;" (click)="cancel(id)">Cancel</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 30mm;">Archive All</button>
                             </div>
                         </div>
                         <div class="row">
@@ -106,7 +113,7 @@
                                             <td>{{d.qty}}</td>
                                             <td style="text-align: right;">{{d.costPriceVatIncl | currency:'':''}}</td>
                                             <td style="text-align: right;">{{d.qty*d.costPriceVatIncl | currency:'':''}}</td>
-                                            <td><span style="cursor: pointer;">[Remove]</span><span style="cursor: pointer;" (click)="open(content, '')">[Edit]</span></td>
+                                            <td><span style="cursor: pointer;" (click)="deleteDetail(d.id)">[Remove]</span><span style="cursor: pointer;" (click)="open(content, d.product.id, d.id)">[Edit]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -133,32 +140,38 @@
                         <table>
                             <tbody>
                                 <tr>
-                                    <td><input type="text" class="form-control special"></td><td><button style="margin: 1mm;">Search</button></td>
+                                    <td><input type="text" [(ngModel)]="barcode" class="form-control special"></td><td><button (click)="searchProduct(barcode, code, description)" style="margin: 1mm;">Search</button></td>
                                 </tr>
                             </tbody>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" [(ngModel)]="code" class="form-control special"></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Description</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Description</td>
+                    <td style="padding: 0;">
+                        <input type="text" [(ngModel)]="description" list="descriptions" class="form-control special">
+                        <datalist id="descriptions" style="padding: 0px;">
+                            <option *ngFor="let d of descriptions" [ngValue]="d">{{d}}</option>
+                        </datalist>
+                    </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Qty</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Qty</td><td style="padding: 0;"><input type="text" [(ngModel)]="qty" class="form-control special"></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Cost Price</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Cost Price</td><td style="padding: 0;"><input type="text" [(ngModel)]="costPriceVatIncl" class="form-control special" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Pack Size</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Pack Size</td><td style="padding: 0;"><input type="text" [(ngModel)]="packSize" class="form-control special" readonly></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="modal-footer">
       <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
-      <button type="button" class="btn btn-outline-dark">Save</button>
+      <button type="button" (click)="saveDetail()" class="btn btn-outline-dark">Save</button>
     </div>
 </ng-template>

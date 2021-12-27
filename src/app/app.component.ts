@@ -4,6 +4,13 @@ import { Router } from '@angular/router';
 import { environment } from './../environments/environment';
 import { AuthService } from './auth.service';
 import {trigger,state,style,animate,transition} from '@angular/animations'; 
+import { DataService } from './data.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { StoreModule} from '@ngrx/store';
+interface AppState{
+  message : string
+}
 
 @Component({
   selector: 'app-root',
@@ -12,6 +19,7 @@ import {trigger,state,style,animate,transition} from '@angular/animations';
 })
 export class AppComponent implements OnInit{
   title = 'orbix-erp';
+
 
   public isLoggedIn = false
 
@@ -51,7 +59,12 @@ export class AppComponent implements OnInit{
       }
     )
   }
+  
 }
 interface IDayData{
   bussinessDate : String
+}
+
+interface ISupplier{
+  name : string
 }

@@ -35,6 +35,7 @@ export class SideBarComponent implements OnInit {
     this.customerRelationsMenuShown = false
     this.humanResourceMenuShown = false
     this.reportMenuShown = false
+    this.dayMenuShown = false
   }
 
   showMainMenu(){

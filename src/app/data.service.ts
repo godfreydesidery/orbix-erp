@@ -6,6 +6,9 @@ import { Injectable } from '@angular/core';
 })
 export class DataService {
 
+  productNames  : string[] = []
+  static supplierNames : string[] = ['gh','fghj']
+
   constructor(private http : HttpClient) { }
 
   
