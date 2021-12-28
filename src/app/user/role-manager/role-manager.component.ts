@@ -4,6 +4,9 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { IRole } from 'src/app/models/role';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-role-manager',
@@ -59,7 +62,7 @@ export class RoleManagerComponent implements OnInit, IRole {
     }
     if (this.id == null || this.id == ''){
       //create a new role
-      await this.http.post('/api/roles/create', this.getRoleData(), options)
+      await this.http.post(API_URL+'/roles/create', this.getRoleData(), options)
       .toPromise()
       .then(
         data => {
@@ -79,7 +82,7 @@ export class RoleManagerComponent implements OnInit, IRole {
       )   
     }else{
       //update an existing role
-      await this.http.put('/api/roles/update', this.getRoleData(), options)
+      await this.http.put(API_URL+'/roles/update', this.getRoleData(), options)
       .toPromise()
       .then(
         data => {
@@ -103,7 +106,7 @@ export class RoleManagerComponent implements OnInit, IRole {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IRole[]>('/api/roles', options)
+    await this.http.get<IRole[]>(API_URL+'/roles', options)
     .toPromise()
     .then(
       data => {
@@ -127,7 +130,7 @@ export class RoleManagerComponent implements OnInit, IRole {
     this.searchKey = key
     this.clearFields()
     this.name = this.searchKey
-    await this.http.get("api/roles/get_role?name="+this.searchKey, options)
+    await this.http.get(API_URL+'/roles/get_role?name='+this.searchKey, options)
     .toPromise()
     .then(
       data=>{
@@ -148,7 +151,7 @@ export class RoleManagerComponent implements OnInit, IRole {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.delete<IRole[]>("api/roles/delete?id="+id, options)
+    await this.http.delete<IRole[]>(API_URL+'/roles/delete?id='+id, options)
     .toPromise()
     .then(data => {
       this.id    = ''

@@ -13,6 +13,9 @@ import { ILevelThree } from '../group-level3/group-level3.component';
 import { ILevelFour } from '../group-level4/group-level4.component';
 import { ISubCategory } from '../sub-category/sub-category.component';
 import { ISubClass } from '../sub-class/sub-class.component';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-product-master',
@@ -191,7 +194,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
       /**
        * Save a new record
        */
-      await this.http.post<IProduct>('/api/products/create', product, options)
+      await this.http.post<IProduct>(API_URL+'/products/create', product, options)
       .toPromise()
       .then(
         data => {
@@ -210,7 +213,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
       /**
        * Update an existing record
        */
-      await this.http.put<IProduct>('/api/products/update', product, options)
+      await this.http.put<IProduct>(API_URL+'/products/update', product, options)
       .toPromise()
       .then(
         data => {
@@ -243,7 +246,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>('/api/products/get?id='+id, options)
+    this.http.get<IProduct>(API_URL+'/products/get?id='+id, options)
     .toPromise()
     .then(
       data => {
@@ -260,7 +263,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>('/api/products/get_by_barcode?barcode='+barcode, options)
+    this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
     .toPromise()
     .then(
       data => {
@@ -277,7 +280,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>('/api/products/get_by_code?code='+code, options)
+    this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
     .toPromise()
     .then(
       data => {
@@ -296,7 +299,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>('/api/products/get_by_description?description='+description, options)
+    this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
     .toPromise()
     .then(
       data => {
@@ -316,7 +319,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.delete('/api/products/delete?id='+id, options)
+    this.http.delete(API_URL+'/products/delete?id='+id, options)
     .toPromise()
     .then(
       () => {
@@ -408,7 +411,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.subCategoryNames = []
-    this.http.get<string[]>('/api/suppliers/get_names', options)
+    this.http.get<string[]>(API_URL+'/suppliers/get_names', options)
     .toPromise()
     .then(
       data => {
@@ -434,7 +437,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IDepartment[]>('/api/departments', options)
+    await this.http.get<IDepartment[]>(API_URL+'/departments', options)
     .toPromise()
     .then(
       data => {
@@ -462,7 +465,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IClass[]>('/api/classes/get_by_department_name?department_name='+departmentName, options)
+    await this.http.get<IClass[]>(API_URL+'/classes/get_by_department_name?department_name='+departmentName, options)
     .toPromise()
     .then(
       data => {
@@ -490,7 +493,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ISubClass[]>('/api/sub_classes/get_by_class_name?class_name='+className, options)
+    await this.http.get<ISubClass[]>(API_URL+'/sub_classes/get_by_class_name?class_name='+className, options)
     .toPromise()
     .then(
       data => {
@@ -517,7 +520,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ICategory[]>('/api/categories', options)
+    await this.http.get<ICategory[]>(API_URL+'/categories', options)
     .toPromise()
     .then(
       data => {
@@ -544,7 +547,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ISubCategory[]>('/api/sub_categories/get_by_category_name?category_name='+categoryName, options)
+    await this.http.get<ISubCategory[]>(API_URL+'/sub_categories/get_by_category_name?category_name='+categoryName, options)
     .toPromise()
     .then(
       data => {
@@ -569,7 +572,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ILevelOne[]>('/api/group_level_ones', options)
+    await this.http.get<ILevelOne[]>(API_URL+'/group_level_ones', options)
     .toPromise()
     .then(
       data => {
@@ -594,7 +597,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ILevelTwo[]>('/api/group_level_twos', options)
+    await this.http.get<ILevelTwo[]>(API_URL+'/group_level_twos', options)
     .toPromise()
     .then(
       data => {
@@ -618,7 +621,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ILevelThree[]>('/api/group_level_threes', options)
+    await this.http.get<ILevelThree[]>(API_URL+'/group_level_threes', options)
     .toPromise()
     .then(
       data => {
@@ -642,7 +645,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ILevelFour[]>('/api/group_level_fours', options)
+    await this.http.get<ILevelFour[]>(API_URL+'/group_level_fours', options)
     .toPromise()
     .then(
       data => {

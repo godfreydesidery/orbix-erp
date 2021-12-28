@@ -7,6 +7,9 @@ import { map } from 'rxjs/operators'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import { DatePipe } from '@angular/common'
 import { primitivesAreNotAllowedInProps } from '@ngrx/store/src/models'
+import { environment } from '../environments/environment';
+
+const API_URL = environment.apiUrl;
 
 interface IUserData{
   alias : string
@@ -20,6 +23,8 @@ interface IDayData{
   providedIn: 'root'
 })
 export class AuthService {
+
+  
 
   helper = new JwtHelperService()
   
@@ -55,7 +60,7 @@ export class AuthService {
       headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
     }
 
-    return this.http.post<any>('/api/login', user, options)
+    return this.http.post<any>(API_URL+'/login', user, options)
       .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem('current-user', JSON.stringify(user))
@@ -111,7 +116,7 @@ export class AuthService {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+currentUser.access_token)
     }
 
-    await this.http.get<IUserData>('/api/users/load_user?username='+username, options)
+    await this.http.get<IUserData>(API_URL+'/users/load_user?username='+username, options)
     .toPromise()
     .then(
       data => {
@@ -120,7 +125,7 @@ export class AuthService {
       }
     )
 
-    await this.http.get<IDayData>('/api/days/get_bussiness_date', options)
+    await this.http.get<IDayData>(API_URL+'/days/get_bussiness_date', options)
     .toPromise()
     .then(
       data => {

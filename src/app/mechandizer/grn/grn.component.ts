@@ -5,6 +5,9 @@ import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-grn',
@@ -117,7 +120,7 @@ export class GrnComponent implements OnInit {
       comments     : this.comments
     }
     if(this.id == null || this.id == ''){   
-      await this.http.post<ILpo>('/api/lpos/create', lpo, options)
+      await this.http.post<ILpo>(API_URL+'/lpos/create', lpo, options)
       .toPromise()
       .then(
         data => {
@@ -145,7 +148,7 @@ export class GrnComponent implements OnInit {
         }
       )
     }else{
-      await this.http.put<ILpo>('/api/lpos/update', lpo, options)
+      await this.http.put<ILpo>(API_URL+'/lpos/update', lpo, options)
       .toPromise()
       .then(
         data => {
@@ -178,7 +181,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpo>('/api/lpos/get?id='+id, options)
+    this.http.get<ILpo>(API_URL+'/lpos/get?id='+id, options)
     .toPromise()
     .then(
       data => {
@@ -211,7 +214,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpo>('/api/lpos/get_by_no?no='+no, options)
+    this.http.get<ILpo>(API_URL+'/lpos/get_by_no?no='+no, options)
     .toPromise()
     .then(
       data => {
@@ -247,7 +250,7 @@ export class GrnComponent implements OnInit {
     var lpo = {
       id : this.id   
     }
-    this.http.put('/api/lpos/approve', lpo, options)
+    this.http.put(API_URL+'/lpos/approve', lpo, options)
     .toPromise()
     .then(
       () => {
@@ -272,7 +275,7 @@ export class GrnComponent implements OnInit {
     var lpo = {
       id : this.id   
     }
-    this.http.put('/api/lpos/print', lpo, options)
+    this.http.put(API_URL+'/lpos/print', lpo, options)
     .toPromise()
     .then(
       () => {
@@ -296,7 +299,7 @@ export class GrnComponent implements OnInit {
     var lpo = {
       id : this.id   
     }
-    this.http.put('/api/lpos/cancel', lpo, options)
+    this.http.put(API_URL+'/lpos/cancel', lpo, options)
     .toPromise()
     .then(
       () => {
@@ -340,7 +343,7 @@ export class GrnComponent implements OnInit {
         costPriceVatIncl : this.costPriceVatIncl,
         costPriceVatExcl : this.costPriceVatExcl
       }
-      this.http.post('/api/lpo_details/save', detail, options)
+      this.http.post(API_URL+'/lpo_details/save', detail, options)
       .toPromise()
       .then(
         () => {
@@ -365,7 +368,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpoDetail[]>('/api/lpo_details/get_by_lpo?id='+id, options)
+    this.http.get<ILpoDetail[]>(API_URL+'/lpo_details/get_by_lpo?id='+id, options)
     .toPromise()
     .then(
       data => {
@@ -390,7 +393,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.delete('/api/lpo_details/delete?id='+id, options)
+    this.http.delete(API_URL+'/lpo_details/delete?id='+id, options)
     .toPromise()
     .then(
       data => {
@@ -408,7 +411,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpo[]>('/api/lpos', options)
+    this.http.get<ILpo[]>(API_URL+'/lpos', options)
     .toPromise()
     .then(
       data => {
@@ -474,7 +477,7 @@ export class GrnComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
-      this.http.get<IProduct>('/api/products/get_by_barcode?barcode='+barcode, options)
+      this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
       .toPromise()
       .then(
         data => {
@@ -491,7 +494,7 @@ export class GrnComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
-      this.http.get<IProduct>('/api/products/get_by_code?code='+code, options)
+      this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
       .toPromise()
       .then(
         data => {
@@ -510,7 +513,7 @@ export class GrnComponent implements OnInit {
       })
     }else{
       //search by description
-      this.http.get<IProduct>('/api/products/get_by_description?description='+description, options)
+      this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
       .toPromise()
       .then(
         data => {
@@ -533,7 +536,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>('/api/products/get?id='+productId, options)
+    this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
     .toPromise()
     .then(
       data => {
@@ -548,7 +551,7 @@ export class GrnComponent implements OnInit {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
 
-    this.http.get<ILpoDetail>('/api/lpo_details/get?id='+detailId, options)
+    this.http.get<ILpoDetail>(API_URL+'/lpo_details/get?id='+detailId, options)
     .toPromise()
     .then(
       data => {
@@ -567,7 +570,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>('/api/lpo_details/get_by_product_id_and_lpo_id?product_id='+productId+'lpo_id='+this.id, options)
+    this.http.get<IProduct>(API_URL+'/lpo_details/get_by_product_id_and_lpo_id?product_id='+productId+'lpo_id='+this.id, options)
     .toPromise()
     .then(
       data => {
@@ -596,7 +599,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<string[]>('/api/suppliers/get_names', options)
+    await this.http.get<string[]>(API_URL+'/suppliers/get_names', options)
     .toPromise()
     .then(
       data => {
@@ -616,7 +619,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<string[]>('/api/products/get_descriptions', options)
+    await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
     .toPromise()
     .then(
       data => {
@@ -638,7 +641,7 @@ export class GrnComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ISupplier>("api/suppliers/get_by_name?name="+name, options)
+    await this.http.get<ISupplier>(API_URL+'/suppliers/get_by_name?name='+name, options)
     .toPromise()
     .then(
       data=>{

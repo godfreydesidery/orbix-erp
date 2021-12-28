@@ -7,6 +7,9 @@ import { IObject } from 'src/app/models/object';
 import { IOperation } from 'src/app/models/operation';
 import { IPrivilege } from 'src/app/models/privilege';
 import { IRole } from 'src/app/models/role';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-access-contol',
@@ -70,7 +73,7 @@ export class AccessContolComponent implements OnInit {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<string[]>('/api/objects', options)
+    await this.http.get<string[]>(API_URL+'/objects', options)
     .toPromise()
     .then(
       data => {
@@ -96,7 +99,7 @@ export class AccessContolComponent implements OnInit {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<string[]>('/api/operations', options)
+    await this.http.get<string[]>(API_URL+'/operations', options)
     .toPromise()
     .then(
       data => {
@@ -120,7 +123,7 @@ export class AccessContolComponent implements OnInit {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
  
-    await this.http.get<IRole[]>('/api/roles', options)
+    await this.http.get<IRole[]>(API_URL+'/roles', options)
     .toPromise()
     .then(
       data => {
@@ -156,7 +159,7 @@ export class AccessContolComponent implements OnInit {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
  
-    await this.http.get<IPrivilege[]>('/api/privileges?role='+role, options)
+    await this.http.get<IPrivilege[]>(API_URL+'/privileges?role='+role, options)
     .toPromise()
     .then(
       data => {
@@ -267,7 +270,7 @@ export class AccessContolComponent implements OnInit {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.post('/api/privileges/addtorole', accessForm, options)
+    await this.http.post(API_URL+'/privileges/addtorole', accessForm, options)
     .toPromise()
     .then(
       data => {

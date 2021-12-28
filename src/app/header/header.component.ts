@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-header',
@@ -33,10 +36,10 @@ export class HeaderComponent implements OnInit {
     }
   }
     
-  public logOut() : any{
+  public async logOut() : Promise<any>{
     localStorage.removeItem('current-user')
     alert('You have logged out!')
-    this.router.navigate([''])
+    await this.router.navigate([''])
     window.location.reload()
   }
 }

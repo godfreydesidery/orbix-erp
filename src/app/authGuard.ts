@@ -4,6 +4,10 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 import { AuthService } from './auth.service';
+import { environment } from '../environments/environment';
+
+const API_URL = environment.apiUrl;
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
@@ -47,7 +51,7 @@ export class AuthGuard implements CanActivate {
                       .set('Authorization',  'Bearer '+currentUser.refresh_token)
                   }
 
-                  this.http.get<any>('/api/token/refresh', header)
+                  this.http.get<any>(API_URL+'/token/refresh', header)
                   .toPromise()
                   .then(
                       data => {

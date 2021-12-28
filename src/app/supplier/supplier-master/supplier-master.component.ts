@@ -3,6 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-supplier-master',
@@ -101,7 +104,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
 
     if (this.id == null || this.id == ''){
       //create a new user
-      await this.http.post('/api/suppliers/create', data, options)
+      await this.http.post(API_URL+'/suppliers/create', data, options)
       .toPromise()
       .then(
         data => {
@@ -118,7 +121,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
       )   
     }else{
       //update an existing user
-      await this.http.put('/api/suppliers/update', data, options)
+      await this.http.put(API_URL+'/suppliers/update', data, options)
       .toPromise()
       .then(
         data => {
@@ -203,7 +206,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ISupplier[]>('/api/suppliers', options)
+    await this.http.get<ISupplier[]>(API_URL+'/suppliers', options)
     .toPromise()
     .then(
       data => {
@@ -224,7 +227,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get("api/suppliers/get?id="+id, options)
+    await this.http.get(API_URL+'/suppliers/get?id='+id, options)
     .toPromise()
     .then(
       data=>{
@@ -243,7 +246,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get("api/suppliers/get_by_name?name="+name, options)
+    await this.http.get(API_URL+'/suppliers/get_by_name?name='+name, options)
     .toPromise()
     .then(
       data=>{
@@ -268,7 +271,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.delete('api/suppliers/delete?id='+this.id, options)
+    await this.http.delete(API_URL+'/suppliers/delete?id='+this.id, options)
     .toPromise()
     .then(
       () => {

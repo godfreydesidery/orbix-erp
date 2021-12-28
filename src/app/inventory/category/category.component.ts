@@ -3,6 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-category',
@@ -35,7 +38,7 @@ export class CategoryComponent implements OnInit {
     }
     if(this.id == null || this.id == ''){
       //save a new till
-      await this.http.post<ICategory>('/api/categories/create', category, options)
+      await this.http.post<ICategory>(API_URL+'/categories/create', category, options)
       .toPromise()
       .then(
         data => {
@@ -55,7 +58,7 @@ export class CategoryComponent implements OnInit {
 
     }else{
       //update an existing till
-      await this.http.put<ICategory>('/api/categories/update', category, options)
+      await this.http.put<ICategory>(API_URL+'/categories/update', category, options)
       .toPromise()
       .then(
         data => {
@@ -77,7 +80,7 @@ export class CategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ICategory[]>('/api/categories', options)
+    await this.http.get<ICategory[]>(API_URL+'/categories', options)
     .toPromise()
     .then(
       data => {
@@ -97,7 +100,7 @@ export class CategoryComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ICategory>("api/categories/get?id="+id, options)
+    await this.http.get<ICategory>(API_URL+'/categories/get?id='+id, options)
     .toPromise()
     .then(
       data=>{
@@ -118,7 +121,7 @@ export class CategoryComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get("api/categories/get_by_name?name="+name, options)
+    await this.http.get(API_URL+'/categories/get_by_name?name='+name, options)
     .toPromise()
     .then(
       data=>{
@@ -143,7 +146,7 @@ export class CategoryComponent implements OnInit {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
-      await this.http.delete('/api/categories/delete?id='+id, options)
+      await this.http.delete(API_URL+'/categories/delete?id='+id, options)
       .toPromise()
       .then(
         data => {
@@ -172,7 +175,7 @@ export class CategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ICategory[]>('/api/categories', options)
+    await this.http.get<ICategory[]>(API_URL+'/categories', options)
     .toPromise()
     .then(
       data => {

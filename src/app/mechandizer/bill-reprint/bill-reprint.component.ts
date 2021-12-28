@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-bill-reprint',

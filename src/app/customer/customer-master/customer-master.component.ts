@@ -2,6 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-customer-master',
@@ -104,7 +107,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
 
     if (this.id == null || this.id == ''){
       //create a new user
-      await this.http.post('/api/customers/create', data, options)
+      await this.http.post(API_URL+'/customers/create', data, options)
       .toPromise()
       .then(
         data => {
@@ -121,7 +124,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
       )   
     }else{
       //update an existing user
-      await this.http.put('/api/customers/update', data, options)
+      await this.http.put(API_URL+'/customers/update', data, options)
       .toPromise()
       .then(
         data => {
@@ -207,7 +210,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ICustomer[]>('/api/customers', options)
+    await this.http.get<ICustomer[]>(API_URL+'/customers', options)
     .toPromise()
     .then(
       data => {
@@ -228,7 +231,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get("api/customers/get?id="+id, options)
+    await this.http.get(API_URL+'/customers/get?id='+id, options)
     .toPromise()
     .then(
       data=>{
@@ -247,7 +250,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get("api/customers/get_by_name?name="+name, options)
+    await this.http.get(API_URL+'/customers/get_by_name?name='+name, options)
     .toPromise()
     .then(
       data=>{
@@ -272,7 +275,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.delete('api/customers/delete?id='+this.id, options)
+    await this.http.delete(API_URL+'/customers/delete?id='+this.id, options)
     .toPromise()
     .then(
       () => {

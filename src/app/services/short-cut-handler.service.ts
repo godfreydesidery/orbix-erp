@@ -2,6 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { ErrorHandlerService } from './error-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +21,7 @@ export class ShortCutHandlerService {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.post('/api/shortcuts/create?username='+username+'&name='+shortcut+'&link='+link, options)
+    await this.http.post(API_URL+'/shortcuts/create?username='+username+'&name='+shortcut+'&link='+link, options)
       .toPromise()
       .then(
         data => {

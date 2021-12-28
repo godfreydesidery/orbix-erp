@@ -4,6 +4,9 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/auth.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-packing-list',

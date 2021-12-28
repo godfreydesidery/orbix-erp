@@ -5,6 +5,9 @@ import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { IClass } from '../class/class.component';
 import { IDepartment } from '../department/department.component';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-sub-class',
@@ -52,7 +55,7 @@ export class SubClassComponent implements OnInit, ISubClass {
       /**
        * Save a new record
        */
-      await this.http.post<ISubClass>('/api/sub_classes/create', subClass, options)
+      await this.http.post<ISubClass>(API_URL+'/sub_classes/create', subClass, options)
       .toPromise()
       .then(
         data => {
@@ -74,7 +77,7 @@ export class SubClassComponent implements OnInit, ISubClass {
       /**
        * Update an existing record
        */
-      await this.http.put<ISubClass>('/api/sub_classes/update', subClass, options)
+      await this.http.put<ISubClass>(API_URL+'/sub_classes/update', subClass, options)
       .toPromise()
       .then(
         data => {
@@ -99,7 +102,7 @@ export class SubClassComponent implements OnInit, ISubClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ISubClass[]>('/api/sub_classes', options)
+    await this.http.get<ISubClass[]>(API_URL+'/sub_classes', options)
     .toPromise()
     .then(
       data => {
@@ -123,7 +126,7 @@ export class SubClassComponent implements OnInit, ISubClass {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ISubClass>("api/sub_classes/get?id="+id, options)
+    await this.http.get<ISubClass>(API_URL+'/sub_classes/get?id='+id, options)
     .toPromise()
     .then(
       data=>{
@@ -149,7 +152,7 @@ export class SubClassComponent implements OnInit, ISubClass {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ISubClass>("api/sub_classes/get_by_name?name="+name, options)
+    await this.http.get<ISubClass>(API_URL+'/sub_classes/get_by_name?name='+name, options)
     .toPromise()
     .then(
       data=>{
@@ -174,7 +177,7 @@ export class SubClassComponent implements OnInit, ISubClass {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
-      await this.http.delete('/api/sub_classes/delete?id='+id, options)
+      await this.http.delete(API_URL+'/sub_classes/delete?id='+id, options)
       .toPromise()
       .then(
         data => {
@@ -212,7 +215,7 @@ export class SubClassComponent implements OnInit, ISubClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IDepartment[]>('/api/departments', options)
+    await this.http.get<IDepartment[]>(API_URL+'/departments', options)
     .toPromise()
     .then(
       data => {
@@ -236,7 +239,7 @@ export class SubClassComponent implements OnInit, ISubClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IClass[]>('/api/classes/get_by_department_name?department_name='+departmentName, options)
+    await this.http.get<IClass[]>(API_URL+'/classes/get_by_department_name?department_name='+departmentName, options)
     .toPromise()
     .then(
       data => {

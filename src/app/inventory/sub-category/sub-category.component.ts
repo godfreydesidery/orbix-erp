@@ -4,6 +4,9 @@ import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { ICategory } from '../category/category.component';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-material-sub-category',
@@ -42,7 +45,7 @@ export class SubCategoryComponent implements OnInit {
     }
     if(this.id == null || this.id == ''){
       //save a new till
-      await this.http.post<ISubCategory>('/api/sub_categories/create', subCategory, options)
+      await this.http.post<ISubCategory>(API_URL+'/sub_categories/create', subCategory, options)
       .toPromise()
       .then(
         data => {
@@ -62,7 +65,7 @@ export class SubCategoryComponent implements OnInit {
 
     }else{
       //update an existing till
-      await this.http.put<ISubCategory>('/api/sub_categories/update', subCategory, options)
+      await this.http.put<ISubCategory>(API_URL+'/sub_categories/update', subCategory, options)
       .toPromise()
       .then(
         data => {
@@ -84,7 +87,7 @@ export class SubCategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ISubCategory[]>('/api/sub_categories', options)
+    await this.http.get<ISubCategory[]>(API_URL+'/sub_categories', options)
     .toPromise()
     .then(
       data => {
@@ -106,7 +109,7 @@ export class SubCategoryComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ISubCategory>("api/sub_categories/get?id="+id, options)
+    await this.http.get<ISubCategory>(API_URL+'/sub_categories/get?id='+id, options)
     .toPromise()
     .then(
       data=>{
@@ -131,7 +134,7 @@ export class SubCategoryComponent implements OnInit {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
-      await this.http.delete('/api/sub_categories/delete?id='+id, options)
+      await this.http.delete(API_URL+'/sub_categories/delete?id='+id, options)
       .toPromise()
       .then(
         data => {

@@ -3,6 +3,9 @@ import { Byte } from '@angular/compiler/src/util';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-company-profile',
@@ -63,7 +66,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ICompanyProfile>('/api/company_profile/get', options)
+    await this.http.get<ICompanyProfile>(API_URL+'/company_profile/get', options)
     .toPromise()
     .then(
       data => {
@@ -122,7 +125,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
       bankName         : this.bankName,
       bankAccountNo    : this.bankAccountNo
     }
-    await this.http.post<ICompanyProfile>('/api/company_profile/save', profile, options)
+    await this.http.post<ICompanyProfile>(API_URL+'/company_profile/save', profile, options)
     .toPromise()
     .then(
       data => {

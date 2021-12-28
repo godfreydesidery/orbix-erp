@@ -8,6 +8,9 @@ import { ThrowStmt } from '@angular/compiler';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 interface IiRole{
   name: string 
@@ -106,7 +109,7 @@ export class UserProfileComponent implements OnInit, IUser {
     }
     if (this.id == null || this.id == ''){
       //create a new user
-      await this.http.post('/api/users/create', this.getUserData(), options)
+      await this.http.post(API_URL+'/users/create', this.getUserData(), options)
       .toPromise()
       .then(
         data => {
@@ -123,7 +126,7 @@ export class UserProfileComponent implements OnInit, IUser {
       )   
     }else{
       //update an existing user
-      await this.http.put('/api/users/update', this.getUserData(), options)
+      await this.http.put(API_URL+'/users/update', this.getUserData(), options)
       .toPromise()
       .then(
         data => {
@@ -151,7 +154,7 @@ export class UserProfileComponent implements OnInit, IUser {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IRole[]>('/api/roles', options)
+    await this.http.get<IRole[]>(API_URL+'/roles', options)
     .toPromise()
     .then(
       data => {
@@ -173,7 +176,7 @@ export class UserProfileComponent implements OnInit, IUser {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IUser[]>('/api/users', options)
+    await this.http.get<IUser[]>(API_URL+'/users', options)
     .toPromise()
     .then(
       data => {
@@ -199,7 +202,7 @@ export class UserProfileComponent implements OnInit, IUser {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get("api/users/get_user?username="+this.searchKey, options)
+    await this.http.get(API_URL+'/users/get_user?username='+this.searchKey, options)
     .toPromise()
     .then(
       data=>{
@@ -225,7 +228,7 @@ export class UserProfileComponent implements OnInit, IUser {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.delete('api/users/delete?id='+this.id, options)
+    await this.http.delete(API_URL+'/users/delete?id='+this.id, options)
     .toPromise()
     .then(
       () => {

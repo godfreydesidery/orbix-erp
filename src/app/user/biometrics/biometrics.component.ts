@@ -6,6 +6,9 @@ import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-biometrics',
@@ -43,7 +46,7 @@ export class BiometricsComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IUser[]>('/api/users', options)
+    await this.http.get<IUser[]>(API_URL+'/users', options)
     .toPromise()
     .then(
       data => {
@@ -86,7 +89,7 @@ export class BiometricsComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IUser>("api/users/get_user?username="+username, options)
+    await this.http.get<IUser>(API_URL+'/users/get_user?username='+username, options)
     .toPromise()
     .then(
       data=>{
@@ -107,7 +110,7 @@ export class BiometricsComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.post("api/users/save_biometric", options)
+    await this.http.post(API_URL+'/users/save_biometric', options)
     .toPromise()
     .then(
       data=>{

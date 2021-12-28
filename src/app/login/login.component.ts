@@ -5,6 +5,9 @@ import { delay } from 'rxjs';
 import { first } from 'rxjs/internal/operators/first';
 import { AuthService } from '../auth.service';
 import { ErrorHandlerService } from '../services/error-handler.service';
+import { environment } from '../../environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-login',
@@ -34,6 +37,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.status = ''
+    console.log(API_URL)
   }
 
   async loginUser(){
@@ -50,8 +54,9 @@ export class LoginComponent implements OnInit {
       .toPromise()
       .then(
         async data => {
-          this.status = 'Authenticated'
+          this.status = 'Loading User... Please wait.'
           await this.auth.loadUserSession(this.username)
+          this.status = 'Authenticated'
           console.log(data);
           console.log('Login success')
           window.location.reload()
@@ -71,8 +76,6 @@ export class LoginComponent implements OnInit {
     this.password = ''
   }
 
-  
-
 }
 
 export interface User{
@@ -80,7 +83,3 @@ export interface User{
   secondName  : string
   lastName    : string
 }
-
-
-
-

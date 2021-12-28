@@ -4,6 +4,9 @@ import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { IClass } from '../class/class.component';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-department',
@@ -38,7 +41,7 @@ export class DepartmentComponent implements OnInit, IDepartment {
       /**
        * Save a new record
        */
-      await this.http.post<IDepartment>('/api/departments/create', department, options)
+      await this.http.post<IDepartment>(API_URL+'/departments/create', department, options)
       .toPromise()
       .then(
         data => {
@@ -59,7 +62,7 @@ export class DepartmentComponent implements OnInit, IDepartment {
       /**
        * Update an existing record
        */
-      await this.http.put<IDepartment>('/api/departments/update', department, options)
+      await this.http.put<IDepartment>(API_URL+'/departments/update', department, options)
       .toPromise()
       .then(
         data => {
@@ -84,7 +87,7 @@ export class DepartmentComponent implements OnInit, IDepartment {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IDepartment[]>('/api/departments', options)
+    await this.http.get<IDepartment[]>(API_URL+'/departments', options)
     .toPromise()
     .then(
       data => {
@@ -107,7 +110,7 @@ export class DepartmentComponent implements OnInit, IDepartment {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IDepartment>("api/departments/get?id="+id, options)
+    await this.http.get<IDepartment>(API_URL+'/departments/get?id='+id, options)
     .toPromise()
     .then(
       data=>{
@@ -131,7 +134,7 @@ export class DepartmentComponent implements OnInit, IDepartment {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get("api/departments/get_by_name?name="+name, options)
+    await this.http.get(API_URL+'/departments/get_by_name?name='+name, options)
     .toPromise()
     .then(
       data=>{
@@ -159,7 +162,7 @@ export class DepartmentComponent implements OnInit, IDepartment {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
-      await this.http.delete('/api/departments/delete?id='+id, options)
+      await this.http.delete(API_URL+'/departments/delete?id='+id, options)
       .toPromise()
       .then(
         data => {

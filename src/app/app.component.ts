@@ -8,6 +8,9 @@ import { DataService } from './data.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { StoreModule} from '@ngrx/store';
+
+const API_URL = environment.apiUrl;
+
 interface AppState{
   message : string
 }
@@ -28,8 +31,10 @@ export class AppComponent implements OnInit{
     private router: Router){   
   }
    
-  ngOnInit(): void {
-    this.loadDay()
+  async ngOnInit(): Promise<void> {
+    try{
+      await this.loadDay()
+    }catch(e:any){}    
     var currentUser = null
     if(localStorage.getItem('current-user') != null){
       currentUser = localStorage.getItem('current-user')
@@ -37,10 +42,10 @@ export class AppComponent implements OnInit{
 
     if(currentUser != null){
       this.isLoggedIn = true
-      this.router.navigate(['home'])
+      await this.router.navigate(['home'])
     }else{
       this.isLoggedIn = false
-      this.router.navigate([''])
+      await this.router.navigate([''])
     }
   }
 
@@ -48,16 +53,14 @@ export class AppComponent implements OnInit{
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IDayData>('/api/days/get_bussiness_date', options)
+    await this.http.get<IDayData>(API_URL+'/days/get_bussiness_date', options)
     .toPromise()
     .then(
       data => {
         localStorage.setItem('system-date', data?.bussinessDate!+'')        
-      },
-      error => {
-        console.log(error)
       }
     )
+    .catch(error => {})
   }
   
 }

@@ -6,6 +6,12 @@ import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.servi
 import { ISupplier } from 'src/app/supplier/supplier-master/supplier-master.component';
 import { ICategory } from '../category/category.component';
 import { ISubCategory } from '../sub-category/sub-category.component';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
+
+
+
 @Component({
   selector: 'app-material-master',
   templateUrl: './material-master.component.html',

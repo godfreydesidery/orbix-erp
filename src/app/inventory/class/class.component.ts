@@ -4,6 +4,9 @@ import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { IDepartment } from '../department/department.component';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-class',
@@ -47,7 +50,7 @@ export class ClassComponent implements OnInit, IClass {
       /**
        * Save new record
        */
-      await this.http.post<IClass>('/api/classes/create', class_, options)
+      await this.http.post<IClass>(API_URL+'/classes/create', class_, options)
       .toPromise()
       .then(
         data => {
@@ -68,7 +71,7 @@ export class ClassComponent implements OnInit, IClass {
       /**
        * Update an existing record
        */
-      await this.http.put<IClass>('/api/classes/update', class_, options)
+      await this.http.put<IClass>(API_URL+'/classes/update', class_, options)
       .toPromise()
       .then(
         data => {
@@ -93,7 +96,7 @@ export class ClassComponent implements OnInit, IClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IClass[]>('/api/classes', options)
+    await this.http.get<IClass[]>(API_URL+'/classes', options)
     .toPromise()
     .then(
       data => {
@@ -116,7 +119,7 @@ export class ClassComponent implements OnInit, IClass {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IClass>("api/classes/get?id="+id, options)
+    await this.http.get<IClass>(API_URL+'/classes/get?id='+id, options)
     .toPromise()
     .then(
       data=>{
@@ -141,7 +144,7 @@ export class ClassComponent implements OnInit, IClass {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<IClass>("api/classes/get_by_name?name="+name, options)
+    await this.http.get<IClass>(API_URL+'/classes/get_by_name?name='+name, options)
     .toPromise()
     .then(
       data=>{
@@ -165,7 +168,7 @@ export class ClassComponent implements OnInit, IClass {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
-      await this.http.delete('/api/classes/delete?id='+id, options)
+      await this.http.delete(API_URL+'/classes/delete?id='+id, options)
       .toPromise()
       .then(
         () => {
@@ -201,7 +204,7 @@ export class ClassComponent implements OnInit, IClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IDepartment[]>('/api/departments', options)
+    await this.http.get<IDepartment[]>(API_URL+'/departments', options)
     .toPromise()
     .then(
       data => {

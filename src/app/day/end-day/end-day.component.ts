@@ -2,6 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth.service';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-end-day',
@@ -32,7 +35,7 @@ export class EndDayComponent implements OnInit {
        let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
-      this.http.get<boolean>('/api/days/end_day', options)
+      this.http.get<boolean>(API_URL+'/days/end_day', options)
       .toPromise()
       .then(
         data => {
@@ -62,7 +65,7 @@ export class EndDayComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<IDayData>('/api/days/get_bussiness_date', options)
+    await this.http.get<IDayData>(API_URL+'/days/get_bussiness_date', options)
     .toPromise()
     .then(
       data => {

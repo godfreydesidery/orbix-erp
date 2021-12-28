@@ -6,6 +6,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-till-administration',
@@ -60,7 +63,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
     }
     if(this.id == null || this.id == ''){
       //save a new till
-      await this.http.post<ITill>('/api/tills/create', till, options)
+      await this.http.post<ITill>(API_URL+'/tills/create', till, options)
       .toPromise()
       .then(
         data => {
@@ -81,7 +84,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
 
     }else{
       //update an existing till
-      await this.http.put<ITill>('/api/tills/update', till, options)
+      await this.http.put<ITill>(API_URL+'/tills/update', till, options)
       .toPromise()
       .then(
         data => {
@@ -113,7 +116,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
-      await this.http.delete('/api/tills/delete?id='+id, options)
+      await this.http.delete(API_URL+'/tills/delete?id='+id, options)
       .toPromise()
       .then(
         data => {
@@ -135,7 +138,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    await this.http.get<ITill[]>('/api/tills', options)
+    await this.http.get<ITill[]>(API_URL+'/tills', options)
     .toPromise()
     .then(
       data => {
@@ -186,7 +189,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
-    await this.http.get<ITill>("api/tills/get?id="+key, options)
+    await this.http.get<ITill>(API_URL+'/tills/get?id='+key, options)
     .toPromise()
     .then(
       data=>{

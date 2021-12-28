@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
 
 @Component({
   selector: 'app-human-resource-menu',
