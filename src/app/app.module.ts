@@ -145,6 +145,7 @@ import { CustomDateComponent } from './day/custom-date/custom-date.component';
     FormsModule,
     StoreModule.forRoot({}, {}),
     RouterModule.forRoot([
+      {path : '', component : DashboardComponent},
       {path : 'home', component : DashboardComponent},
       {path : 'user-profile', component :UserProfileComponent},
       {path : 'role-manager', component :RoleManagerComponent},

@@ -29,6 +29,9 @@ export class ErrorHandlerService {
     if(httpError.statusText == 'Forbidden'){
       displayMessage = displayMessage+'. Access denied.'
     }
+    if(httpError.statusText == 'Unknown Error'){
+      displayMessage = 'Operation failed. Unknown Error. Please check Connection'
+    }
     alert(displayMessage)
   }
 }

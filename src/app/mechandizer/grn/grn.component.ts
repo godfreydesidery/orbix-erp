@@ -28,22 +28,16 @@ export class GrnComponent implements OnInit {
   
   id             : any;
   no             : string;
-  supplier!      : ISupplier;
-  supplierId     : any
-  supplierCode!  : string
-  supplierName!  : string
-  validityDays   : number;
+  grnDate        : Date;
+  orderNo        : string
+  invoiceNo      : string
   status         : string;
-  orderDate     : Date;
-  validUntil    : Date;
   comments!      : string
   created        : string;
   approved       : string;
-  printed        : string;
-  lpoDetails     : ILpoDetail[];
-  lpos           : ILpo[]
 
-  supplierNames : string[] = []
+  grnDetails     : IGrnDetail[]
+  grns           : IGrn[]
 
   //detail
   detailId         : any
@@ -51,29 +45,27 @@ export class GrnComponent implements OnInit {
   productId        : any
   code             : string
   description      : string
-  qty              : number
+  qtyOrdered       : number
+  qtyReceived      : number
   costPriceVatIncl : number
   costPriceVatExcl : number
   packSize         : number
-
-  descriptions : string[]
 
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
               private modalService: NgbModal) {
-      this.id           = ''
+      this.id           = null
       this.no           = ''
-      this.orderDate = new Date()
-      this.validUntil = new Date()
-      this.validityDays = 30
+      this.grnDate      = new Date()
+      this.orderNo      = ''
+      this.invoiceNo    = ''
       this.status       = ''
       this.comments     = ''
       this.created      = ''
       this.approved     = ''
-      this.printed      = ''
-      this.lpoDetails   = []
-      this.lpos         = []
+      this.grnDetails   = []
+      this.grns         = []
 
 
       this.detailId         = ''
@@ -81,98 +73,79 @@ export class GrnComponent implements OnInit {
       this.barcode          = ''
       this.code             = ''    
       this.description      = ''
-      this.qty              = 0
+      this.qtyOrdered       = 0
+      this.qtyReceived      = 0
       this.costPriceVatIncl = 0
       this.costPriceVatExcl = 0
       this.packSize         = 1
 
-      this.descriptions = []
     }
 
   ngOnInit(): void {
-    this.loadLpos()
-    this.loadSupplierNames()
-    this.loadProductDescriptions()
+    this.loadGrns()  
   }
 
-  async save() {
-    if(this.supplierId == null || this.supplierId == ''){
-      alert('Supplier information missing')
-      return
-    }
-    if(this.orderDate == null){
+  async save() {   
+    if(this.grnDate == null){
       alert('Order date required')
       return
     }
-    if (this.validityDays <= 0){
-      alert('Please enter validity days')
-      return
-    }
+    
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var lpo = {
+    var grn = {
       id           : this.id,
-      orderDate    : this.orderDate,
-      validityDays : this.validityDays,
-      validUntil   : this.validUntil,
-      supplier     : {code : this.supplierCode, name : this.supplierName},
+      grnDate    : this.grnDate,
+      invoiceNo   : this.invoiceNo,
+      lpo          : { no : this.orderNo},
       comments     : this.comments
     }
     if(this.id == null || this.id == ''){   
-      await this.http.post<ILpo>(API_URL+'/lpos/create', lpo, options)
+      await this.http.post<IGrn>(API_URL+'/grns/create', grn, options)
       .toPromise()
       .then(
         data => {
           this.id           = data?.id
           this.no           = data!.no
-          this.supplierId   = data!.supplier.id
-          this.supplierCode = data!.supplier.code
-          this.supplierName = data!.supplier.name
-          this.validityDays = data!.validityDays
-          this.orderDate    = data!.orderDate
-          this.validUntil   = data!.validUntil
+          this.grnDate      = data!.grnDate
+          this.orderNo      = data!.orderNo
+          this.invoiceNo    = data!.invoiceNo
           this.status       = data!.status
           this.comments     = data!.comments
           this.created      = data!.created
           this.approved     = data!.approved
-          this.printed      = data!.printed
-          this.getDetails(data?.id)
-          alert('LPO Created successifully')
-          this.loadLpos()
+          alert('GRN Created successifully')
+          this.loadGrns()
         }
       )
       .catch(
         error => {
-          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not save LPO')
+          console.log(error)
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not save GRN')
         }
       )
     }else{
-      await this.http.put<ILpo>(API_URL+'/lpos/update', lpo, options)
+      await this.http.put<IGrn>(API_URL+'/grns/update', grn, options)
       .toPromise()
       .then(
         data => {
           this.id           = data?.id
           this.no           = data!.no
-          this.supplierId   = data!.supplier.id
-          this.supplierCode = data!.supplier.code
-          this.supplierName = data!.supplier.name
-          this.validityDays = data!.validityDays
-          this.orderDate    = data!.orderDate
-          this.validUntil   = data!.validUntil
+          this.grnDate      = data!.grnDate
+          this.orderNo      = data!.orderNo
+          this.invoiceNo    = data!.invoiceNo
           this.status       = data!.status
           this.comments     = data!.comments
           this.created      = data!.created
           this.approved     = data!.approved
-          this.printed      = data!.printed
-          this.getDetails(data?.id)
-          alert('LPO Updated successifully')
-          this.loadLpos()
+          alert('GRN Updated successifully')
+          this.loadGrns()
         }
       )
       .catch(
         error => {
-          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update LPO')
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update GRN')
         }
       )
     }
@@ -181,29 +154,24 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpo>(API_URL+'/lpos/get?id='+id, options)
+    this.http.get<IGrn>(API_URL+'/grns/get?id='+id, options)
     .toPromise()
     .then(
       data => {
         this.id           = data?.id
-        this.no           = data!.no
-        this.supplierId   = data!.supplier.id
-        this.supplierCode = data!.supplier.code
-        this.supplierName = data!.supplier.name
-        this.validityDays = data!.validityDays
-        this.orderDate    = data!.orderDate
-        this.validUntil   = data!.validUntil
-        this.status       = data!.status
-        this.comments     = data!.comments
-        this.created      = data!.created
-        this.approved     = data!.approved
-        this.printed      = data!.printed
-        this.getDetails(data?.id)
+          this.no           = data!.no
+          this.grnDate      = data!.grnDate
+          this.orderNo      = data!.orderNo
+          this.invoiceNo    = data!.invoiceNo
+          this.status       = data!.status
+          this.comments     = data!.comments
+          this.created      = data!.created
+          this.approved     = data!.approved
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load LPO')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load GRN')
       }
     )
   }
@@ -214,47 +182,42 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpo>(API_URL+'/lpos/get_by_no?no='+no, options)
+    this.http.get<IGrn>(API_URL+'/grns/get_by_no?no='+no, options)
     .toPromise()
     .then(
       data => {
         this.id           = data?.id
-        this.no           = data!.no
-        this.supplierId   = data!.supplier.id
-        this.supplierCode = data!.supplier.code
-        this.supplierName = data!.supplier.name
-        this.validityDays = data!.validityDays
-        this.orderDate    = data!.orderDate
-        this.validUntil   = data!.validUntil
-        this.status       = data!.status
-        this.comments     = data!.comments
-        this.created      = data!.created
-        this.approved     = data!.approved
-        this.printed      = data!.printed
-        this.getDetails(data?.id)
+          this.no           = data!.no
+          this.grnDate      = data!.grnDate
+          this.orderNo      = data!.orderNo
+          this.invoiceNo    = data!.invoiceNo
+          this.status       = data!.status
+          this.comments     = data!.comments
+          this.created      = data!.created
+          this.approved     = data!.approved
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load LPO')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load GRN')
       }
     )
   }
   approve(id: any) {
-    if(!window.confirm('Confirm approval of the selected LPO')){
+    if(!window.confirm('Confirm approval of the selected GRN')){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var lpo = {
+    var grn = {
       id : this.id   
     }
-    this.http.put(API_URL+'/lpos/approve', lpo, options)
+    this.http.put(API_URL+'/grns/approve', grn, options)
     .toPromise()
     .then(
       () => {
-        this.loadLpos()
+        this.loadGrns()
       }
     )
     .catch(
@@ -265,46 +228,22 @@ export class GrnComponent implements OnInit {
     )
   }
 
-  print(id: any) {
-    if(!window.confirm('Confirm printing of the selected LPO')){
-      return
-    }
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    var lpo = {
-      id : this.id   
-    }
-    this.http.put(API_URL+'/lpos/print', lpo, options)
-    .toPromise()
-    .then(
-      () => {
-        this.loadLpos()
-      }
-    )
-    .catch(
-      error => {
-        console.log(error)
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not print')
-      }
-    )
-  }
   cancel(id: any) {
-    if(!window.confirm('Confirm canceling of the selected LPO')){
+    if(!window.confirm('Confirm canceling of the selected GRN')){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var lpo = {
+    var grn = {
       id : this.id   
     }
-    this.http.put(API_URL+'/lpos/cancel', lpo, options)
+    this.http.put(API_URL+'/grns/cancel', grn, options)
     .toPromise()
     .then(
       () => {
         this.clear()
-        this.loadLpos()
+        this.loadGrns()
       }
     )
     .catch(
@@ -318,62 +257,20 @@ export class GrnComponent implements OnInit {
     throw new Error('Method not implemented.');
   }
   
-  saveDetail() {
-    if(this.supplierId == null || this.supplierId == ''){
-      alert('Please enter supplier information')
-      return
-    }
-    if(this.id == '' || this.id == null){
-      /**
-       * First Create a new LPO
-       */
-      alert('LPO not available, the system will create a new LPO')
-      this.save()
-    }else{
-      /**
-       * Enter LPO Detail
-       */
-      let options = {
-        headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-      }   
-      var detail = {
-        lpo : {id : this.id},
-        product : {id : this.productId, code : this.code},
-        qty : this.qty,
-        costPriceVatIncl : this.costPriceVatIncl,
-        costPriceVatExcl : this.costPriceVatExcl
-      }
-      this.http.post(API_URL+'/lpo_details/save', detail, options)
-      .toPromise()
-      .then(
-        () => {
-          this.clearDetail()
-          this.getDetails(this.id)
-        }
-      )
-      .catch(
-        error => {
-          console.log(error)
-          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not save detail')
-        }
-      )
-    }
-  }
-
-  getDetails(id: any) {
+  getDetailss(id: any) {
     if(id == ''){
       return
     }
-    this.lpoDetails = []
+    this.grnDetails = []
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpoDetail[]>(API_URL+'/lpo_details/get_by_lpo?id='+id, options)
+    this.http.get<IGrnDetail[]>(API_URL+'/grn_details/get_by_grn?id='+id, options)
     .toPromise()
     .then(
       data => {
         data?.forEach(element => {
-          this.lpoDetails.push(element)
+          this.grnDetails.push(element)
         })
         
       }
@@ -384,67 +281,51 @@ export class GrnComponent implements OnInit {
       }
     )
 
-    console.log(this.lpoDetails)
+    console.log(this.grnDetails)
   }
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
   }
-  deleteDetail(id: any) {
+  
+  loadGrns(){
+    this.grns = []
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.delete(API_URL+'/lpo_details/delete?id='+id, options)
-    .toPromise()
-    .then(
-      data => {
-        this.getDetails(this.id)
-      }
-    )
-    .catch(
-      error => {ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not remove detail')
-      }
-    )
-  }
 
-  loadLpos(){
-    this.lpos = []
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<ILpo[]>(API_URL+'/lpos', options)
+    this.http.get<IGrn[]>(API_URL+'/grns', options)
     .toPromise()
     .then(
       data => {
+        console.log(data)
         data?.forEach(element => {
-          this.lpos.push(element)
+          this.grns.push(element)
         })
       }
     )
   }
 
   clear(){
-    this.id           = ''
+    this.id           = null
     this.no           = ''
-    this.validityDays = 30
+    this.grnDate      = new Date()
+    this.orderNo      = ''
+    this.invoiceNo    = ''
     this.status       = ''
     this.comments     = ''
     this.created      = ''
     this.approved     = ''
-    this.printed      = ''
-    this.lpoDetails   = []
-    this.supplierCode = ''
-    this.supplierName = ''
-    this.orderDate    = new Date()
-    this.validUntil   = new Date()
-
+    this.grnDetails   = []
+    this.grns         = []
   }
 
   clearDetail(){
-    this.detailId         = ''
+    this.detailId         = null
     this.barcode          = ''
     this.code             = ''
     this.description      = ''
-    this.qty              = 0
+    this.qtyOrdered       = 0
+    this.qtyReceived      = 0
     this.costPriceVatIncl = 0
     this.costPriceVatExcl = 0
     this.packSize         = 1
@@ -456,132 +337,12 @@ export class GrnComponent implements OnInit {
     }
   }
 
-  open(content: any, productId : any, detailId :any) {
-    if(this.supplierCode == '' || this.supplierCode == null){
-      alert('Please enter supplier information')
-      return
-    }  
-    if(productId != ''){
-      this.searchDetail(productId, detailId)
-    }
+  open(content: any, productId : any, detailId :any) {  
     
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
-  }
-
-  searchProduct(barcode : string, code : string, description : string){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    if(barcode != ''){
-      //search by barcode
-      this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
-      .toPromise()
-      .then(
-        data => {
-          this.productId = data!.id
-          this.barcode = data!.barcode
-          this.code = data!.code
-          this.description = data!.description
-          this.costPriceVatIncl = data!.costPriceVatIncl
-          this.costPriceVatExcl = data!.costPriceVatExcl
-          this.packSize = data!.packSize
-        }
-      )
-      .catch(error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
-      })
-    }else if(code != ''){
-      this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
-      .toPromise()
-      .then(
-        data => {
-          this.productId = data!.id
-          this.barcode = data!.barcode
-          this.code = data!.code
-          this.description = data!.description
-          this.costPriceVatIncl = data!.costPriceVatIncl
-          this.costPriceVatExcl = data!.costPriceVatExcl
-          this.packSize = data!.packSize
-        }
-      )
-      .catch(error => {
-        console.log(error)
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
-      })
-    }else{
-      //search by description
-      this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
-      .toPromise()
-      .then(
-        data => {
-          this.productId = data!.id
-          this.barcode = data!.barcode
-          this.code = data!.code
-          this.description = data!.description
-          this.costPriceVatIncl = data!.costPriceVatIncl
-          this.costPriceVatExcl = data!.costPriceVatExcl
-          this.packSize = data!.packSize
-        }
-      )
-      .catch(error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
-      })
-    }
-  }
-
-  searchDetail(productId : any, detailId :any){    
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
-    .toPromise()
-    .then(
-      data => {
-        this.productId = data!.id
-        this.barcode = data!.barcode
-        this.code = data!.code
-        this.description = data!.description
-        this.packSize = data!.packSize
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
-    })
-
-    this.http.get<ILpoDetail>(API_URL+'/lpo_details/get?id='+detailId, options)
-    .toPromise()
-    .then(
-      data => {
-        this.detailId = data!.id
-        this.costPriceVatIncl = data!.costPriceVatIncl
-        this.costPriceVatExcl = data!.costPriceVatExcl
-        this.qty = data!.qty
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load detail information')
-    })
-  }
-
-  getDetailByProductIdAndLpoId(productId : any){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IProduct>(API_URL+'/lpo_details/get_by_product_id_and_lpo_id?product_id='+productId+'lpo_id='+this.id, options)
-    .toPromise()
-    .then(
-      data => {
-        this.barcode = data!.barcode
-        this.code = data!.code
-        this.description = data!.description
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
-    })
   }
 
   private getDismissReason(reason: any): string {
@@ -595,93 +356,33 @@ export class GrnComponent implements OnInit {
     }
   }
 
-  async loadSupplierNames(){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    await this.http.get<string[]>(API_URL+'/suppliers/get_names', options)
-    .toPromise()
-    .then(
-      data => {
-        this.supplierNames = []
-        data?.forEach(element => {
-          this.supplierNames.push(element)
-        })
-      },
-      error => {
-        console.log(error)
-        alert('Could not load suppliers names')
-      }
-    )
-  }
-
-  async loadProductDescriptions(){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
-    .toPromise()
-    .then(
-      data => {
-        this.descriptions = []
-        data?.forEach(element => {
-          this.descriptions.push(element)
-        })
-        console.log(data)
-      },
-      error => {
-        console.log(error)
-        alert('Could not load product descriptions')
-      }
-    )
-  }
-
-  async searchSupplier(name: string) {
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-
-    await this.http.get<ISupplier>(API_URL+'/suppliers/get_by_name?name='+name, options)
-    .toPromise()
-    .then(
-      data=>{
-        this.supplierId = data?.id
-        this.supplierCode = data!.code
-      }
-    )
-    .catch(
-      error=>{
-        console.log(error)        
-        alert('Supplier not found')
-        this.supplierId = ''
-        this.supplierCode = ''
-        this.supplierName = ''
-      }
-    )
-  }
 }
 
-interface ILpo{
+interface IGrn{
   id           : any
   no           : string
-  supplier     : ISupplier
-  validityDays : number
+  orderNo      : string
+  lpo          : ILpo
+  invoiceNo    : string
   status       : string
   comments     : string
-  orderDate    : Date
-  validUntil   : Date
+  grnDate      : Date
   created      : string
   approved     : string
-  printed      : string
-  lpoDetails   : ILpoDetail[]
+  grnDetails   : IGrnDetail[]
 }
 
-interface ILpoDetail{
+interface IGrnDetail{
   id               : any
   qty              : number
   costPriceVatIncl : number
   costPriceVatExcl : number
   product          : IProduct
+}
+
+interface ILpo{
+  id           : any
+  no           : string
 }
 
 interface IProduct{
@@ -694,12 +395,3 @@ interface IProduct{
   costPriceVatExcl : number
 }
 
-interface ISupplier{
-  id   : string
-  code : string
-  name : string
-}
-
-interface ISupplierName{
-  names : string[]
-}

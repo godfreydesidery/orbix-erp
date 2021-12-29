@@ -42,7 +42,7 @@ export class AppComponent implements OnInit{
 
     if(currentUser != null){
       this.isLoggedIn = true
-      await this.router.navigate(['home'])
+      await this.router.navigate([''])
     }else{
       this.isLoggedIn = false
       await this.router.navigate([''])
