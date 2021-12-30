@@ -31,6 +31,7 @@ export class GrnComponent implements OnInit {
   grnDate        : Date;
   orderNo        : string
   invoiceNo      : string
+  invoiceAmount  : number
   status         : string;
   comments!      : string
   created        : string;
@@ -55,17 +56,18 @@ export class GrnComponent implements OnInit {
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
               private modalService: NgbModal) {
-      this.id           = null
-      this.no           = ''
-      this.grnDate      = new Date()
-      this.orderNo      = ''
-      this.invoiceNo    = ''
-      this.status       = ''
-      this.comments     = ''
-      this.created      = ''
-      this.approved     = ''
-      this.grnDetails   = []
-      this.grns         = []
+      this.id            = null
+      this.no            = ''
+      this.grnDate       = new Date()
+      this.orderNo       = ''
+      this.invoiceNo     = ''
+      this.invoiceAmount = 0
+      this.status        = ''
+      this.comments      = ''
+      this.created       = ''
+      this.approved      = ''
+      this.grnDetails    = []
+      this.grns          = []
 
 
       this.detailId         = ''
@@ -111,6 +113,7 @@ export class GrnComponent implements OnInit {
           this.grnDate      = data!.grnDate
           this.orderNo      = data!.orderNo
           this.invoiceNo    = data!.invoiceNo
+          this.invoiceAmount= data!.invoiceAmount
           this.status       = data!.status
           this.comments     = data!.comments
           this.created      = data!.created
@@ -135,6 +138,7 @@ export class GrnComponent implements OnInit {
           this.grnDate      = data!.grnDate
           this.orderNo      = data!.orderNo
           this.invoiceNo    = data!.invoiceNo
+          this.invoiceAmount= data!.invoiceAmount
           this.status       = data!.status
           this.comments     = data!.comments
           this.created      = data!.created
@@ -163,10 +167,12 @@ export class GrnComponent implements OnInit {
           this.grnDate      = data!.grnDate
           this.orderNo      = data!.orderNo
           this.invoiceNo    = data!.invoiceNo
+          this.invoiceAmount= data!.invoiceAmount
           this.status       = data!.status
           this.comments     = data!.comments
           this.created      = data!.created
           this.approved     = data!.approved
+          this.grnDetails   = data!.grnDetails
       }
     )
     .catch(
@@ -191,10 +197,12 @@ export class GrnComponent implements OnInit {
           this.grnDate      = data!.grnDate
           this.orderNo      = data!.orderNo
           this.invoiceNo    = data!.invoiceNo
+          this.invoiceAmount= data!.invoiceAmount
           this.status       = data!.status
           this.comments     = data!.comments
           this.created      = data!.created
           this.approved     = data!.approved
+          this.grnDetails   = data!.grnDetails
       }
     )
     .catch(
@@ -280,8 +288,6 @@ export class GrnComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load LPO')
       }
     )
-
-    console.log(this.grnDetails)
   }
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
@@ -337,7 +343,7 @@ export class GrnComponent implements OnInit {
     }
   }
 
-  open(content: any, productId : any, detailId :any) {  
+  open(content: any) {  
     
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
     }, (reason) => {
@@ -359,25 +365,29 @@ export class GrnComponent implements OnInit {
 }
 
 interface IGrn{
-  id           : any
-  no           : string
-  orderNo      : string
-  lpo          : ILpo
-  invoiceNo    : string
-  status       : string
-  comments     : string
-  grnDate      : Date
-  created      : string
-  approved     : string
-  grnDetails   : IGrnDetail[]
+  id            : any
+  no            : string
+  orderNo       : string
+  lpo           : ILpo
+  invoiceNo     : string
+  invoiceAmount : number
+  status        : string
+  comments      : string
+  grnDate       : Date
+  created       : string
+  approved      : string
+  grnDetails    : IGrnDetail[]
 }
 
 interface IGrnDetail{
-  id               : any
-  qty              : number
-  costPriceVatIncl : number
-  costPriceVatExcl : number
-  product          : IProduct
+  id                   : any
+  qtyOrdered           : number
+  qtyReceived          : number
+  clientPriceVatIncl   : number
+  clientPriceVatExcl   : number
+  supplierPriceVatIncl : number
+  supplierPriceVatExcl : number
+  product              : IProduct
 }
 
 interface ILpo{

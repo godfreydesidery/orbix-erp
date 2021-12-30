@@ -27,7 +27,10 @@
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Invoice No</td><td style="padding: 0;"><input type="text" [(ngModel)]="invoiceNo" class="form-control special"></td>
-                                        </tr>                               
+                                        </tr>  
+                                        <tr>
+                                            <td style="text-align: right;">Invoice Amount</td><td style="padding: 0;"><input type="text" [(ngModel)]="invoiceAmount" class="form-control special" style="text-align: right;"></td>
+                                        </tr>                              
                                         <tr>
                                             <td style="text-align: right;">Created</td><td>{{created}}</td>
                                         </tr> 
@@ -85,22 +88,24 @@
                                         <tr>
                                             <td>Code</td>
                                             <td>Description</td>
-                                            <td>Pack Size</td>
-                                            <td>Qty</td>
-                                            <td>Cost Price</td>
+                                            <td>Ordered</td>
+                                            <td>Received</td>
+                                            <td>Client Price</td>
+                                            <td>Supplier Price</td>
                                             <td>Total Cost</td>
                                             <td>Action</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td style="text-align: right;"></td>
-                                            <td style="text-align: right;"></td>
-                                            <td><span style="cursor: pointer;">[Remove]</span><span style="cursor: pointer;">[Edit]</span></td>
+                                        <tr *ngFor="let d of grnDetails">
+                                            <td>{{d.product.code}}</td>
+                                            <td>{{d.product.description}}</td>
+                                            <td>{{d.qtyOrdered}}</td>
+                                            <td>{{d.qtyReceived}}</td>
+                                            <td style="text-align: right;">{{d.clientPriceVatIncl | currency:'':''}}</td>
+                                            <td style="text-align: right;">{{d.supplierPriceVatIncl | currency:'':''}}</td>
+                                            <td style="text-align: right;">{{d.qtyReceived*d.supplierPriceVatIncl | currency:'':''}}</td>
+                                            <td style="text-align: center;"><span style="cursor: pointer;" (click)="open(content)">[Edit]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -115,50 +120,38 @@
 
 <ng-template #content let-modal>
     <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">Add/Edit Product</h4>
+      <h4 class="modal-title" id="modal-basic-title">Edit Detail</h4>
       <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="modal-body">
         <table class="table table-bordered">
-            <tbody>
+            <tbody>   
                 <tr>
-                    <td style="text-align: right;">Barcode</td>
-                    <td style="padding: 0;">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td><input type="text" class="form-control special"></td><td><button style="margin: 1mm;">Search</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
+                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Description</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Description</td>
-                    <td style="padding: 0;">
-                        <input type="text" class="form-control special">
-                        <datalist id="descriptions" style="padding: 0px;">
-                            <option></option>
-                        </datalist>
-                    </td>
+                    <td style="text-align: right;">Qty Ordered</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Qty</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Qty Received</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Cost Price</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
+                    <td style="text-align: right;">Client Price @</td><td style="padding: 0;"><input type="text" class="form-control special" style="text-align: right;" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Pack Size</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
+                    <td style="text-align: right;">Supplier Price @</td><td style="padding: 0;"><input type="text" class="form-control special" style="text-align: right;"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">Total Cost</td><td style="padding: 0;"><input type="text" class="form-control special" style="text-align: right;" readonly></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="modal-footer">
       <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
-      <button type="button" class="btn btn-outline-dark">Save</button>
+      <button type="button" (click)="modal.dismiss('Cross click')" class="btn btn-outline-dark">Save</button>
     </div>
 </ng-template>
