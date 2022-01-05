@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { environment } from './../environments/environment';
 import { AuthService } from './auth.service';
 import {trigger,state,style,animate,transition} from '@angular/animations'; 
-import { DataService } from './data.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { StoreModule} from '@ngrx/store';

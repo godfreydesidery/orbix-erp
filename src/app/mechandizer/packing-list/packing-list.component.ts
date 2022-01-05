@@ -11,6 +11,7 @@ const pdfMakeX = require('pdfmake/build/pdfmake.js');
 const pdfFontsX = require('pdfmake-unicode/dist/pdfmake-unicode.js');
 pdfMakeX.vfs = pdfFontsX.pdfMake.vfs;
 import * as pdfMake from 'pdfmake/build/pdfmake';
+import { DataService } from 'src/app/services/data.service';
 
 const API_URL = environment.apiUrl;
 
@@ -28,7 +29,8 @@ const API_URL = environment.apiUrl;
   ]
 })
 export class PackingListComponent implements OnInit {
-  closeResult    : string = ''
+  logo!              : any
+  closeResult        : string = ''
   disablePriceChange : any = false
 
   blank          : boolean = false
@@ -92,7 +94,8 @@ export class PackingListComponent implements OnInit {
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private data : DataService) {
     this.id               = ''
     this.no               = ''
     this.status           = ''
@@ -140,6 +143,7 @@ export class PackingListComponent implements OnInit {
     this.loadPackingLists()
     this.loadCustomerNames()
     this.loadProductDescriptions()
+    this.getLogo()
   }
 
   async save() {   
@@ -877,21 +881,67 @@ export class PackingListComponent implements OnInit {
     this.disablePriceChange = false
   }
 
+  
+  async getLogo() {
+    await this.http.get(API_URL+'/company_profile/get_logo')
+    .toPromise()
+    .then(
+      res => {
+        var retrieveResponse : any = res
+        var base64Data = retrieveResponse.logo
+        this.logo = 'data:image/png;base64,'+base64Data
+        console.log(this.logo)
+      }
+    )
+    .catch(error => {
+      console.log(error)
+    })    
+  }
+
   exportToPdf = () => {
+    var report = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9}, 
+        {text : 'Price', fontSize : 9}, 
+        {text : 'Returns', fontSize : 9}, 
+        {text : 'Issued', fontSize : 9}, 
+        {text : 'Total', fontSize : 9}, 
+        {text : 'Sold', fontSize : 9}, 
+        {text : 'Offered', fontSize : 9}, 
+        {text : 'Returned', fontSize : 9}, 
+        {text : 'Damaged', fontSize : 9}
+      ]
+    ]   
+    this.packingListDetails.forEach((element) => {
+      var detail = [
+        {text : element.product.code.toString(), fontSize : 9}, 
+        {text : element.product.description.toString(), fontSize : 9}, 
+        {text : element.sellingPriceVatIncl.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'}, 
+        {text : element.previousReturns.toString(), fontSize : 9}, 
+        {text : element.qtyIssued.toString(), fontSize : 9}, 
+        {text : element.totalPacked.toString(), fontSize : 9}, 
+        {text : element.qtySold.toString(), fontSize : 9}, 
+        {text : element.qtyOffered.toString(), fontSize : 9}, 
+        {text : element.qtyReturned.toString(), fontSize : 9}, 
+        {text : element.qtyDamaged.toString(), fontSize : 9}
+      ]
+      report.push(detail)
+    })
     const docDefinition = {
       header: '',
-      watermark: { text: 'Viva All Viva', color: 'blue', opacity: 0.1, bold: true, italics: false },
-        content: [
+      watermark : { text : 'Packing List and Returns', color: 'blue', opacity: 0.1, bold: true, italics: false },
+        content : [
           {
-            columns: 
+            columns : 
             [
               {
-                width : 100,
-                text : ''
+                image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}
               },
+              {width : 10, columns : [[]]},
               {
-                width: 300,
-                columns: [
+                width : 300,
+                columns : [
                   [
                     {text : 'Bumaco Holdings Ltd', fontSize : 12, bold : true},
                     {text : 'Kinondoni, Dar es Salaam', fontSize : 9},
@@ -908,25 +958,29 @@ export class PackingListComponent implements OnInit {
           {text : 'Packing List and Returns', fontSize : 12, bold : true},
           '  ',
           {
-            layout: 'noBorders',
+            layout : 'noBorders',
             table : {
-              widths : [75, 200],
+              widths : [75, 300],
               body : [
                 [
                   {text : 'Issue No', fontSize : 9}, 
-                  {text : 'PCL-000-000-001', fontSize : 9} 
+                  {text : this.no, fontSize : 9} 
                 ],
                 [
                   {text : 'Issue Date', fontSize : 9}, 
-                  {text : '2021-01-04', fontSize : 9} 
+                  {text : this.issueDate, fontSize : 9} 
                 ],
                 [
                   {text : 'Sales Officer', fontSize : 9}, 
                   {text : 'Maganga Jumanne', fontSize : 9} 
                 ],
                 [
+                  {text : 'Customer', fontSize : 9}, 
+                  {text : this.customerName, fontSize : 9} 
+                ],
+                [
                   {text : 'Status', fontSize : 9}, 
-                  {text : 'PRINTED', fontSize : 9} 
+                  {text : this.status, fontSize : 9} 
                 ]
               ]
             },
@@ -934,38 +988,10 @@ export class PackingListComponent implements OnInit {
           '  ',
           {
             table : {
-                headerRows: 1,
-                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto',],
-                body: [
-                    [
-                      {text : 'Code', fontSize : 9}, 
-                      {text : 'Description', fontSize : 9}, 
-                      {text : 'Price', fontSize : 9}, 
-                      {text : 'Returns', fontSize : 9}, 
-                      {text : 'Issued', fontSize : 9}, 
-                      {text : 'Total', fontSize : 9}, 
-                      {text : 'Sold', fontSize : 9}, 
-                      {text : 'Offered', fontSize : 9}, 
-                      {text : 'Returned', fontSize : 9}, 
-                      {text : 'Damaged', fontSize : 9}
-                    ],
-                    /*this.packingListDetails.forEach(element => {
-                      [
-                        
-                        {text : element.product.code, fontSize : 9}, 
-                        {text : element.product.description, fontSize : 9}, 
-                        {text : element.sellingPriceVatIncl, fontSize : 9,  alignment: 'right'}, 
-                        {text : element.previousReturns, fontSize : 9}, 
-                        {text : element.qtyIssued, fontSize : 9}, 
-                        {text : element.totalPacked, fontSize : 9}, 
-                        {text : element.qtySold, fontSize : 9}, 
-                        {text : element.qtyOffered, fontSize : 9}, 
-                        {text : element.qtyReturned, fontSize : 9}, 
-                        {text : element.qtyDamaged, fontSize : 9}
-                      ]
-                    })*/
-                ]
-            },
+                headerRows : 1,
+                widths : ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto',],
+                body : report
+            }
         },
         ' ',
         ' ',
@@ -977,55 +1003,54 @@ export class PackingListComponent implements OnInit {
             body : [
               [
                 {text : 'Issue No', fontSize : 9}, 
-                {text : 'PCL-000-000-001', fontSize : 9} 
+                {text : this.no, fontSize : 9} 
               ],
               [
                 {text : 'Total Packed', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalAmountPacked.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Sales', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Offer/Giveaway', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalOffered.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Returns', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalReturns.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Damages', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalDamages.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Discounts', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalDiscounts.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Expenditures', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalExpenditures.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Bank', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalBank.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Cash', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalCash.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ],
               [
                 {text : 'Total Deficit', fontSize : 9}, 
-                {text : '1,000.000.00', fontSize : 9, alignment : 'right'} 
+                {text : this.totalDeficit.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ]
             ]
           }         
         }       
       ]     
     };
-   // pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
-    pdfMake.createPdf(docDefinition).open();
+    pdfMake.createPdf(docDefinition).print();
 }
 
 }
