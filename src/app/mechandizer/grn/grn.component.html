@@ -30,6 +30,9 @@
                                         </tr>  
                                         <tr>
                                             <td style="text-align: right;">Invoice Amount</td><td style="padding: 0;"><input type="text" [(ngModel)]="invoiceAmount" class="form-control special" style="text-align: right;"></td>
+                                        </tr> 
+                                        <tr>
+                                            <td style="text-align: right;">Status</td><td>{{status}}</td>
                                         </tr>                              
                                         <tr>
                                             <td style="text-align: right;">Created</td><td>{{created}}</td>
@@ -57,7 +60,7 @@
                                         <tr class="table-dark">
                                             <td>GRN#</td>
                                             <td>GRN Date</td>
-                                            <td>Invoice#</td>
+                                            <td>Status</td>
                                             <td>Select</td>
                                         </tr>
                                     </thead>
@@ -65,7 +68,7 @@
                                         <tr *ngFor="let grn of grns">
                                             <td>{{grn.no}}</td>
                                             <td>{{grn.grnDate}}</td>
-                                            <td>{{grn.invoiceNo}}</td>
+                                            <td>{{grn.status}}</td>
                                             <td><span (click)="get(grn.id)" style="cursor: pointer;">[Select]</span></td>
                                         </tr>
                                     </tbody>
@@ -74,11 +77,11 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <button class="btn btn-success" style="margin: 2px; width: 45mm;">Approve & Receive</button>
+                                <button (click)="approve(id)" class="btn btn-success" style="margin: 2px; width: 45mm;">Approve Receipt</button>
                                 <button class="btn btn-success"style="margin: 2px; width: 25mm;">Print</button>
                                 <button class="btn btn-danger"style="margin: 2px; width: 25mm;">Cancel</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 30mm;">Archive All</button>
+                                <button (click)="archive(id)" class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
+                                <button (click)="archiveAll()" class="btn btn-success"style="margin: 2px; width: 30mm;">Archive All</button>
                             </div>
                         </div>
                         <div class="row">
@@ -105,7 +108,7 @@
                                             <td style="text-align: right;">{{d.clientPriceVatIncl | currency:'':''}}</td>
                                             <td style="text-align: right;">{{d.supplierPriceVatIncl | currency:'':''}}</td>
                                             <td style="text-align: right;">{{d.qtyReceived*d.supplierPriceVatIncl | currency:'':''}}</td>
-                                            <td style="text-align: center;"><span style="cursor: pointer;" (click)="open(content)">[Edit]</span></td>
+                                            <td style="text-align: center;"><span style="cursor: pointer;" (click)="open(content, d.id)">[Edit]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -127,31 +130,32 @@
         <table class="table table-bordered">
             <tbody>   
                 <tr>
-                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
+                    <input type="hidden" [(ngModel)]="detailId">
+                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" [(ngModel)]="product.code" class="form-control special" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Description</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
+                    <td style="text-align: right;">Description</td><td style="padding: 0;"><input type="text" [(ngModel)]="product.description" class="form-control special" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Qty Ordered</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
+                    <td style="text-align: right;">Qty Ordered</td><td style="padding: 0;"><input type="text" [(ngModel)]="qtyOrdered" class="form-control special" readonly></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Qty Received</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Qty Received</td><td style="padding: 0;"><input type="text" [(ngModel)]="qtyReceived" class="form-control special"></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Client Price @</td><td style="padding: 0;"><input type="text" class="form-control special" style="text-align: right;" readonly></td>
+                    <td style="text-align: right;">Client Price @</td><td style="text-align: right;">{{clientPriceVatIncl | currency:'':''}}</td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Supplier Price @</td><td style="padding: 0;"><input type="text" class="form-control special" style="text-align: right;"></td>
+                    <td style="text-align: right;">Supplier Price @</td><td style="padding: 0;"><input type="text" [(ngModel)]="supplierPriceVatIncl" class="form-control special" style="text-align: right;"></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Total Cost</td><td style="padding: 0;"><input type="text" class="form-control special" style="text-align: right;" readonly></td>
+                    <td style="text-align: right;">Total Cost</td><td style="text-align: right;">{{qtyReceived*supplierPriceVatIncl | currency:'':''}}</td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="modal-footer">
       <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
-      <button type="button" (click)="modal.dismiss('Cross click')" class="btn btn-outline-dark">Save</button>
+      <button type="button" (click)="saveDetail()" (click)="modal.dismiss('Cross click')" class="btn btn-outline-dark">Save</button>
     </div>
 </ng-template>

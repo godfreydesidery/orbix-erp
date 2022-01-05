@@ -24,6 +24,8 @@ const API_URL = environment.apiUrl;
 })
 export class LpoComponent implements OnInit {
   closeResult    : string = ''
+
+  blank : boolean = false
   
   id             : any;
   no             : string;
@@ -33,8 +35,8 @@ export class LpoComponent implements OnInit {
   supplierName!  : string
   validityDays   : number;
   status         : string;
-  orderDate     : Date;
-  validUntil    : Date;
+  orderDate      : Date;
+  validUntil     : Date;
   comments!      : string
   created        : string;
   approved       : string;
@@ -138,6 +140,7 @@ export class LpoComponent implements OnInit {
           this.printed      = data!.printed
           this.getDetails(data?.id)
           alert('LPO Created successifully')
+          this.blank = true
           this.loadLpos()
         }
       )
@@ -254,6 +257,7 @@ export class LpoComponent implements OnInit {
     .then(
       () => {
         this.loadLpos()
+        this.get(id)
       }
     )
     .catch(
@@ -279,6 +283,7 @@ export class LpoComponent implements OnInit {
     .then(
       () => {
         this.loadLpos()
+        this.get(id)
       }
     )
     .catch(
@@ -317,7 +322,7 @@ export class LpoComponent implements OnInit {
     throw new Error('Method not implemented.');
   }
   
-  saveDetail() {
+  async saveDetail() {
     if(this.supplierId == null || this.supplierId == ''){
       alert('Please enter supplier information')
       return
@@ -342,12 +347,16 @@ export class LpoComponent implements OnInit {
         costPriceVatIncl : this.costPriceVatIncl,
         costPriceVatExcl : this.costPriceVatExcl
       }
-      this.http.post(API_URL+'/lpo_details/save', detail, options)
+      await this.http.post(API_URL+'/lpo_details/save', detail, options)
       .toPromise()
       .then(
         () => {
           this.clearDetail()
           this.getDetails(this.id)
+          if(this.blank == true){
+            this.blank = false
+            this.loadLpos()
+          }
         }
       )
       .catch(
@@ -417,6 +426,62 @@ export class LpoComponent implements OnInit {
         data?.forEach(element => {
           this.lpos.push(element)
         })
+      }
+    )
+  }
+
+  async archive(id: any) {
+    if(id == null || id == ''){
+      window.alert('Please select LPO to archive')
+      return
+    }
+    if(!window.confirm('Confirm archiving of the selected LPO')){
+      return
+    }
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    var lpo = {
+      id : id   
+    }
+    await this.http.put<boolean>(API_URL+'/lpos/archive', lpo, options)
+    .toPromise()
+    .then(
+      data => {
+        this.clear()
+        this.loadLpos()
+        alert('LPO archived successifully')
+      }
+    )
+    .catch(
+      error => {
+        console.log(error)
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not archive')
+      }
+    )
+  }
+
+  async archiveAll() {
+    if(!window.confirm('Confirm archiving LPOs. All RECEIVED LPOs will be archived')){
+      return
+    }
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    
+    await this.http.put<boolean>(API_URL+'/lpos/archive_all', null, options)
+    .toPromise()
+    .then(
+      data => {
+        this.clear()
+        this.loadLpos()
+        alert('LPOs archived successifully')
+      }
+    )
+    .catch(
+      error => {
+        console.log(error)
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not archive')
       }
     )
   }

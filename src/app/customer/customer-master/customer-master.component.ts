@@ -14,6 +14,7 @@ const API_URL = environment.apiUrl;
 export class CustomerMasterComponent implements OnInit, ICustomer {
 
   id                  : any
+  no                  : string
   name                : string
   contactName         : string
   active              : boolean
@@ -36,10 +37,11 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
   bankName            : string
   bankAccountNo       : string
 
-  customers : ICustomer[] = []
+  customers           : ICustomer[] = []
 
   constructor(private auth : AuthService, private http :HttpClient) {
-    this.id                  = ''
+    this.id                  = null
+    this.no                  = ''
     this.name                = ''
     this.contactName         = ''
     this.active              = true
@@ -78,6 +80,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
 
     var data = {
       id                  : this.id,
+      no                  : this.no,
       name                : this.name,
       contactName         : this.contactName,
       active              : this.active,
@@ -147,6 +150,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
      * Args: customer object
      */
     this.id                  = customer['id']
+    this.no                  = customer['no']
     this.name                = customer['name']
     this.contactName         = customer['contactName']
     this.active              = customer['active']
@@ -182,7 +186,8 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
     /**
      * Clear all the fields
      */
-     this.id                  = ''
+     this.id                  = null
+     this.no                  = ''
      this.name                = ''
      this.contactName         = ''
      this.tin                 = ''
@@ -301,41 +306,41 @@ export interface ICustomer {
   /**
    * Basic Inf
    */
-  id         : any
-  name   : string
-  contactName   : string 
-  active : boolean 
-  tin : string
-  vrn : string
+  id          : any
+  name        : string
+  contactName : string 
+  active      : boolean 
+  tin         : string
+  vrn         : string
   /**
    * Credit Inf
    */
-  creditLimit : number
+  creditLimit  : number
   invoiceLimit : number
-  creditDays : number
+  creditDays   : number
   /**
    * Contact Inf
    */
   physicalAddress : string
-  postCode : string
-  postAddress : string
-  telephone : string
-  mobile : string
-  email : string
-  fax : string
+  postCode        : string
+  postAddress     : string
+  telephone       : string
+  mobile          : string
+  email           : string
+  fax             : string
   /**
    * Bank Inf
    */
-  bankAccountName : string
+  bankAccountName     : string
   bankPhysicalAddress : string
-  bankPostAddress : string
-  bankPostCode : string
-  bankName : string
-  bankAccountNo : string
+  bankPostAddress     : string
+  bankPostCode        : string
+  bankName            : string
+  bankAccountNo       : string
 
-  save() : void
-  getAll() : void
-  get(id : any) : any
+  save()         : void
+  getAll()       : void
+  get(id : any)  : any
   getByName(name : string) : any
-  delete() : any
+  delete()       : any
 }

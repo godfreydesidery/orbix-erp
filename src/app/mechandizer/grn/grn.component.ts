@@ -41,47 +41,47 @@ export class GrnComponent implements OnInit {
   grns           : IGrn[]
 
   //detail
-  detailId         : any
-  barcode          : string
-  productId        : any
-  code             : string
-  description      : string
-  qtyOrdered       : number
-  qtyReceived      : number
-  costPriceVatIncl : number
-  costPriceVatExcl : number
-  packSize         : number
+  detailId             : any
+  qtyOrdered           : number
+  qtyReceived          : number
+  clientPriceVatIncl   : number
+  clientPriceVatExcl   : number
+  supplierPriceVatIncl : number
+  supplierPriceVatExcl : number
+  packSize             : number
+  product!             : IProduct
 
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService: NgbModal) {
-      this.id            = null
-      this.no            = ''
-      this.grnDate       = new Date()
-      this.orderNo       = ''
-      this.invoiceNo     = ''
-      this.invoiceAmount = 0
-      this.status        = ''
-      this.comments      = ''
-      this.created       = ''
-      this.approved      = ''
-      this.grnDetails    = []
-      this.grns          = []
+              private modalService : NgbModal) {
+    this.id            = null
+    this.no            = ''
+    this.grnDate       = new Date()
+    this.orderNo       = ''
+    this.invoiceNo     = ''
+    this.invoiceAmount = 0
+    this.status        = ''
+    this.comments      = ''
+    this.created       = ''
+    this.approved      = ''
+    this.grnDetails    = []
+    this.grns          = []
 
+    /**
+     * Detail
+     */
+    this.detailId             = ''
+    this.qtyOrdered           = 0
+    this.qtyReceived          = 0
+    this.clientPriceVatIncl   = 0
+    this.clientPriceVatExcl   = 0
+    this.supplierPriceVatIncl = 0
+    this.supplierPriceVatExcl = 0
+    this.packSize             = 1
+   
 
-      this.detailId         = ''
-      this.productId        = ''
-      this.barcode          = ''
-      this.code             = ''    
-      this.description      = ''
-      this.qtyOrdered       = 0
-      this.qtyReceived      = 0
-      this.costPriceVatIncl = 0
-      this.costPriceVatExcl = 0
-      this.packSize         = 1
-
-    }
+  }
 
   ngOnInit(): void {
     this.loadGrns()  
@@ -96,30 +96,24 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+
     var grn = {
-      id           : this.id,
-      grnDate    : this.grnDate,
-      invoiceNo   : this.invoiceNo,
-      lpo          : { no : this.orderNo},
-      comments     : this.comments
+      id            : this.id,
+      grnDate       : this.grnDate,
+      invoiceNo     : this.invoiceNo,
+      invoiceAmount : this.invoiceAmount,
+      orderNo       : this.orderNo,
+      lpo           : { no : this.orderNo},
+      comments      : this.comments
     }
     if(this.id == null || this.id == ''){   
       await this.http.post<IGrn>(API_URL+'/grns/create', grn, options)
       .toPromise()
       .then(
         data => {
-          this.id           = data?.id
-          this.no           = data!.no
-          this.grnDate      = data!.grnDate
-          this.orderNo      = data!.orderNo
-          this.invoiceNo    = data!.invoiceNo
-          this.invoiceAmount= data!.invoiceAmount
-          this.status       = data!.status
-          this.comments     = data!.comments
-          this.created      = data!.created
-          this.approved     = data!.approved
-          alert('GRN Created successifully')
+          this.show(data!)
           this.loadGrns()
+          alert('GRN Created successifully')
         }
       )
       .catch(
@@ -133,18 +127,10 @@ export class GrnComponent implements OnInit {
       .toPromise()
       .then(
         data => {
-          this.id           = data?.id
-          this.no           = data!.no
-          this.grnDate      = data!.grnDate
-          this.orderNo      = data!.orderNo
-          this.invoiceNo    = data!.invoiceNo
-          this.invoiceAmount= data!.invoiceAmount
-          this.status       = data!.status
-          this.comments     = data!.comments
-          this.created      = data!.created
-          this.approved     = data!.approved
-          alert('GRN Updated successifully')
+          console.log(data)
+          this.show(data!)
           this.loadGrns()
+          alert('GRN Updated successifully')
         }
       )
       .catch(
@@ -154,25 +140,16 @@ export class GrnComponent implements OnInit {
       )
     }
   }
-  get(id: any) {
+
+  async get(id: any) {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IGrn>(API_URL+'/grns/get?id='+id, options)
+    await this.http.get<IGrn>(API_URL+'/grns/get?id='+id, options)
     .toPromise()
     .then(
       data => {
-        this.id           = data?.id
-          this.no           = data!.no
-          this.grnDate      = data!.grnDate
-          this.orderNo      = data!.orderNo
-          this.invoiceNo    = data!.invoiceNo
-          this.invoiceAmount= data!.invoiceAmount
-          this.status       = data!.status
-          this.comments     = data!.comments
-          this.created      = data!.created
-          this.approved     = data!.approved
-          this.grnDetails   = data!.grnDetails
+        this.show(data!)
       }
     )
     .catch(
@@ -181,28 +158,19 @@ export class GrnComponent implements OnInit {
       }
     )
   }
-  getByNo(no: string) {
+
+  async getByNo(no: string) {
     if(no == ''){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IGrn>(API_URL+'/grns/get_by_no?no='+no, options)
+    await this.http.get<IGrn>(API_URL+'/grns/get_by_no?no='+no, options)
     .toPromise()
     .then(
       data => {
-        this.id           = data?.id
-          this.no           = data!.no
-          this.grnDate      = data!.grnDate
-          this.orderNo      = data!.orderNo
-          this.invoiceNo    = data!.invoiceNo
-          this.invoiceAmount= data!.invoiceAmount
-          this.status       = data!.status
-          this.comments     = data!.comments
-          this.created      = data!.created
-          this.approved     = data!.approved
-          this.grnDetails   = data!.grnDetails
+        this.show(data!)
       }
     )
     .catch(
@@ -211,7 +179,22 @@ export class GrnComponent implements OnInit {
       }
     )
   }
-  approve(id: any) {
+
+  show(data : IGrn){
+    this.id           = data?.id
+    this.no           = data!.no
+    this.grnDate      = data!.grnDate
+    this.orderNo      = data!.orderNo
+    this.invoiceNo    = data!.invoiceNo
+    this.invoiceAmount= data!.invoiceAmount
+    this.status       = data!.status
+    this.comments     = data!.comments
+    this.created      = data!.created
+    this.approved     = data!.approved
+    this.grnDetails   = data!.grnDetails
+  }
+
+  async approve(id: any) {
     if(!window.confirm('Confirm approval of the selected GRN')){
       return
     }
@@ -219,13 +202,15 @@ export class GrnComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     var grn = {
-      id : this.id   
+      id : id   
     }
-    this.http.put(API_URL+'/grns/approve', grn, options)
+    await this.http.put(API_URL+'/grns/approve', grn, options)
     .toPromise()
     .then(
       () => {
         this.loadGrns()
+        this.get(id)
+        alert('Received succesifully')
       }
     )
     .catch(
@@ -236,7 +221,7 @@ export class GrnComponent implements OnInit {
     )
   }
 
-  cancel(id: any) {
+  async cancel(id: any) {
     if(!window.confirm('Confirm canceling of the selected GRN')){
       return
     }
@@ -244,9 +229,9 @@ export class GrnComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     var grn = {
-      id : this.id   
+      id : id   
     }
-    this.http.put(API_URL+'/grns/cancel', grn, options)
+    await this.http.put(API_URL+'/grns/cancel', grn, options)
     .toPromise()
     .then(
       () => {
@@ -261,11 +246,68 @@ export class GrnComponent implements OnInit {
       }
     )
   }
+
+  async archive(id: any) {
+    if(id == null || id == ''){
+      window.alert('Please select GRN to archive')
+      return
+    }
+    if(!window.confirm('Confirm archiving of the selected GRN')){
+      return
+    }
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    var grn = {
+      id : id   
+    }
+    await this.http.put<boolean>(API_URL+'/grns/archive', grn, options)
+    .toPromise()
+    .then(
+      data => {
+        this.clear()
+        this.loadGrns()
+        alert('GRN archived successifully')
+      }
+    )
+    .catch(
+      error => {
+        console.log(error)
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not archive')
+      }
+    )
+  }
+
+  async archiveAll() {
+    if(!window.confirm('Confirm archiving GRNs. All RECEIVED GRNs will be archived')){
+      return
+    }
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    
+    await this.http.put<boolean>(API_URL+'/grns/archive_all', null, options)
+    .toPromise()
+    .then(
+      data => {
+        this.clear()
+        this.loadGrns()
+        alert('GRNs archived successifully')
+      }
+    )
+    .catch(
+      error => {
+        console.log(error)
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not archive')
+      }
+    )
+  }
+
   delete(id: any) {
     throw new Error('Method not implemented.');
   }
   
-  getDetailss(id: any) {
+  async getDetailss(id: any) {
     if(id == ''){
       return
     }
@@ -273,7 +315,7 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IGrnDetail[]>(API_URL+'/grn_details/get_by_grn?id='+id, options)
+    await this.http.get<IGrnDetail[]>(API_URL+'/grn_details/get_by_grn?id='+id, options)
     .toPromise()
     .then(
       data => {
@@ -289,6 +331,74 @@ export class GrnComponent implements OnInit {
       }
     )
   }
+
+  async getDetail(id : any){
+    this.clearDetail()
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+
+    await this.http.get<IGrnDetail>(API_URL+'/grn_details/get?id='+id, options)
+    .toPromise()
+    .then(
+      data => {
+        this.detailId             = data?.id
+        this.qtyOrdered           = data!.qtyOrdered
+        this.qtyReceived          = data!.qtyReceived
+        this.clientPriceVatIncl   = data!.clientPriceVatIncl
+        this.clientPriceVatExcl   = data!.clientPriceVatExcl
+        this.supplierPriceVatIncl = data!.supplierPriceVatIncl
+        this.supplierPriceVatExcl = data!.supplierPriceVatExcl
+        this.product              = data!.product
+      }
+    )
+  }
+
+  saveDetail(){
+    /**
+     * To save GRN detail,
+     * First validate detail, if valid, save else, reject
+     */
+    if(this.detailId == null || this.detailId == ''){
+      alert('Could not process. Detail not selected')
+      return
+    }   
+    if(isNaN(this.supplierPriceVatIncl) || this.supplierPriceVatIncl < 0){
+      alert('Invalid Cost price, cost price must be a positive number')
+      return
+    }
+    if(isNaN(this.qtyReceived) || this.qtyReceived < 0){
+      alert('Invalid Quantity, quantity must be a positive number')
+      return
+    }
+
+     let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+
+    var detail = {
+      id                   : this.detailId,
+      qtyOrdered           : this.qtyOrdered,
+      qtyReceived          : this.qtyReceived,
+      supplierPriceVatIncl : this.supplierPriceVatIncl,
+      grn                  : {id : this.id}
+    }
+
+    this.http.post<IGrnDetail>(API_URL+'/grn_details/save', detail ,options)
+    .toPromise()
+    .then(
+      () => {
+        this.get(this.id)        
+      }
+    )
+    .catch(
+      error => {
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not save detail')
+      }
+    )
+
+  }
+
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
   }
@@ -322,19 +432,18 @@ export class GrnComponent implements OnInit {
     this.created      = ''
     this.approved     = ''
     this.grnDetails   = []
-    this.grns         = []
   }
 
   clearDetail(){
-    this.detailId         = null
-    this.barcode          = ''
-    this.code             = ''
-    this.description      = ''
-    this.qtyOrdered       = 0
-    this.qtyReceived      = 0
-    this.costPriceVatIncl = 0
-    this.costPriceVatExcl = 0
-    this.packSize         = 1
+    this.detailId             = null
+    this.qtyOrdered           = 0
+    this.qtyReceived          = 0
+    this.clientPriceVatIncl   = 0
+    this.clientPriceVatExcl   = 0
+    this.supplierPriceVatIncl = 0
+    this.supplierPriceVatExcl = 0
+    this.packSize             = 1
+    this.product!
   }
 
   createShortCut(shortCutName : string, link : string){
@@ -343,9 +452,9 @@ export class GrnComponent implements OnInit {
     }
   }
 
-  open(content: any) {  
-    
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+  open(content: any, id : any) {  
+    this.getDetail(id)
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title',  size: 'lg' }).result.then((result) => {
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
@@ -361,7 +470,6 @@ export class GrnComponent implements OnInit {
       return `with: ${reason}`;
     }
   }
-
 }
 
 interface IGrn{
@@ -404,4 +512,3 @@ interface IProduct{
   costPriceVatIncl : number
   costPriceVatExcl : number
 }
-
