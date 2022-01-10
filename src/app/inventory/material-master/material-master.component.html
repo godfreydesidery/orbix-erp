@@ -148,8 +148,16 @@
                                                 <tr>
                                                     <td>Code</td>
                                                     <td>Description</td>
+                                                    <td>Select</td>
                                                 </tr>
                                             </thead>
+                                            <tbody>
+                                                <tr *ngFor="let m of materials">
+                                                    <td>{{m.code}}</td>
+                                                    <td>{{m.description}}</td>
+                                                    <td><span (click)="get(m.id)" style="cursor: pointer;">[Select]</span></td>
+                                                </tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>

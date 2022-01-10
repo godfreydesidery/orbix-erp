@@ -9,6 +9,7 @@
                 <a (click)="showAdminMenu()"><div class="SectionOnBox">Admin</div></a>
                 <a (click)="showInventoryMenu()"><div class="SectionOnBox">Inventory</div></a>
                 <a (click)="showMechandizerMenu()" ><div class="SectionOnBox">Mechandizing</div></a>  
+                <a (click)="showProductionMenu()" ><div class="SectionOnBox">Production</div></a> 
                 <a (click)="showSupplierRelationsMenu()" ><div class="SectionOnBox">Supplier Relations</div></a>
                 <a (click)="showCustomerRelationsMenu()" ><div class="SectionOnBox">Customer Relations</div></a>  
                 <a (click)="showHumanResourceMenu()" ><div class="SectionOnBox">Human Resource</div></a>   
@@ -46,6 +47,14 @@
             </div>
         </div>
         <app-mechandizer-menu></app-mechandizer-menu>
+    </div> 
+    <div *ngIf="productionMenuShown">
+        <div class="EnclosureBox">
+            <div class="SectionEnclosureBox">
+                <a  routerLink="home" (click)="showMainMenu()"><div class="SectionOnBoxBack">Back to Main Menu</div></a> 
+            </div>
+        </div>
+        <app-production-menu></app-production-menu>
     </div> 
     <div *ngIf="supplierRelationsMenuShown">
         <div class="EnclosureBox">

@@ -223,18 +223,6 @@ export class AccessContolComponent implements OnInit {
     }
   }
 
-  privilegeChecked1(object_ : string, operation_ : string){
-    var present = false
-    for (const [key, value] of Object.entries(this.privileges)){
-      value.forEach(element => {
-        if(key === object_ && element === operation_){
-          present = true
-        }
-      })
-    } 
-    return present 
-  }
-
   privilegeChecked(object_ : string, operation_ : string){
     var present = false
     for (const [key] of Object.entries(this.privileges)){

@@ -139,11 +139,11 @@ export class PackingListComponent implements OnInit {
     this.descriptions        = []
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.loadPackingLists()
     this.loadCustomerNames()
     this.loadProductDescriptions()
-    this.getLogo()
+    this.logo = await this.data.getLogo()
   }
 
   async save() {   
@@ -879,23 +879,6 @@ export class PackingListComponent implements OnInit {
 
   enablePriceChange(){
     this.disablePriceChange = false
-  }
-
-  
-  async getLogo() {
-    await this.http.get(API_URL+'/company_profile/get_logo')
-    .toPromise()
-    .then(
-      res => {
-        var retrieveResponse : any = res
-        var base64Data = retrieveResponse.logo
-        this.logo = 'data:image/png;base64,'+base64Data
-        console.log(this.logo)
-      }
-    )
-    .catch(error => {
-      console.log(error)
-    })    
   }
 
   exportToPdf = () => {

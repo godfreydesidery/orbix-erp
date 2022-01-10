@@ -15,6 +15,7 @@ export class SideBarComponent implements OnInit {
   adminMenuShown : boolean = false
   inventoryMenuShown : boolean = false
   mechandizerMenuShown : boolean = false
+  productionMenuShown : boolean = false
   supplierRelationsMenuShown : boolean = false
   customerRelationsMenuShown : boolean = false
   humanResourceMenuShown : boolean = false
@@ -34,6 +35,7 @@ export class SideBarComponent implements OnInit {
     this.adminMenuShown = false
     this.inventoryMenuShown = false
     this.mechandizerMenuShown = false
+    this.productionMenuShown = false
     this.supplierRelationsMenuShown = false
     this.customerRelationsMenuShown = false
     this.humanResourceMenuShown = false
@@ -57,6 +59,11 @@ export class SideBarComponent implements OnInit {
   showMechandizerMenu(){
     this.hideAll()
     this.mechandizerMenuShown = true
+  } 
+
+  showProductionMenu(){
+    this.hideAll()
+    this.productionMenuShown = true
   } 
 
   showSupplierRelationsMenu(){

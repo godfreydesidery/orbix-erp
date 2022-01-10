@@ -71,6 +71,16 @@ import { GroupLevel4Component } from './inventory/group-level4/group-level4.comp
 import { DayMenuComponent } from './menu/day-menu/day-menu.component';
 import { EndDayComponent } from './day/end-day/end-day.component';
 import { CustomDateComponent } from './day/custom-date/custom-date.component';
+import { ProductionMenuComponent } from './menu/production-menu/production-menu.component';
+import { CustomProductionComponent } from './production/custom-production/custom-production.component';
+import { BatchProductionComponent } from './production/batch-production/batch-production.component';
+import { ProductMaterialRatioComponent } from './inventory/product-material-ratio/product-material-ratio.component';
+import { ProductToMaterialComponent } from './inventory/product-to-material/product-to-material.component';
+import { MaterialToProductComponent } from './inventory/material-to-product/material-to-product.component';
+import { ProductToProductComponent } from './inventory/product-to-product/product-to-product.component';
+import { MaterialToMaterialComponent } from './inventory/material-to-material/material-to-material.component';
+//import { BatchProductionComponent } from './mechandizer/batch-production/batch-production.component';
+//import { CustomProductionComponent } from './mechandizer/custom-production/custom-production.component';
 
 
 @NgModule({
@@ -134,6 +144,16 @@ import { CustomDateComponent } from './day/custom-date/custom-date.component';
     DayMenuComponent,
     EndDayComponent,
     CustomDateComponent,
+    ProductionMenuComponent,
+    CustomProductionComponent,
+    BatchProductionComponent,
+    ProductMaterialRatioComponent,
+    ProductToMaterialComponent,
+    MaterialToProductComponent,
+    ProductToProductComponent,
+    MaterialToMaterialComponent,
+    //BatchProductionComponent,
+    //CustomProductionComponent,
   ],
   exports: [ UserProfileComponent ],
   imports: [
@@ -191,7 +211,14 @@ import { CustomDateComponent } from './day/custom-date/custom-date.component';
       {path : 'group-level3', component: GroupLevel3Component},
       {path : 'group-level4', component: GroupLevel4Component},
       {path : 'end-day', component: EndDayComponent},
-      {path : 'custom-date', component:CustomDateComponent}
+      {path : 'custom-date', component:CustomDateComponent},
+      {path : 'batch-production', component:BatchProductionComponent},
+      {path : 'custom-production', component:CustomProductionComponent},
+      {path : 'product-material-ratio', component:ProductMaterialRatioComponent},
+      {path : 'product-to-material', component:ProductToMaterialComponent},
+      {path : 'material-to-product', component:MaterialToProductComponent},
+      {path : 'product-to-product', component:ProductToProductComponent},
+      {path : 'material-to-material', component:MaterialToMaterialComponent}
     ]),
     BrowserAnimationsModule,
   ],

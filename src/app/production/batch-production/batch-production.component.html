@@ -1,0 +1,226 @@
+<div class="row" [@fadeInOut]>
+    <div class="col">
+        <table style="width: 100%;">
+            <tr style="width: 100%; background-color: #eeeeee;">
+                <td style="width: 100mm; vertical-align: top;"><p class="h6">Production / Batch Production</p></td>
+                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Batch Production', 'batch-production')">Create Shortcut</span>]</td>
+            </tr>
+        </table>
+        <table style="width: 100%;">
+            <tr style="width: 100%;">
+                <td style="vertical-align: top; height: 75vh;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-5">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <input type="hidden" [(ngModel)]="id">
+                                            <td style="text-align: right;">Production No</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Production Name</td><td style="padding: 0;"><input type="text" [(ngModel)]="productionName" class="form-control special"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Batch Size</td><td style="padding: 0;"><input type="text" [(ngModel)]="batchSize" class="form-control special"></td>
+                                        </tr>  
+                                        <tr>
+                                            <td style="text-align: right;">Units</td><td style="padding: 0;"><input type="text"  [(ngModel)]="uom" class="form-control special"></td>
+                                        </tr>                               
+                                        <tr>
+                                            <td style="text-align: right;">Status</td><td>{{status}}</td>
+                                        </tr>                              
+                                        <tr>
+                                            <td style="text-align: right;">Created</td><td>{{created}}</td>
+                                        </tr> 
+                                        <tr>
+                                            <td style="text-align: right;">Opened</td><td>{{opened}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Closed</td><td>{{closed}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Comments</td>
+                                            <td style="padding: 0;"><textarea [(ngModel)]="comments" class="form-control special"></textarea></td>          
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-1">
+                                <button class="btn btn-success" style="margin: 2px; width: 25mm;">Search</button><br><br>
+                                <button (click)="clear()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Edit</button><br>
+                                <button (click)="save()" class="btn btn-success"style="margin: 2px; width: 25mm;">Save</button><br>
+                            </div>
+                            <div class="col-1"></div>
+                            <div class="col-5" style="height: 7cm; overflow: auto;">
+                                <table class="table table-bordered">
+                                    <thead style="position: sticky; top: 0;">
+                                        <tr class="table-dark">
+                                            <td>Production No</td>
+                                            <td>Status</td>
+                                            <td>Select</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let p of productions">
+                                            <td>{{p.no}}</td>
+                                            <td>{{p.status}}</td>
+                                            <td><span (click)="get(p.id)" style="cursor: pointer;">[Select]</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button (click)="closeBatch(id)" class="btn btn-success"style="margin: 2px; width: 30mm;">Close Batch</button>
+                                <button class="btn btn-danger"style="margin: 2px; width: 25mm;">Cancel</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Print</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 30mm;">Archive All</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-2" style="background-color: antiquewhite;">
+                                <span>Material List </span><button (click)="addSelected()">Add Selected</button><br>
+                                <input type="text" [(ngModel)]="materialFilter" (input)="refreshVisible(materialFilter)" class="form-control" placeholder="Type to filter">
+                                <span *ngFor="let m of visibleMaterials"><span><input type="checkbox" (change)="selectMaterial($event, m.id, m.code, m.description)" style="height: 5mm; width: 5mm;"><span>{{m.description}}</span></span><br></span>
+                            </div>
+                            <div class="col-5" style="background-color: rgb(247, 244, 238);">
+                                <span style="font-size: large;">Selected materials to use</span><br>
+                                <br>
+                                <span style="font-size: large;"><u><i>Unverified Materials</i></u></span><span style="cursor: pointer;"><font style="color: blue;">  [Verify all]</font></span><span style="cursor: pointer;"><font style="color: rgb(243, 11, 11);">  [Remove all]</font></span><br>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr *ngFor="let m of unverifiedMaterials">
+                                            <td>{{m.description}}</td><td>{{m.qty}} Kg</td><td><span (click)="openMaterialModal(materialModal, m.id, m.code, m.description, m.qty)" style="cursor: pointer;"><font style="color: blue;">  [Edit]</font></span><span (click)="verifyMaterial(m.id, m.qty)" style="cursor: pointer;"><font style="color: rgb(56, 20, 66);">  [Verify]</font></span><span (click)="removeMaterial(m.id)" style="cursor: pointer;"><font style="color: rgb(236, 11, 11);">  [Remove]</font></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br>
+                                <span style="font-size: large;"><u><i>Verified Materials [Can not be removed]</i></u></span><br>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr *ngFor="let m of verifiedMaterials">
+                                            <td>{{m.description}}</td><td>{{m.qty}} Kg</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-5">
+                                <div class="row">
+                                    <div class="row-12">
+                                        <span>Unverified Products </span><button (click)="openProductModal(productModal, '', '', '', 0)" class="btn btn-success">+Add</button>
+                                    </div>
+                                </div>  
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td>Code</td><td>Description</td><td>Qty</td><td>Action</td>
+                                        </tr>
+                                        <tr *ngFor="let p of unverifiedProducts">
+                                            <td>{{p.code}}</td><td>{{p.description}}</td><td>{{p.qty}}</td><td><span (click)="openProductModal(productModal, p.id, p.code, p.description, p.qty)" style="cursor: pointer;">[Edit]</span><span (click)="verifyProduct(p.id, p.qty)" style="cursor: pointer;"><font style="color: rgb(56, 20, 66);">  [Verify]</font></span><span (click)="removeProduct(p.id)" style="cursor: pointer;"><font style="color: rgb(236, 11, 11);">  [Remove]</font></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="row">
+                                    <div class="row-12">
+                                        <span>Verified Products [Can not be removed] </span>
+                                    </div>
+                                </div>  
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td>Code</td><td>Description</td><td>Qty</td>
+                                        </tr>
+                                        <tr *ngFor="let p of verifiedProducts">
+                                            <td>{{p.code}}</td><td>{{p.description}}</td><td>{{p.qty}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>                   
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<ng-template #materialModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add/Deduct Material</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" [(ngModel)]="materialCode" class="form-control special" readonly></td>
+                </tr>  
+                <tr>
+                    <td style="text-align: right;">Description</td><td style="padding: 0;"><input type="text" [(ngModel)]="materialDescription" class="form-control special" readonly></td>
+                </tr>  
+                <!--<tr>
+                    <td style="text-align: right;">Add</td><td style="padding: 0;"><input type="text" [(ngModel)]="materialAdd" (input)="refreshMaterialQty()" class="form-control special"></td>
+                </tr> 
+                <tr>
+                    <td style="text-align: right;">Deduct</td><td style="padding: 0;"><input type="text" [(ngModel)]="materialDeduct" (input)="refreshMaterialQty()" class="form-control special"></td>
+                </tr>-->  
+                <tr>
+                    <td style="text-align: right;">Total Qty</td><td style="padding: 0;"><input type="text" [(ngModel)]="materialQty" class="form-control special"></td>
+                </tr>            
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+      <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
+      <button type="button" (click)="addMaterial(materialId, materialQty)" (click)="modal.close('Save click')" class="btn btn-outline-dark">Save</button>
+    </div>
+</ng-template>
+
+<ng-template #productModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add/Edit Product</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td style="text-align: right;">Barcode</td>
+                    <td style="padding: 0;">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" [(ngModel)]="barcode" class="form-control special"></td><td><button (click)="searchProduct(barcode, productCode, productDescription)" style="margin: 1mm;">Search</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" [(ngModel)]="productCode" class="form-control special"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">Description</td>
+                    <td style="padding: 0;">
+                        <input type="text" [(ngModel)]="productDescription" list="descriptions" class="form-control special">
+                        <datalist id="descriptions" style="padding: 0px;">
+                            <option *ngFor="let d of descriptions" [ngValue]="d">{{d}}</option>
+                        </datalist>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">Qty</td><td style="padding: 0;"><input type="text" [(ngModel)]="productQty" class="form-control special"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+      <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
+      <button type="button" (click)="addProduct(productId, productQty)" (click)="modal.close('Save click')" class="btn btn-outline-dark">Save</button>
+    </div>
+</ng-template>

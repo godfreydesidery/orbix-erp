@@ -49,6 +49,13 @@ import { GroupLevel3Component } from './inventory/group-level3/group-level3.comp
 import { GroupLevel4Component } from './inventory/group-level4/group-level4.component';
 import { EndDayComponent } from './day/end-day/end-day.component';
 import { CustomDateComponent } from './day/custom-date/custom-date.component';
+import { BatchProductionComponent } from './production/batch-production/batch-production.component';
+import { CustomProductionComponent } from './production/custom-production/custom-production.component';
+import { MaterialToMaterialComponent } from './inventory/material-to-material/material-to-material.component';
+import { MaterialToProductComponent } from './inventory/material-to-product/material-to-product.component';
+import { ProductMaterialRatioComponent } from './inventory/product-material-ratio/product-material-ratio.component';
+import { ProductToMaterialComponent } from './inventory/product-to-material/product-to-material.component';
+import { ProductToProductComponent } from './inventory/product-to-product/product-to-product.component';
 
 const routes: Routes = [
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
@@ -96,6 +103,13 @@ const routes: Routes = [
   {path: 'group-level4', component: GroupLevel4Component, canActivate: [AuthGuard]},
   {path: 'end-day', component: EndDayComponent, canActivate: [AuthGuard]},
   {path: 'custom-date', component: CustomDateComponent, canActivate: [AuthGuard]},
+  {path: 'batch-production', component: BatchProductionComponent, canActivate: [AuthGuard]},
+  {path: 'custom-production', component: CustomProductionComponent, canActivate: [AuthGuard]},
+  {path : 'product-material-ratio', component:ProductMaterialRatioComponent, canActivate: [AuthGuard]},
+  {path : 'product-to-material', component:ProductToMaterialComponent, canActivate: [AuthGuard]},
+  {path : 'material-to-product', component:MaterialToProductComponent, canActivate: [AuthGuard]},
+  {path : 'product-to-product', component:ProductToProductComponent, canActivate: [AuthGuard]},
+  {path : 'material-to-material', component:MaterialToMaterialComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

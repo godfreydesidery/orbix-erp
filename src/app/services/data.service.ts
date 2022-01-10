@@ -16,24 +16,21 @@ export class DataService {
 
 
 
-  public async getLogo(){
-    //Make a call to Sprinf Boot to get the Image Bytes.
-  await this.http.get<ICompany>(API_URL+'/company_profile/get_logo')
-  .toPromise()
+  async getLogo() : Promise<string> {
+    var logo : any = ''
+    await this.http.get<ICompany>(API_URL+'/company_profile/get_logo')
+    .toPromise()
     .then(
       res => {
-        var retrieveResponse : any
-        var base64Data : any
-        var retrievedImage : any
-        retrieveResponse = res
-        base64Data = retrieveResponse.logo
-        retrievedImage = 'data:image/png;base64,'+base64Data
-        return retrievedImage
+        var retrieveResponse : any = res
+        var base64Data = retrieveResponse.logo
+        logo = 'data:image/png;base64,'+base64Data
       }
     )
-    .catch(() => {
-      return ''
+    .catch(error => {
+      console.log(error)
     }) 
+    return logo
   }
 }
 

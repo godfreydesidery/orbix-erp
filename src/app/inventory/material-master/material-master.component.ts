@@ -17,7 +17,7 @@ const API_URL = environment.apiUrl;
   templateUrl: './material-master.component.html',
   styleUrls: ['./material-master.component.scss']
 })
-export class MaterialMasterComponent implements OnInit, IMaterial {
+export class MaterialMasterComponent implements OnInit {
   id                  : any
   barcode             : string
   code                : string
@@ -39,6 +39,8 @@ export class MaterialMasterComponent implements OnInit, IMaterial {
   
   categoryNames    : string[]
   subCategoryNames : string[]
+
+  materials  : IMaterial[]
 
   constructor(private shortcut : ShortCutHandlerService,
               private auth : AuthService,
@@ -64,10 +66,37 @@ export class MaterialMasterComponent implements OnInit, IMaterial {
 
     this.categoryNames    = []
     this.subCategoryNames = []
+
+    this.materials = []
   }
  
   ngOnInit(): void {
     this.loadCategoryNames()
+    this.loadMaterials()
+  }
+
+  async loadMaterials(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    this.materials = []
+    await this.http.get<IMaterial[]>('/api/materials', options)
+    .toPromise()
+    .then(data => {
+      data?.forEach(element => {
+        var material = {
+          id                  : element!.id,
+          code                : element!.code,
+          description         : element!.description
+        }
+        this.materials.push(material)
+      })     
+    })
+    .catch(error => {
+      console.log(error)
+      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load materials')
+    })
+
   }
 
   async save() {
@@ -100,6 +129,7 @@ export class MaterialMasterComponent implements OnInit, IMaterial {
       .toPromise()
       .then(
         data => {
+          this.loadMaterials()
           alert('Material created successifully')
           this.clear()
         }
@@ -120,12 +150,12 @@ export class MaterialMasterComponent implements OnInit, IMaterial {
       .then(
         data => {
           
-          alert('Sub Class updated successifully')
+          alert('Material updated successifully')
         }
       )
       .catch(
         error => {
-          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update sub class')
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update material')
         }
       )
     }
@@ -317,26 +347,6 @@ export class MaterialMasterComponent implements OnInit, IMaterial {
 
 export interface IMaterial{
   id                  : any
-  barcode             : string
   code                : string
   description         : string
-  active              : boolean
-  category            : ICategory
-  subCategory         : ISubCategory
-  vat                 : number
-  costPriceVatIncl    : number
-  costPriceVatExcl    : number
-  stock               : number
-  minimumInventory    : number
-  maximumInventory    : number
-  defaultReorderLevel : number
-  defaultReorderQty   : number
-  
-  save() : void
-  get(id : any) : void
-  getByCode(code : string) : void
-  getByDescription(description : string) : void
-  delete(id : any) : void
-  show(data : any) : void
-  clear() : void
 }
