@@ -836,7 +836,6 @@ export class PackingListComponent implements OnInit {
         data?.forEach(element => {
           this.descriptions.push(element)
         })
-        console.log(data)
       },
       error => {
         console.log(error)

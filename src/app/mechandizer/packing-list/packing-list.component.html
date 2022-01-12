@@ -198,9 +198,9 @@
                 <tr>
                     <td style="text-align: right;">Description</td>
                     <td style="padding: 0;">
-                        <input type="text" [(ngModel)]="description" class="form-control special">
+                        <input type="text" [(ngModel)]="description" list="descriptions" class="form-control special">
                         <datalist id="descriptions" style="padding: 0px;">
-                            <option></option>
+                            <option *ngFor="let d of descriptions" [ngValue]="d">{{d}}</option>
                         </datalist>
                     </td>
                 </tr> 

@@ -3,7 +3,7 @@
         <table style="width: 100%;">
             <tr style="width: 100%; background-color: #eeeeee;">
                 <td style="width: 100mm; vertical-align: top;"><p class="h6">Inventory / Settings / Product-Material Ratio</p></td>
-                <td></td>                                   
+                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Product-Material Ratio', 'product-material-ratio')">Create Shortcut</span>]</td>                                   
             </tr>
         </table>
         <table style="width: 100%;">
@@ -11,7 +11,122 @@
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
                         <div class="row">
-                                                                        
+                            <div class="col-6" style="background-color: rgb(235, 232, 232);">
+                                <p>Product</p>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align: right; vertical-align: top;">Product</td>
+                                            <td style="padding: 0;">
+                                                <table>
+                                                    <tbody>
+                                                        <tr>
+                                                            <input type="hidden" [(ngModel)]="productId">
+                                                            <td><input type="text" [(ngModel)]="barcode" class="form-control" placeholder="Barcode"></td>
+                                                            <td><button (click)="searchProduct(barcode, productCode, productDescription)">Search</button></td>
+                                                            <td><button (click)="resetProduct()">Reset</button></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <input type="text" [(ngModel)]="productCode" class="form-control" placeholder="Code">
+                                                <input type="text" [(ngModel)]="productDescription" list="productDescriptions" placeholder="Description" class="form-control special">
+                                                <datalist id="productDescriptions" style="padding: 0px;">
+                                                    <option *ngFor="let pd of productDescriptions" [ngValue]="pd">{{pd}}</option>
+                                                </datalist>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Qty</td>
+                                            <td style="padding: 0;">
+                                                <table>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input type="text" [(ngModel)]="productQty" class="form-control"></td>
+                                                            <td> {{productUom}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div> 
+                            <div class="col-6" style="background-color: rgb(243, 239, 234);">
+                                <p>Material equivalent</p>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align: right; vertical-align: top;">Material</td>
+                                            <td style="padding: 0;">
+                                                <table>
+                                                    <tbody>
+                                                        <tr>
+                                                            <input type="hidden" [(ngModel)]="materialId">
+                                                            <td><input type="text" [(ngModel)]="materialCode" class="form-control" placeholder="Code"></td>
+                                                            <td><button (click)="searchMaterial(materialCode, materialDescription)">Search</button></td>
+                                                            <td><button (click)="resetMaterial()">Reset</button></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <input type="text" [(ngModel)]="materialDescription" list="materialDescriptions"  placeholder="Description" class="form-control special">
+                                                <datalist id="materialDescriptions" style="padding: 0px;">
+                                                    <option *ngFor="let md of materialDescriptions" [ngValue]="md">{{md}}</option>
+                                                </datalist>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Qty</td>
+                                            <td style="padding: 0;">
+                                                <table>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input type="text" [(ngModel)]="materialQty" class="form-control"></td>
+                                                            <td> {{materialUom}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>                                      
+                        </div>
+                        
+                        <div class="row">
+                            <div class="co-12">
+                                <br>
+                                <div class="row">
+                                    <div  class="col-12">
+                                        <button (click)="new()" class="btn btn-success" style="margin: 1mm;">New Ratio</button>
+                                        <button (click)="save()" class="btn btn-success" style="margin: 1mm;">Save Ratio</button>
+                                        <button class="btn btn-danger">Delete Ratio</button>
+                                    </div>                                    
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td>Product Code</td>
+                                            <td>Product Description</td>
+                                            <td>Product-Material Ratio Details</td>
+                                            <td>Action</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let r of ratios">
+                                            <td>{{r.product.code}}</td>
+                                            <td>{{r.product.description}}</td>
+                                            <td>[<font color="red"><b>1</b></font>] {{r.product.uom}} {{r.product.description}} = [<font color="red"><b>{{r.ratio}}</b></font>] {{r.material.uom}} {{r.material.description}}</td>
+                                            <td><span (click)="get(r.id)" style="cursor: pointer;">[Edit]</span><span (click)="deleteRatio(r.id)" style="cursor: pointer;">[Delete]</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </td>

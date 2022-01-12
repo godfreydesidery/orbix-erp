@@ -29,6 +29,7 @@ export class MaterialMasterComponent implements OnInit {
   costPriceVatIncl    : number
   costPriceVatExcl    : number
   stock               : number
+  uom                 : string
   minimumInventory    : number
   maximumInventory    : number
   defaultReorderLevel : number
@@ -55,7 +56,8 @@ export class MaterialMasterComponent implements OnInit {
     this.vat                 = 0
     this.costPriceVatIncl    = 0
     this.costPriceVatExcl    = 0
-    this.stock               = 0        
+    this.stock               = 0   
+    this.uom                 = ''     
     this.minimumInventory    = 0     
     this.maximumInventory    = 0     
     this.defaultReorderLevel = 0   
@@ -87,7 +89,8 @@ export class MaterialMasterComponent implements OnInit {
         var material = {
           id                  : element!.id,
           code                : element!.code,
-          description         : element!.description
+          description         : element!.description,
+          uom                 : element!.uom
         }
         this.materials.push(material)
       })     
@@ -114,7 +117,8 @@ export class MaterialMasterComponent implements OnInit {
       vat                 : this.vat,
       costPriceVatIncl    : this.costPriceVatIncl,
       costPriceVatExcl    : this.costPriceVatExcl,
-      stock               : this.stock,                  
+      stock               : this.stock,   
+      uom                 : this.uom,               
       minimumInventory    : this.minimumInventory,     
       maximumInventory    : this.maximumInventory,   
       defaultReorderLevel : this.defaultReorderLevel, 
@@ -257,7 +261,8 @@ export class MaterialMasterComponent implements OnInit {
     this.vat                 = data['vat']
     this.costPriceVatIncl    = data['costPriceVatIncl']
     this.costPriceVatExcl    = data['costPriceVatExcl']
-    this.stock               = data['stock']            
+    this.stock               = data['stock']
+    this.uom                 = data['uom']            
     this.minimumInventory    = data['minimumInventory']   
     this.maximumInventory    = data['maximumInventory']
     this.defaultReorderLevel = data['defaultReorderLevel']
@@ -268,14 +273,15 @@ export class MaterialMasterComponent implements OnInit {
 
   }
   clear(): void {
-    this.id               = ''
-    this.code             = ''
-    this.description      = ''
-    this.active           = true
+    this.id                  = ''
+    this.code                = ''
+    this.description         = ''
+    this.active              = true
     this.vat                 = 0
     this.costPriceVatIncl    = 0
     this.costPriceVatExcl    = 0
-    this.stock               = 0        
+    this.stock               = 0  
+    this.uom                 = ''      
     this.minimumInventory    = 0
     this.maximumInventory    = 0
     this.defaultReorderLevel = 0
@@ -349,4 +355,5 @@ export interface IMaterial{
   id                  : any
   code                : string
   description         : string
+  uom                 : string
 }
