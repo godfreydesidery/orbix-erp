@@ -3,7 +3,7 @@
         <table style="width: 100%;">
             <tr style="width: 100%; background-color: #eeeeee;">
                 <td style="width: 100mm; vertical-align: top;"><p class="h6">Inventory / Conversion / Product to Material</p></td>
-                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Product-Material Connversion', 'product-to-material')">Create Shortcut</span>]</td>                                 
+                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Product-Material Conversion', 'product-to-material')">Create Shortcut</span>]</td>                                 
             </tr>
         </table>
         <table style="width: 100%;">
@@ -16,42 +16,45 @@
                                 <table class="table table-bordered">
                                     <tbody>
                                         <tr>
-                                            <td style="text-align: right;">Conversion #</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
-                                        </tr>                                   
-                                        <tr>
-                                            <td style="text-align: right;">Status</td><td></td>
+                                            <td style="text-align: right;">Conversion #</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Created</td><td></td>
+                                            <td style="text-align: right;">Status</td><td>{{status}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Created</td><td>{{created}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Approved</td><td>{{approved}}</td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Comments</td>
-                                            <td style="padding: 0;"><textarea class="form-control special"></textarea></td>          
+                                            <td style="padding: 0;"><textarea [(ngModel)]="comments" class="form-control special"></textarea></td>          
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="col-1">
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;">Search</button><br><br>
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;">Edit</button><br>
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;">Save</button><br>
+                                <button class="btn btn-success" (click)="getByNo(no)" style="margin: 2px; width: 25mm;">Search</button><br><br>
+                                <button class="btn btn-success" (click)="clear()" style="margin: 2px; width: 25mm;">New</button><br>
+                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Edit</button><br>
+                                <button (click)="save()" class="btn btn-success"style="margin: 2px; width: 25mm;">Save</button><br>
                             </div>
                             <div class="col-1"></div>
                             <div class="col-5" style="height: 7cm; overflow: auto;">
                                 <table class="table table-bordered">
                                     <thead style="position: sticky; top: 0;">
                                         <tr class="table-dark">
-                                            <td>Conversion #</td>
+                                            <td>Conversion#</td>
                                             <td>Status</td>
                                             <td>Select</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span style="cursor: pointer;">[Select]</span></td>
+                                        <tr *ngFor="let c of productToMaterials">
+                                            <td>{{c.no}}</td>
+                                            <td>{{c.status}}</td>
+                                            <td><span (click)="get(c.id)" style="cursor: pointer;">[Select]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -59,12 +62,12 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <button (click)="open(content)" class="btn btn-success" style="margin: 2px; width: 25mm;">+Product</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Approve</button>
+                                <button (click)="open(content, '', '')" class="btn btn-success" style="margin: 2px; width: 25mm;" >+Product</button>
+                                <button (click)="approve(id)" class="btn btn-success"style="margin: 2px; width: 25mm;" >Approve</button>
                                 <button class="btn btn-success"style="margin: 2px; width: 25mm;">Print</button>
-                                <button class="btn btn-danger"style="margin: 2px; width: 25mm;">Cancel</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 30mm;">Archive All</button>
+                                <button (click)="cancel(id)" class="btn btn-danger"style="margin: 2px; width: 25mm;" >Cancel</button>
+                                <button (click)="archive(id)" class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
+                                <button (click)="archiveAll()" class="btn btn-success"style="margin: 2px; width: 30mm;">Archive All</button>
                             </div>
                         </div>
                         <div class="row">
@@ -75,30 +78,32 @@
                                             <td>Code</td>
                                             <td>Description</td>
                                             <td>Qty</td>
-                                            <td>Ratio details</td>
+                                            <td>Price(VAT Incl)</td>
+                                            <td>Total Cost</td>
                                             <td>Action</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        <tr *ngFor="let d of productToMaterialDetails">
+                                            <td>{{d.product.code}}</td>
+                                            <td>{{d.product.description}}</td>
+                                            <td>{{d.qty}}</td>
                                             <td></td>
                                             <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span style="cursor: pointer;">[Remove]</span><span (click)="open(content)" style="cursor: pointer;">[Edit]</span></td>
+                                            <td><span style="cursor: pointer;" (click)="deleteDetail(d.id)">[Remove]</span><span style="cursor: pointer;" (click)="open(content, d.product.id, d.id)">[Edit]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                    </div>
+                    </div>              
                 </td>
             </tr>
         </table>
     </div>
 </div>
 
-<ng-template #content let-modal>
+<ng-template #content let-modal style="height: 4cm;">
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">Add/Edit Product</h4>
       <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span aria-hidden="true">&times;</span></button>
@@ -112,35 +117,43 @@
                         <table>
                             <tbody>
                                 <tr>
-                                    <td><input type="text" class="form-control special"></td><td><button style="margin: 1mm;">Search</button></td>
+                                    <td><input type="text" [(ngModel)]="barcode" class="form-control special"></td><td><button (click)="searchProduct(barcode, productCode, productDescription)" style="margin: 1mm;">Search</button></td>
                                 </tr>
                             </tbody>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
+                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" [(ngModel)]="productCode" class="form-control special"></td>
                 </tr>
                 <tr>
                     <td style="text-align: right;">Description</td>
                     <td style="padding: 0;">
-                        <input type="text" class="form-control special">
+                        <input type="text" [(ngModel)]="productDescription" list="descriptions" class="form-control special">
                         <datalist id="descriptions" style="padding: 0px;">
-                            <option></option>
+                            <option *ngFor="let d of descriptions" [ngValue]="d">{{d}}</option>
                         </datalist>
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Qty</td><td style="padding: 0;"><input type="text" class="form-control special"></td>
-                </tr>
+                    <td style="text-align: right;">Qty</td><td style="padding: 0;"><input type="text" [(ngModel)]="qty" class="form-control special"></td>
+                </tr>   
                 <tr>
-                    <td style="text-align: right;">Cost Price</td><td style="padding: 0;"><input type="text" class="form-control special" readonly></td>
-                </tr>
+                    <td style="text-align: right;">Ratio Details</td>
+                    <td style="padding: 0;">
+                        <textarea class="form-control special" readonly>
+                            1 {{productUom}} {{productDescription}} = {{ratio}} {{materialUom}} {{materialDescription}}
+                            {{materialCode}}
+                            {{materialDescription}}
+                            {{materialUom}}
+                        </textarea>
+                    </td>
+                </tr>              
             </tbody>
         </table>
     </div>
     <div class="modal-footer">
       <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
-      <button type="button" class="btn btn-outline-dark">Save</button>
+      <button type="button" (click)="saveDetail()" class="btn btn-outline-dark">Save</button>
     </div>
 </ng-template>
