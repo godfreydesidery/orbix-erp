@@ -78,8 +78,7 @@
                                             <td>Code</td>
                                             <td>Description</td>
                                             <td>Qty</td>
-                                            <td>Price(VAT Incl)</td>
-                                            <td>Total Cost</td>
+                                            <td>Material Equivalence</td>
                                             <td>Action</td>
                                         </tr>
                                     </thead>
@@ -87,9 +86,8 @@
                                         <tr *ngFor="let d of productToMaterialDetails">
                                             <td>{{d.product.code}}</td>
                                             <td>{{d.product.description}}</td>
-                                            <td>{{d.qty}}</td>
-                                            <td></td>
-                                            <td></td>
+                                            <td><b>{{d.qty}}</b>  <i>    {{d.product.uom}}    </i></td>
+                                            <td><b>{{d.ratio*d.qty}}</b>  <i>    {{d.material.uom}}    </i>  {{d.material.description}}</td>
                                             <td><span style="cursor: pointer;" (click)="deleteDetail(d.id)">[Remove]</span><span style="cursor: pointer;" (click)="open(content, d.product.id, d.id)">[Edit]</span></td>
                                         </tr>
                                     </tbody>
@@ -117,7 +115,15 @@
                         <table>
                             <tbody>
                                 <tr>
-                                    <td><input type="text" [(ngModel)]="barcode" class="form-control special"></td><td><button (click)="searchProduct(barcode, productCode, productDescription)" style="margin: 1mm;">Search</button></td>
+                                    <td>
+                                        <input type="text" [(ngModel)]="barcode" class="form-control special">
+                                    </td>
+                                    <td>
+                                        <button (click)="searchProduct(barcode, productCode, productDescription)" style="margin: 1mm;">Search</button>
+                                    </td>
+                                    <td>
+                                        <button (click)="clearDetail()">Reset</button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -141,11 +147,8 @@
                 <tr>
                     <td style="text-align: right;">Ratio Details</td>
                     <td style="padding: 0;">
-                        <textarea class="form-control special" readonly>
-                            1 {{productUom}} {{productDescription}} = {{ratio}} {{materialUom}} {{materialDescription}}
-                            {{materialCode}}
-                            {{materialDescription}}
-                            {{materialUom}}
+                        <textarea class="form-control special" style="height: 3cm;" readonly>
+                            1 {{productUom}} [{{productCode}}] {{productDescription}} = {{ratio}} {{materialUom}} [{{materialCode}}] {{materialDescription}}
                         </textarea>
                     </td>
                 </tr>              
@@ -154,6 +157,6 @@
     </div>
     <div class="modal-footer">
       <!--<button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>-->
-      <button type="button" (click)="saveDetail()" class="btn btn-outline-dark">Save</button>
+      <button type="button" (click)="saveDetail()" (click)="modal.close('Save click')" class="btn btn-outline-dark">Save</button>
     </div>
 </ng-template>

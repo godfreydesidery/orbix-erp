@@ -33,7 +33,7 @@
     border: 0px solid #eeeeee;
     background-color: #eeeeee;
     border: 0x solid #eeeeee;
-    font-family:'Times New Roman', Times, serif;
+    //font-family:'Times New Roman', Times, serif;
     font-size: large;
     color: rgb(22, 1, 1);
     text-align: left;
@@ -63,9 +63,13 @@
     border: 1px solid #cccccc;
     background-color: #cccccc;
     border: 1px solid #cccccc;
-    font-family:'Times New Roman', Times, serif;
+    //font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: large;
     cursor: pointer;
+    text-decoration: none;
+}
+
+a, .SectionOnBox {
     text-decoration: none;
 }
 

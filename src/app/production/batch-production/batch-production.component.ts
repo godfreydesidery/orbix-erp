@@ -32,6 +32,7 @@ export class BatchProductionComponent implements OnInit {
   id             : any
   no             : string
   productionName : string
+  batchNo        : string
   batchSize      : number
   uom            : string
   status         : string
@@ -96,6 +97,7 @@ export class BatchProductionComponent implements OnInit {
     this.id             = null
     this.no             = ''
     this.productionName = ''
+    this.batchNo        = ''
     this.batchSize      = 0
     this.uom            = ''
     this.status         = ''
@@ -155,6 +157,7 @@ export class BatchProductionComponent implements OnInit {
       id             : this.id,
       no             : this.no,
       productionName : this.productionName,
+      batchNo        : this.batchNo,
       batchSize      : this.batchSize,
       uom            : this.uom,
       comments       : this.comments
@@ -166,6 +169,7 @@ export class BatchProductionComponent implements OnInit {
         this.id             = data!.id
         this.no             = data!.no
         this.productionName = data!.productionName
+        this.batchNo        = data!.batchNo
         this.batchSize      = data!.batchSize
         this.uom            = data!.uom
         this.status         = data!.status
@@ -179,7 +183,25 @@ export class BatchProductionComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not create production')
       })
     }else{
-      //update production
+      await this.http.post<IProduction>(API_URL+'/productions/update', production, options)
+      .toPromise()
+      .then(data => {
+        this.id             = data!.id
+        this.no             = data!.no
+        this.productionName = data!.productionName
+        this.batchNo        = data!.batchNo
+        this.batchSize      = data!.batchSize
+        this.uom            = data!.uom
+        this.status         = data!.status
+        this.created        = data!.created
+        this.opened         = data!.opened
+        this.closed         = data!.closed
+        this.comments       = data!.comments
+      })
+      .catch(error => {
+        console.log(error)
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update production')
+      })
     }
 
   }
@@ -500,6 +522,7 @@ export class BatchProductionComponent implements OnInit {
         this.id             = data!.id
         this.no             = data!.no
         this.productionName = data!.productionName
+        this.batchNo        = data!.batchNo
         this.batchSize      = data!.batchSize
         this.uom            = data!.uom
         this.status         = data!.status
@@ -872,6 +895,7 @@ export class BatchProductionComponent implements OnInit {
     this.id             = null
     this.no             = ''
     this.productionName = ''
+    this.batchNo        = ''
     this.batchSize      = 0
     this.uom            = ''
     this.status         = ''
@@ -892,6 +916,7 @@ export interface IProduction{
   id             : any
   no             : string
   productionName : string
+  batchNo        : string
   batchSize      : number
   uom            : string
   status         : string

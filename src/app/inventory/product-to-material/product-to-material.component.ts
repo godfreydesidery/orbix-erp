@@ -70,7 +70,6 @@ export class ProductToMaterialComponent implements OnInit {
     this.materialDescription = ''
     this.materialUom         = ''
 
-
     this.descriptions        = []
   }
 
@@ -150,6 +149,7 @@ export class ProductToMaterialComponent implements OnInit {
         this.created                  = data!.created
         this.approved                 = data!.approved
         this.productToMaterialDetails = data!.productToMaterialDetails
+        console.log(this.productToMaterialDetails)
       }
     )
     .catch(
@@ -246,13 +246,13 @@ export class ProductToMaterialComponent implements OnInit {
     
     if(this.id == '' || this.id == null){
       /**
-       * First Create a new Invoice
+       * First Create a new Conversion
        */
       alert('Conversion not available, the system will create a new Conversion')
       this.save()
     }else{
       /**
-       * Enter Invoice Detail
+       * Enter Conversion Detail
        */
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
@@ -260,9 +260,11 @@ export class ProductToMaterialComponent implements OnInit {
       var detail = {
         productToMaterial : {id : this.id},
         product : {id : this.productId, code : this.productCode},
+        material : { id : this.materialId},
         qty : this.qty,
         ratio : this.ratio
       }
+      console.log(this.ratio)
       await this.http.post(API_URL+'/product_to_material_details/save', detail, options)
       .toPromise()
       .then(
@@ -284,8 +286,6 @@ export class ProductToMaterialComponent implements OnInit {
     }
   }
 
-  
-
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
   }
@@ -297,7 +297,7 @@ export class ProductToMaterialComponent implements OnInit {
     this.http.delete(API_URL+'/product_to_material_details/delete?id='+id, options)
     .toPromise()
     .then(
-      data => {
+      () => {
         this.get(this.id)
       }
     )
@@ -334,10 +334,10 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var invoice = {
+    var conversion = {
       id : id   
     }
-    await this.http.put<boolean>(API_URL+'/product_to_materials/archive', invoice, options)
+    await this.http.put<boolean>(API_URL+'/product_to_materials/archive', conversion, options)
     .toPromise()
     .then(
       data => {
@@ -355,7 +355,7 @@ export class ProductToMaterialComponent implements OnInit {
   }
 
   async archiveAll() {
-    if(!window.confirm('Confirm archiving Invoices. All PAID Invoices will be archived')){
+    if(!window.confirm('Confirm archiving Conversion. All Approved conversions will be archived')){
       return
     }
     let options = {
@@ -368,7 +368,7 @@ export class ProductToMaterialComponent implements OnInit {
       data => {
         this.clear()
         this.loadConversions()
-        alert('Invoices archived successifully')
+        alert('Conversions archived successifully')
       }
     )
     .catch(
@@ -509,24 +509,6 @@ export class ProductToMaterialComponent implements OnInit {
     })
   }
 
-  getDetailByProductIdAndLpoId(productId : any){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IProduct>(API_URL+'/product_to_material_details/get_by_product_id_and_invoice_id?product_id='+productId+'product_to_material_id='+this.id, options)
-    .toPromise()
-    .then(
-      data => {
-        this.barcode = data!.barcode
-        this.productCode = data!.code
-        this.productDescription = data!.description
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
-    })
-  }
-
   open(content : any, productId : string, detailId : string) {
     if(productId != ''){
       this.searchDetail(productId, detailId)
@@ -582,6 +564,7 @@ export class ProductToMaterialComponent implements OnInit {
         this.materialCode        = data!.material.code
         this.materialDescription = data!.material.description
         this.materialUom         = data!.material.uom
+        this.ratio               = data!.ratio
       },
       error => {
         console.log(error)
@@ -606,6 +589,7 @@ interface IProductToMaterialDetail{
   qty              : number
   ratio            : number
   product          : IProduct
+  material         : IMaterial
 }
 
 interface IProduct{
