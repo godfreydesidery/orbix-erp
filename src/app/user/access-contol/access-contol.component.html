@@ -28,10 +28,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let object of objects">
+                                        <!--<tr *ngFor="let object of objects">
                                             <td style="vertical-align: top;">{{object}}</td>
                                             <td style="vertical-align: top;">
                                                 <button *ngFor="let operation of operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox" [checked]="privilegeChecked(object, operation)" (change)="addOrRemovePrivilege($event, object, operation)" style="height: 5mm; width: 5mm;"><label>{{operation}}</label></button>
+                                            </td>
+                                        </tr> -->
+                                        <tr *ngFor="let model of privModels">
+                                            <td style="vertical-align: top;">{{model.object}}</td>
+                                            <td style="vertical-align: top;">
+                                                <button *ngFor="let operation of model.operations" class="btn btn-light" style="margin-left: 1mm; margin-right: 1mm;"><input type="checkbox" [checked]="privilegeChecked(model.object, operation)" (change)="addOrRemovePrivilege($event, model.object, operation)" style="height: 5mm; width: 5mm;"><label>{{operation}}</label></button>
                                             </td>
                                         </tr> 
                                     </tbody>

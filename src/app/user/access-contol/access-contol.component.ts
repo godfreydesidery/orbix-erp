@@ -1,4 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { ListKeyManager } from '@angular/cdk/a11y';
 import { KeyValue } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, Pipe} from '@angular/core';
@@ -58,9 +59,10 @@ export class AccessContolComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllObjects()
-    this.getAllOperations()
+    //this.getAllObjects()
+    //this.getAllOperations()
     this.getRoles()
+    this.loadPrivModel()
   }
 
   async getAllObjects(){
@@ -289,6 +291,28 @@ export class AccessContolComponent implements OnInit {
     return granted
     
   }
+
+  loadPrivModel() : boolean{
+    let options = {
+      headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+
+    this.http.get<IIPrivilege[]>(API_URL+'/load_privilege_model', options)
+    .toPromise()
+    .then(
+      data => {
+        this.privModels = data!
+      }
+    )
+    .catch(error => {
+      console.log(error)
+    })
+    return false
+  }
+
+  privModels : IIPrivilege[] = []
+ 
+
 }
 
 export class AccessForm{
@@ -309,4 +333,9 @@ export class PrivilegeForm{
     this.object = ''
     this.operations = []
   }
+}
+
+export interface IIPrivilege{
+  object     : string
+  operations : string[]
 }
