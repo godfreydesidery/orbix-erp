@@ -1,9 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const API_URL = environment.apiUrl;
 
@@ -13,6 +15,14 @@ const API_URL = environment.apiUrl;
   styleUrls: ['./supplier-master.component.scss']
 })
 export class SupplierMasterComponent implements OnInit, ISupplier {
+
+  public codeLocked   : boolean = true
+  public nameLocked   : boolean = true
+  public inputsLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
 
   id                  : any
   code                : string
@@ -37,8 +47,9 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
   bankAccountNo       : string
 
   suppliers : ISupplier[] = []
+  names     : string[] =[]
 
-  constructor(private shortcut : ShortCutHandlerService, private http : HttpClient, private auth : AuthService) {
+  constructor(private shortcut : ShortCutHandlerService, private http : HttpClient, private auth : AuthService, private spinner : NgxSpinnerService) {
     this.id                  = ''
     this.code                = ''
     this.name                = ''
@@ -63,6 +74,7 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
   }
   ngOnInit(): void {
     this.getAll()
+    this.loadSupplierNames()
   }
 
   async save() {
@@ -104,10 +116,13 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
 
     if (this.id == null || this.id == ''){
       //create a new user
+      this.spinner.show()
       await this.http.post(API_URL+'/suppliers/create', data, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           this.showSupplier(data)
           alert('Supplier created successifully')
           this.getAll()
@@ -121,10 +136,13 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
       )   
     }else{
       //update an existing user
+      this.spinner.show()
       await this.http.put(API_URL+'/suppliers/update', data, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           console.log(data)
           alert('Supplier updated successifully')
           this.getAll()
@@ -174,31 +192,34 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
     }
     return valid
   }
-  clearFields(){
-    
+  clearFields() {
     /**
      * Clear all the fields
      */
-     this.id                  = ''
-     this.code                = ''
-     this.name                = ''
-     this.contactName         = ''
-     this.tin                 = ''
-     this.vrn                 = ''
-     this.termsOfContract     = ''
-     this.physicalAddress     = ''
-     this.postCode            = ''
-     this.postAddress         = ''
-     this.telephone           = ''
-     this.mobile              = ''
-     this.email               = ''
-     this.fax                 = ''
-     this.bankAccountName     = ''
-     this.bankPhysicalAddress = ''
-     this.bankPostAddress     = ''
-     this.bankPostCode        = ''
-     this.bankName            = ''
-     this.bankAccountNo       = ''
+    this.id = ''
+    this.code = ''
+    this.name = ''
+    this.contactName = ''
+    this.tin = ''
+    this.vrn = ''
+    this.termsOfContract = ''
+    this.physicalAddress = ''
+    this.postCode = ''
+    this.postAddress = ''
+    this.telephone = ''
+    this.mobile = ''
+    this.email = ''
+    this.fax = ''
+    this.bankAccountName = ''
+    this.bankPhysicalAddress = ''
+    this.bankPostAddress = ''
+    this.bankPostCode = ''
+    this.bankName = ''
+    this.bankAccountNo = ''
+    this.unlockAll()
+    if (this.id == null || this.id == '') {
+      this.codeLocked = true
+    }
   }
   async getAll(): Promise<void> {
     this.suppliers = []
@@ -231,34 +252,55 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.showSupplier(data)
       }
     )
     .catch(
       error=>{
         console.log(error)        
-        alert('No matching record')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested record could not be found')
       }
     )
   }
-  async getByName(name: string) {
+  async getByCodeOrName(code : string, name: string) {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
-    await this.http.get(API_URL+'/suppliers/get_by_name?name='+name, options)
-    .toPromise()
-    .then(
-      data=>{
-        this.showSupplier(data)
-      }
-    )
-    .catch(
-      error=>{
-        console.log(error)        
-        alert('No matching record')
-      }
-    )
+    if(code != ''){
+      this.name = ''
+    }
+    if(code != ''){
+      await this.http.get(API_URL+'/suppliers/get_by_code?code='+code, options)
+      .toPromise()
+      .then(
+        data=>{
+          this.lockAll()
+          this.showSupplier(data)
+        }
+      )
+      .catch(
+        error=>{
+          console.log(error)        
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested record could not be found')
+        }
+      )
+    }else{
+      await this.http.get(API_URL+'/suppliers/get_by_name?name='+name, options)
+      .toPromise()
+      .then(
+        data=>{
+          this.lockAll()
+          this.showSupplier(data)
+        }
+      )
+      .catch(
+        error=>{
+          console.log(error)        
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested record could not be found')
+        }
+      )
+    }
   }
   async delete() {
     if(this.id == null || this.id == ''){
@@ -288,6 +330,38 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
         return false
       }
     )
+  }
+
+  async loadSupplierNames(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    await this.http.get<string[]>(API_URL+'/suppliers/get_names', options)
+    .toPromise()
+    .then(
+      data => {
+        this.names = []
+        data?.forEach(element => {
+          this.names.push(element)
+        })
+      },
+      error => {
+        console.log(error)
+        alert('Could not load product descriptions')
+      }
+    )
+  }
+
+  unlockAll(){
+    this.codeLocked   = false 
+    this.nameLocked   = false
+    this.inputsLocked = false
+  }
+
+  lockAll(){
+    this.codeLocked   = true
+    this.nameLocked   = true
+    this.inputsLocked = true
   }
 
   createShortCut(shortCutName : string, link : string){
@@ -336,6 +410,6 @@ export interface ISupplier {
   save() : void
   getAll() : void
   get(id : any) : any
-  getByName(name : string) : any
+  getByCodeOrName(code : string, name : string) : any
   delete() : any
 }

@@ -34,7 +34,8 @@
                                             <td>{{till.active}}</td>
                                             <td>
                                                 <button class="btn btn-sm btn-outline-primary" (click)="open(content, till.id)" style="margin-left: 2mm;">Edit</button>
-                                                <button class="btn btn-sm btn-outline-primary" style="margin-left: 2mm;">Enable</button>
+                                                <button class="btn btn-sm btn-outline-primary" (click)="activateTill(till.id, till.active)" style="margin-left: 2mm;">Activate</button>
+                                                <button class="btn btn-sm btn-outline-primary" (click)="deactivateTill(till.id, till.active)" style="margin-left: 2mm;">Deactivate</button>
                                                 <button class="btn btn-sm btn-outline-danger" (click)="deleteTill(till.id)" style="margin-left: 2mm;">Delete</button>
                                             </td>
                                         </tr>

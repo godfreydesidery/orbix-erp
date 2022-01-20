@@ -133,6 +133,54 @@ export class TillAdministrationComponent implements OnInit, ITill {
     }
   }
 
+  public async activateTill(id : any, active : boolean){
+    if(active == true){
+      return
+    }
+    if(window.confirm('Activate Selected till') == true){
+      let options = {
+        headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+      }
+      await this.http.post(API_URL+'/tills/activate?id='+id, options)
+      .toPromise()
+      .then(
+        data => {
+          alert('Till activate succesifully')
+          this.loadTills()
+        }
+      )
+      .catch(
+        error => {
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not activate till')
+        }
+      )
+    }
+  }
+
+  public async deactivateTill(id : any, active : boolean){
+    if(active == false){
+      return
+    }
+    if(window.confirm('Deactivate Selected till') == true){
+      let options = {
+        headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+      }
+      await this.http.post(API_URL+'/tills/deactivate?id='+id, options)
+      .toPromise()
+      .then(
+        data => {
+          alert('Till deactivated succesifully')
+          this.loadTills()
+        }
+      )
+      .catch(
+        error => {
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not activate till')
+        }
+      )
+    }
+  }
+
   async loadTills(){
     this.tills = []
     let options = {

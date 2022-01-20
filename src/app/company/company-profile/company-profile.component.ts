@@ -6,6 +6,8 @@ import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { environment } from 'src/environments/environment';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DataService } from 'src/app/services/data.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 
 const API_URL = environment.apiUrl;
@@ -39,7 +41,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
 
   logoUrl     : any
 
-  constructor(private http : HttpClient, private auth : AuthService, private sanitizer: DomSanitizer, private data : DataService) {
+  constructor(private http : HttpClient, private auth : AuthService, private sanitizer: DomSanitizer, private data : DataService, private spinner : NgxSpinnerService) {
     this.id               = ''
     this.companyName      = ''
     this.contactName      = ''
@@ -73,8 +75,6 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
-
     await this.http.get<ICompanyProfile>(API_URL+'/company_profile/get', options)
     .toPromise()
     .then(
@@ -149,7 +149,9 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
       bankName         : this.bankName,
       bankAccountNo    : this.bankAccountNo
     }
+    this.spinner.show()
     await this.http.post<ICompanyProfile>(API_URL+'/company_profile/save', profile, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -172,24 +174,21 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
         this.bankPostAddress  = data!.bankPostAddress
         this.bankName         = data!.bankName
         this.bankAccountNo    = data!.bankAccountNo
-
+        try{
+          this.onUpload()
+        }catch(e : any){}
         alert('Company details saved successifully')
       }
     )
     .catch(
       error => {
+        console.log(error)
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not save company details')
       }
     )
     this.getLogo()
   }
 
-
-
-
-
-
- 
 
   selectedFile!: File;
   retrievedImage!: any;

@@ -5,6 +5,8 @@ import { AuthService } from 'src/app/auth.service';
 import { IRole } from 'src/app/models/role';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 const API_URL = environment.apiUrl;
 
@@ -23,7 +25,7 @@ const API_URL = environment.apiUrl;
 })
 export class RoleManagerComponent implements OnInit, IRole {
 
-  lockedName : boolean = true
+  public nameLocked : boolean = true
 
   enableSearch : boolean = false
   enableSave   : boolean = false
@@ -37,7 +39,9 @@ export class RoleManagerComponent implements OnInit, IRole {
 
   public roles : IRole[]
 
-  constructor(private http : HttpClient, private auth : AuthService) {
+  constructor(private http : HttpClient, 
+    private auth : AuthService,
+    private spinner : NgxSpinnerService) {
     this.id      = ''
     this.name    = ''
     this.granted = false
@@ -62,11 +66,13 @@ export class RoleManagerComponent implements OnInit, IRole {
     }
     if (this.id == null || this.id == ''){
       //create a new role
+      this.spinner.show()
       await this.http.post(API_URL+'/roles/create', this.getRoleData(), options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
-          this.lockedName = true
+          this.nameLocked = true
           this.showRole(data)
           console.log(data)
           this.roles = []
@@ -82,7 +88,9 @@ export class RoleManagerComponent implements OnInit, IRole {
       )   
     }else{
       //update an existing role
+      this.spinner.show()
       await this.http.put(API_URL+'/roles/update', this.getRoleData(), options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -134,7 +142,7 @@ export class RoleManagerComponent implements OnInit, IRole {
     .toPromise()
     .then(
       data=>{
-        this.lockedName = true
+        this.nameLocked = true
         this.showRole(data)
       }
     )
@@ -147,26 +155,29 @@ export class RoleManagerComponent implements OnInit, IRole {
     )
   }
 
-  async deleteRole(id : string) : Promise<any>{
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+  async deleteRole(id: string): Promise<any> {
+    if (!window.confirm('Confirm deletion of the selected role')) {
+      return
     }
-    await this.http.delete<IRole[]>(API_URL+'/roles/delete?id='+id, options)
-    .toPromise()
-    .then(data => {
-      this.id    = ''
-      this.name  = ''
-      this.roles = []
-      this.lockedName = true
-      this.getRoles()
-    })
-    .catch(
-      error => {
-        console.log(error)        
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not delete role')
-        return false
-      }
-    )
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer ' + this.auth.user.access_token)
+    }
+    await this.http.delete<IRole[]>(API_URL + '/roles/delete?id=' + id, options)
+      .toPromise()
+      .then(data => {
+        this.id = ''
+        this.name = ''
+        this.roles = []
+        this.nameLocked = true
+        this.getRoles()
+      })
+      .catch(
+        error => {
+          console.log(error)
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not delete role')
+          return false
+        }
+      )
     return true
   }
 
@@ -205,11 +216,11 @@ export class RoleManagerComponent implements OnInit, IRole {
     this.name = ''
     this.enableSave = true
     this.enableDelete = false
-    this.lockedName = false
+    this.nameLocked = false
   }
 
   edit(){
-    this.lockedName = false
+    this.nameLocked = false
   }
 
   public grant(privilege : string[]) : boolean{
@@ -225,6 +236,5 @@ export class RoleManagerComponent implements OnInit, IRole {
       }
     )
     return granted
-    
   }
 }

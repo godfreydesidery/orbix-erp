@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 const API_URL = environment.apiUrl;
 
@@ -12,6 +14,14 @@ const API_URL = environment.apiUrl;
   styleUrls: ['./customer-master.component.scss']
 })
 export class CustomerMasterComponent implements OnInit, ICustomer {
+
+  public noLocked     : boolean = true
+  public nameLocked   : boolean = true
+  public inputsLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
 
   id                  : any
   no                  : string
@@ -38,8 +48,9 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
   bankAccountNo       : string
 
   customers           : ICustomer[] = []
+  names     : string[] =[]
 
-  constructor(private auth : AuthService, private http :HttpClient) {
+  constructor(private auth : AuthService, private http :HttpClient, private spinner : NgxSpinnerService) {
     this.id                  = null
     this.no                  = ''
     this.name                = ''
@@ -67,6 +78,7 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
 
   ngOnInit(): void {
     this.getAll()
+    this.loadCustomerNames()
   }
   
   async save() {
@@ -110,10 +122,13 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
 
     if (this.id == null || this.id == ''){
       //create a new user
+      this.spinner.show()
       await this.http.post(API_URL+'/customers/create', data, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           this.showCustomer(data)
           alert('Customer created successifully')
           this.getAll()
@@ -127,10 +142,13 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
       )   
     }else{
       //update an existing user
+      this.spinner.show()
       await this.http.put(API_URL+'/customers/update', data, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           console.log(data)
           alert('Customer updated successifully')
           this.getAll()
@@ -208,67 +226,96 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
      this.bankPostCode        = ''
      this.bankName            = ''
      this.bankAccountNo       = ''
+     this.unlockAll()
+    if (this.id == null || this.id == '') {
+      this.noLocked = true
+    }
   }
   async getAll(): Promise<void> {
     this.customers = []
     let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+      headers: new HttpHeaders().set('Authorization', 'Bearer ' + this.auth.user.access_token)
     }
 
-    await this.http.get<ICustomer[]>(API_URL+'/customers', options)
-    .toPromise()
-    .then(
-      data => {
-        data?.forEach(
-          element => {
-            this.customers.push(element)
-          }
-        )
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load customers')
-    })
-    return 
+    await this.http.get<ICustomer[]>(API_URL + '/customers', options)
+      .toPromise()
+      .then(
+        data => {
+          data?.forEach(
+            element => {
+              this.customers.push(element)
+            }
+          )
+        }
+      )
+      .catch(error => {
+        console.log(error)
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load customers')
+      })
+    return
   }
   async get(id: any) {
     let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+      headers: new HttpHeaders().set('Authorization', 'Bearer ' + this.auth.user.access_token)
     }
-
-    await this.http.get(API_URL+'/customers/get?id='+id, options)
-    .toPromise()
-    .then(
-      data=>{
-        this.showCustomer(data)
-      }
-    )
-    .catch(
-      error=>{
-        console.log(error)        
-        alert('No matching record')
-      }
-    )
+    this.spinner.show
+    await this.http.get(API_URL + '/customers/get?id=' + id, options)
+      .pipe(finalize(() => this.spinner.hide()))
+      .toPromise()
+      .then(
+        data => {
+          this.showCustomer(data)
+        }
+      )
+      .catch(
+        error => {
+          console.log(error)
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested record could not be found')
+        }
+      )
   }
-  async getByName(name: string) {
+  async getByNoOrName(no: string, name: string) {
     let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+      headers: new HttpHeaders().set('Authorization', 'Bearer ' + this.auth.user.access_token)
     }
-
-    await this.http.get(API_URL+'/customers/get_by_name?name='+name, options)
-    .toPromise()
-    .then(
-      data=>{
-        this.showCustomer(data)
-      }
-    )
-    .catch(
-      error=>{
-        console.log(error)        
-        alert('No matching record')
-      }
-    )
+    if (no != '') {
+      this.name = ''
+    }
+    if (no != '') {
+      this.spinner.show()
+      await this.http.get(API_URL + '/customers/get_by_no?no=' + no, options)
+        .pipe(finalize(() => this.spinner.hide()))
+        .toPromise()
+        .then(
+          data => {
+            this.showCustomer(data)
+          }
+        )
+        .catch(
+          error => {
+            console.log(error)
+            ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested record could not be found')
+          }
+        )
+    } else {
+      this.spinner.show()
+      await this.http.get(API_URL + '/customers/get_by_name?name=' + name, options)
+        .pipe(finalize(() => this.spinner.hide()))
+        .toPromise()
+        .then(
+          data => {
+            this.showCustomer(data)
+          }
+        )
+        .catch(
+          error => {
+            console.log(error)
+            ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested record could not be found')
+          }
+        )
+    }
   }
+
   async delete() {
     if(this.id == null || this.id == ''){
       alert('No customer selected, please select a customer to delete')
@@ -294,6 +341,38 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
         console.log(error)
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not delete customer profile')
         return false
+      }
+    )
+  }
+
+  unlockAll(){
+    this.noLocked     = false 
+    this.nameLocked   = false
+    this.inputsLocked = false
+  }
+
+  lockAll(){
+    this.noLocked     = true
+    this.nameLocked   = true
+    this.inputsLocked = true
+  }
+
+  async loadCustomerNames(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    await this.http.get<string[]>(API_URL+'/customers/get_names', options)
+    .toPromise()
+    .then(
+      data => {
+        this.names = []
+        data?.forEach(element => {
+          this.names.push(element)
+        })
+      },
+      error => {
+        console.log(error)
+        alert('Could not load product descriptions')
       }
     )
   }
@@ -341,6 +420,6 @@ export interface ICustomer {
   save()         : void
   getAll()       : void
   get(id : any)  : any
-  getByName(name : string) : any
+  getByNoOrName(no : string, name : string) : any
   delete()       : any
 }

@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 
 import { Component, OnInit } from '@angular/core';
 import { IUser } from 'src/app/models/user';
@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const API_URL = environment.apiUrl;
 
@@ -32,6 +33,14 @@ interface IiRole{
 })
 
 export class UserProfileComponent implements OnInit, IUser {
+  public usernameLocked     : boolean = true
+  public passwordLocked     : boolean = true
+  public passwordConfLocked : boolean = true
+  public rollNoLocked       : boolean = true
+  public firstNameLocked    : boolean = true
+  public secondNameLocked   : boolean = true
+  public lastNameLocked     : boolean = true
+  public aliasLocked        : boolean = true
 
   public enableSearch : boolean = false
   public enableDelete : boolean = false
@@ -53,8 +62,16 @@ export class UserProfileComponent implements OnInit, IUser {
 
   public users           : IUser[]
 
+  /**
+   * 
+   * @param http 
+   * @param auth 
+   */
+
  
-  constructor(private http : HttpClient, private auth : AuthService) {
+  constructor(private http : HttpClient, 
+              private auth : AuthService, 
+              private spinner: NgxSpinnerService) {
     this.searchKey       = ''
     this.id              = ''
     this.username        = ''
@@ -107,9 +124,12 @@ export class UserProfileComponent implements OnInit, IUser {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    
     if (this.id == null || this.id == ''){
-      //create a new user
+      //create a new user 
+      this.spinner.show()  
       await this.http.post(API_URL+'/users/create', this.getUserData(), options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -126,7 +146,9 @@ export class UserProfileComponent implements OnInit, IUser {
       )   
     }else{
       //update an existing user
+      this.spinner.show()
       await this.http.put(API_URL+'/users/update', this.getUserData(), options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -140,16 +162,14 @@ export class UserProfileComponent implements OnInit, IUser {
           console.log(error);
           ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update user')
         }
-      )   
+      )  
     }
-    
   }
  
   async getRoles(){
    /**
     * Get all the roles
-    */
-    
+    */  
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
@@ -194,6 +214,7 @@ export class UserProfileComponent implements OnInit, IUser {
   }
   
   async getUser(key: string) {
+    this.spinner.show()
     this.searchKey = key
     this.clearFields()
     this.username = this.searchKey
@@ -207,14 +228,16 @@ export class UserProfileComponent implements OnInit, IUser {
     .then(
       data=>{
         this.showUser(data)
+        this.lockInputs()
       }
     )
     .catch(
       error=>{
         console.log(error)        
-        alert('No matching record')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested user could not be found')
       }
     )
+    this.spinner.hide()
   }
 
   async deleteUser(){
@@ -228,12 +251,14 @@ export class UserProfileComponent implements OnInit, IUser {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.delete(API_URL+'/users/delete?id='+this.id, options)
     .toPromise()
     .then(
       () => {
         this.clearFields()
         alert('Record deleted succesifully')
+        this.spinner.hide()
         return true
       }
     )
@@ -241,6 +266,7 @@ export class UserProfileComponent implements OnInit, IUser {
       error => {
         console.log(error)
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not delete user profile')
+        this.spinner.hide()
         return false
       }
     )
@@ -342,6 +368,28 @@ export class UserProfileComponent implements OnInit, IUser {
     this.active           = false
     this.clearRoles()
     this.enableSave = true
+  }
+
+  unlockInputs(){
+    this.usernameLocked      = false
+    this.passwordLocked      = false
+    this.passwordConfLocked  = false
+    this.rollNoLocked        = false
+    this.firstNameLocked     = false
+    this.secondNameLocked    = false
+    this.lastNameLocked      = false
+    this.aliasLocked         = false
+  }
+
+  lockInputs(){
+    this.usernameLocked      = true
+    this.passwordLocked      = true
+    this.passwordConfLocked  = true
+    this.rollNoLocked        = true
+    this.firstNameLocked     = true
+    this.secondNameLocked    = true
+    this.lastNameLocked      = true
+    this.aliasLocked         = true
   }
 
   public grant(privilege : string[]) : boolean{

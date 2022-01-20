@@ -18,7 +18,7 @@
                                         <label>*Role Name</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" name="username" [readonly]="lockedName" required  [(ngModel)]="name" list="role_names" class="form-control input-sm special">   
+                                        <input type="text" name="username" [readonly]="nameLocked" required  [(ngModel)]="name" list="role_names" class="form-control input-sm special">   
                                     </div>
                                     <datalist id="role_names" style="padding: 0px;">
                                         <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>

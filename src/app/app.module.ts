@@ -79,8 +79,7 @@ import { ProductToMaterialComponent } from './inventory/product-to-material/prod
 import { MaterialToProductComponent } from './inventory/material-to-product/material-to-product.component';
 import { ProductToProductComponent } from './inventory/product-to-product/product-to-product.component';
 import { MaterialToMaterialComponent } from './inventory/material-to-material/material-to-material.component';
-//import { BatchProductionComponent } from './mechandizer/batch-production/batch-production.component';
-//import { CustomProductionComponent } from './mechandizer/custom-production/custom-production.component';
+import { NgxSpinnerModule } from "ngx-spinner";
 
 
 @NgModule({
@@ -163,6 +162,7 @@ import { MaterialToMaterialComponent } from './inventory/material-to-material/ma
     HttpClientModule,
     CommonModule,
     FormsModule,
+    NgxSpinnerModule,
     StoreModule.forRoot({}, {}),
     RouterModule.forRoot([
       {path : '', component : DashboardComponent},

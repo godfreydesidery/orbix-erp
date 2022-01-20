@@ -1,10 +1,12 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-
+declare var apiUrl: any;
 export const environment = {
   production: false,
-  apiUrl: 'http://192.168.43.40:8080/api'
+  projectName : "Orbix ERP-DEV",
+  //apiUrl: 'http://192.168.43.40:8080/api'
+  apiUrl : apiUrl.getDevApiUrl()
 };
 
 /*

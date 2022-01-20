@@ -17,76 +17,82 @@
                                         <span>Basic Inf</span>
                                         <tr>
                                             <input type="hidden" [(ngModel)]="id">
-                                            <td style="text-align: right; width: 50mm;">Code</td><td><input type="text" [(ngModel)]="code" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Code</td><td><input type="text" [(ngModel)]="code" class="form-control special" [readonly]="codeLocked"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Company Name</td><td><input type="text" [(ngModel)]="name" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Company Name</td>
+                                            <td>
+                                                <input type="text" [(ngModel)]="name" list="names" class="form-control special" [readonly]="nameLocked" autocomplete="disabled">
+                                                <datalist id="names" style="padding: 0px;">
+                                                    <option *ngFor="let n of names" [ngValue]="n">{{n}}</option>
+                                                </datalist>
+                                            </td>
                                         </tr>
                                         <tr>                                      
-                                            <td style="text-align: right; width: 50mm;">Contact Name</td><td><input type="text" [(ngModel)]="contactName" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Contact Name</td><td><input type="text" [(ngModel)]="contactName" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>                                      
-                                            <td style="text-align: right; width: 50mm;"></td><td><input type="checkbox"><label>Active</label></td>
+                                            <td style="text-align: right; width: 50mm;"></td><td><input type="checkbox" [(ngModel)]="active"><label>Active</label></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">TIN</td><td><input type="text" [(ngModel)]="tin" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">TIN</td><td><input type="text" [(ngModel)]="tin" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">VRN</td><td><input type="text" [(ngModel)]="vrn" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">VRN</td><td><input type="text" [(ngModel)]="vrn" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <span>Contract Inf</span>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Terms of Contract</td><td><input type="text" [(ngModel)]="termsOfContract" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Terms of Contract</td><td><input type="text" [(ngModel)]="termsOfContract" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr> 
                                         <span>Contacts</span>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Physical Address</td><td><input type="text" [(ngModel)]="physicalAddress" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Physical Address</td><td><input type="text" [(ngModel)]="physicalAddress" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Post Code</td><td><input type="text" [(ngModel)]="postCode" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Post Code</td><td><input type="text" [(ngModel)]="postCode" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Post Address</td><td><input type="text" [(ngModel)]="postAddress" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Post Address</td><td><input type="text" [(ngModel)]="postAddress" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Telephone</td><td><input type="tel" [(ngModel)]="telephone" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Telephone</td><td><input type="tel" [(ngModel)]="telephone" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Mobile</td><td><input type="tel" [(ngModel)]="mobile" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Mobile</td><td><input type="tel" [(ngModel)]="mobile" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Email</td><td><input type="email" [(ngModel)]="email" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Email</td><td><input type="email" [(ngModel)]="email" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Fax</td><td><input type="tel" [(ngModel)]="fax" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Fax</td><td><input type="tel" [(ngModel)]="fax" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <span>Bank Inf</span>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Bank Acc Name</td><td><input type="text" [(ngModel)]="bankAccountName" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Bank Acc Name</td><td><input type="text" [(ngModel)]="bankAccountName" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Bank Physical Address</td><td><input type="text" [(ngModel)]="bankPhysicalAddress" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Bank Physical Address</td><td><input type="text" [(ngModel)]="bankPhysicalAddress" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Bank Post Address</td><td><input type="text" [(ngModel)]="bankPostAddress" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Bank Post Address</td><td><input type="text" [(ngModel)]="bankPostAddress" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Bank Post Code</td><td><input type="text" [(ngModel)]="bankPostCode" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Bank Post Code</td><td><input type="text" [(ngModel)]="bankPostCode" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Bank Name</td><td><input type="text" [(ngModel)]="bankName" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Bank Name</td><td><input type="text" [(ngModel)]="bankName" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right; width: 50mm;">Bank Acc No</td><td><input type="text" [(ngModel)]="bankAccountNo" class="form-control special"></td>
+                                            <td style="text-align: right; width: 50mm;">Bank Acc No</td><td><input type="text" [(ngModel)]="bankAccountNo" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="col-1">
-                                <button (click)="getByName(name)" class="btn btn-success form-control">Search</button> 
+                                <button (click)="getByCodeOrName(code, name)" class="btn btn-success form-control">Search</button> 
                                 <hr>
                                 <button class="btn btn-success" (click)="clearFields()" style="margin: 2px; width: 25mm;">New</button><br>
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;">Edit</button><br>
+                                <button class="btn btn-success" (click)="unlockAll()" style="margin: 2px; width: 25mm;">Edit</button><br>
                                 <button class="btn btn-danger"  (click)="delete()" style="margin: 2px; width: 25mm;">Delete</button><br>
                                 <button class="btn btn-primary" (click)="save()" style="margin: 2px; width: 25mm;">Save</button>
                               </div> 
@@ -105,7 +111,7 @@
                                             <td>{{supplier.name}}</td>
                                             <td>{{supplier.termsOfContract}}</td>
                                             <td>{{supplier.active}}</td>
-                                            <td><span style="cursor: pointer;">[Select]</span></td>
+                                            <td><span (click)="get(supplier.id)" style="cursor: pointer;">[Select]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>

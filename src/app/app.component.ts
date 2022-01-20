@@ -3,13 +3,18 @@ import { AfterContentInit, AfterViewInit, Component, OnInit } from '@angular/cor
 import { Router } from '@angular/router';
 import { environment } from './../environments/environment';
 import { AuthService } from './auth.service';
-import {trigger,state,style,animate,transition} from '@angular/animations'; 
+import { trigger,state,style,animate,transition} from '@angular/animations'; 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { StoreModule} from '@ngrx/store';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const API_URL = environment.apiUrl;
 
+declare var myExtObject: any;
+declare var webGlObject: any;
+
+declare var apiUrl: any;
 interface AppState{
   message : string
 }
@@ -20,14 +25,14 @@ interface AppState{
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit{
-  title = 'orbix-erp';
-
+  title = environment.projectName
 
   public isLoggedIn = false
 
   constructor(private http  : HttpClient,
     private auth : AuthService,
-    private router: Router){   
+    private router: Router,
+    private spinner: NgxSpinnerService){   
   }
    
   async ngOnInit(): Promise<void> {
@@ -38,7 +43,6 @@ export class AppComponent implements OnInit{
     if(localStorage.getItem('current-user') != null){
       currentUser = localStorage.getItem('current-user')
     }
-
     if(currentUser != null){
       this.isLoggedIn = true
       await this.router.navigate([''])

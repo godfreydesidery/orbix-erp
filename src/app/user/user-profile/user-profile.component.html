@@ -18,11 +18,11 @@
                                         <label>Username*</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" name="username" [(ngModel)]="username" list="users" required class="form-control input-sm special" autocomplete="off">                               
-                                    </div>
+                                        <input type="text" name="username" [(ngModel)]="username" list="users" class="form-control input-sm special" [readonly]="usernameLocked" autocomplete="off">                               
                                     <datalist id="users" style="padding: 0px;">
                                         <option *ngFor="let user of users" [ngValue]="user">{{user.username}}</option>
                                     </datalist>
+                                    </div>
                                     <div class="col-3">
                                         <button *ngIf="grant(['USER-READ'])" (click)="getUser(username)" class="btn btn-success form-control">Search</button>                               
                                     </div>
@@ -32,7 +32,7 @@
                                         <label>Password*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="password" name="password" [(ngModel)]="password" required class="form-control input-sm special" autocomplete="new-password">                               
+                                        <input type="password" name="password" [(ngModel)]="password" class="form-control input-sm special" [readonly]="passwordLocked" autocomplete="new-password">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -40,7 +40,7 @@
                                         <label>Confirm Password*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required class="form-control input-sm special" autocomplete="off">                               
+                                        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" class="form-control input-sm special" [readonly]="passwordConfLocked" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -48,7 +48,7 @@
                                         <label>Roll No*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="rollNo" [(ngModel)]="rollNo" required class="form-control input-sm special" placeholder="Unique employee/personnel number">                               
+                                        <input type="text" name="rollNo" [(ngModel)]="rollNo" class="form-control input-sm special" [readonly]="rollNoLocked" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -56,7 +56,7 @@
                                         <label>First Name*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="firstName" [(ngModel)]="firstName" required class="form-control input-sm special">                               
+                                        <input type="text" name="firstName" [(ngModel)]="firstName" class="form-control input-sm special"  [readonly]="firstNameLocked" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -64,7 +64,7 @@
                                         <label>Second Name</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="secondName" [(ngModel)]="secondName" class="form-control input-sm special">                               
+                                        <input type="text" name="secondName" [(ngModel)]="secondName" class="form-control input-sm special" [readonly]="secondNameLocked" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -72,7 +72,7 @@
                                         <label>Last Name*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="lastName" [(ngModel)]="lastName" required class="form-control input-sm special">                               
+                                        <input type="text" name="lastName" [(ngModel)]="lastName" class="form-control input-sm special" [readonly]="lastNameLocked" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -80,7 +80,7 @@
                                         <label>Alias*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" name="alias" [(ngModel)]="alias" required class="form-control input-sm special" placeholder="Unique flag name that identify the user">                               
+                                        <input type="text" name="alias" [(ngModel)]="alias" class="form-control input-sm special" [readonly]="aliasLocked" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -109,8 +109,8 @@
                           <div class="col-7">
                               <div class="row">
                                   <div class="col-2">
-                                    <button *ngIf="grant(['USER-CREATE'])" (click)="clearFields()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                    <button *ngIf="grant(['USER-UPDATE'])" class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
+                                    <button *ngIf="grant(['USER-CREATE'])" (click)="clearFields()" (click)="unlockInputs()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                    <button *ngIf="grant(['USER-UPDATE'])" (click)="unlockInputs()" class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
                                     <button *ngIf="grant(['USER-DELETE'])" (click)="deleteUser()" [disabled]="enableSave === false" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
                                     <button *ngIf="grant(['USER-CREATE','USER-UPDATE'])" (click)="saveUser()" [disabled]="enableSave === false" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                   </div>

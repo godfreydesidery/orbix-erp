@@ -12,9 +12,9 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-4">
-                                <span class="badge bg-primary" style="width: 50mm; border-radius: 0px;">My Shortcuts</span><font (click)="removeAllShortcuts()" style="color: rgb(6, 13, 56); font-style: italic; cursor: pointer;">  Clear all shortcuts</font>
+                                <span class="badge bg-primary" style="width: 50mm; border-radius: 0px;">My Shortcuts</span>
                                 <ul>
-                                    <li *ngFor="let shortcut of shortcuts"><a routerLink='/{{shortcut.link}}'>{{shortcut.name}}</a></li>
+                                    <li *ngFor="let shortcut of shortcuts"><a routerLink='/{{shortcut.link}}'>{{shortcut.name}}</a><span (click)="removeShortcut(shortcut.name)" style="cursor: pointer;">  [X]  </span></li>
                                 </ul>
                             </div>
                             <div class="col-4">

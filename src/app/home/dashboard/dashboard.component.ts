@@ -4,6 +4,8 @@ import { AuthService } from 'src/app/auth.service';
 import { IShortcut } from 'src/app/models/shortcut';
 import {trigger,state,style,animate,transition} from '@angular/animations'; 
 import { environment } from 'src/environments/environment';
+import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
+import { NgxSpinnerModule } from "ngx-spinner";
 
 const API_URL = environment.apiUrl;
 
@@ -25,7 +27,7 @@ export class DashboardComponent implements OnInit {
 
   public shortcuts: IShortcut[] = [];
 
-  constructor(private auth : AuthService, private http : HttpClient) { }
+  constructor(private auth : AuthService, private http : HttpClient, private shortcut : ShortCutHandlerService) { }
 
   ngOnInit(): void {
     this.loadShortcuts()
@@ -57,8 +59,11 @@ export class DashboardComponent implements OnInit {
 
   }
 
-  removeShortcut(){
-    alert('clear shortcut!')
+  removeShortcut(shortCutName : string){
+    if(confirm('Remove the selected shortcut?')){
+      this.shortcut.removeShortCut(shortCutName)
+      location.reload()
+    }
   }
 
   removeAllShortcuts(){
