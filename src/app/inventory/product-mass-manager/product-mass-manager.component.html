@@ -15,14 +15,14 @@
                             <div class="col-8">
                                 <br><br>
                                 <div class="alert alert-info" role="alert">
-                                    <span>{{progressStatus}} {{currentRecord}} of {{totalRecords}}</span>
+                                    <span>Progress: {{progressStatus}} {{currentRecord}} of {{totalRecords}}</span>
                                     <hr>
                                     <div class="alert alert-info" role="alert">Upload Products from file
                                         <input type="file" (change)="uploadProductFile($event)" multiple="false">
                                     </div>
                                     <hr>
                                     <div class="alert alert-info" role="alert">Update Products from file
-                                        <input type="file" (change)="uploadProductFile($event)" multiple="false">
+                                        <input type="file" (change)="updateProductFile($event)" multiple="false">
                                     </div>
                                     <hr>
                                     <div class="alert alert-info" role="alert">Download Products

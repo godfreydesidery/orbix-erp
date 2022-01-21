@@ -18,10 +18,21 @@ const API_URL = environment.apiUrl;
   styleUrls: ['./material-master.component.scss']
 })
 export class MaterialMasterComponent implements OnInit {
+
+  public barcodeLocked     : boolean = true
+  public codeLocked        : boolean = true
+  public descriptionLocked : boolean = true
+  public inputsLocked      : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   id                  : any
   barcode             : string
   code                : string
   description         : string
+  shortDescription    : string
   active              : boolean
   category!           : ICategory
   subCategory!        : ISubCategory
@@ -43,6 +54,8 @@ export class MaterialMasterComponent implements OnInit {
 
   materials  : IMaterial[]
 
+  descriptions : string[] = []
+
   constructor(private shortcut : ShortCutHandlerService,
               private auth : AuthService,
               private http : HttpClient) {
@@ -50,6 +63,7 @@ export class MaterialMasterComponent implements OnInit {
     this.barcode          = ''
     this.code             = ''
     this.description      = ''
+    this.shortDescription = ''
     this.active           = true
     this.category
     this.subCategory
@@ -75,6 +89,7 @@ export class MaterialMasterComponent implements OnInit {
   ngOnInit(): void {
     this.loadCategoryNames()
     this.loadMaterials()
+    this.loadMaterialDescriptions()
   }
 
   async loadMaterials(){
@@ -90,6 +105,7 @@ export class MaterialMasterComponent implements OnInit {
           id                  : element!.id,
           code                : element!.code,
           description         : element!.description,
+          shortDescription    : element!.shortDescription,
           uom                 : element!.uom
         }
         this.materials.push(material)
@@ -111,6 +127,7 @@ export class MaterialMasterComponent implements OnInit {
       barcode             : this.barcode,
       code                : this.code,
       description         : this.description,
+      shortDescription    : this.shortDescription,
       active              : this.active,
       category            : { name : this.categoryName},
       subCategory         : { name : this.subCategoryName},
@@ -184,12 +201,13 @@ export class MaterialMasterComponent implements OnInit {
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.show(data)
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Material could not be found')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Material not found')
       }
     )
   }
@@ -202,14 +220,14 @@ export class MaterialMasterComponent implements OnInit {
     .toPromise()
     .then(
       data => {
-        console.log(data)
+        this.lockAll()
         this.show(data)
       }
     )
     .catch(
       error => {
         console.log(error)
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Material could not be found')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Material not found')
       }
     )
   }
@@ -221,12 +239,13 @@ export class MaterialMasterComponent implements OnInit {
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.show(data)
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Material could not be found')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Material not found')
       }
     )
   }
@@ -257,6 +276,7 @@ export class MaterialMasterComponent implements OnInit {
     this.barcode             = data['barcode']
     this.code                = data['code']
     this.description         = data['description']
+    this.shortDescription    = data['shortDescription']
     this.active              = data['active']
     this.vat                 = data['vat']
     this.costPriceVatIncl    = data['costPriceVatIncl']
@@ -276,6 +296,7 @@ export class MaterialMasterComponent implements OnInit {
     this.id                  = ''
     this.code                = ''
     this.description         = ''
+    this.shortDescription    = ''
     this.active              = true
     this.vat                 = 0
     this.costPriceVatIncl    = 0
@@ -289,6 +310,8 @@ export class MaterialMasterComponent implements OnInit {
 
     this.categoryName    = ''
     this.subCategoryName = ''
+
+    this.unlockAll()
   }
 
   async loadCategoryNames(){
@@ -344,6 +367,44 @@ export class MaterialMasterComponent implements OnInit {
     )
   }
 
+  async loadMaterialDescriptions(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    await this.http.get<string[]>(API_URL+'/materials/get_descriptions', options)
+    .toPromise()
+    .then(
+      data => {
+        console.log(data)
+        this.descriptions = []
+        data?.forEach(element => {
+          this.descriptions.push(element)
+        })
+      },
+      error => {
+        console.log(error)
+        alert('Could not load material descriptions')
+      }
+    )
+  }
+
+  unlockAll(){
+    this.barcodeLocked     = false
+    this.codeLocked        = false 
+    this.descriptionLocked = false
+    this.inputsLocked      = false
+    if(!(this.id == null || this.id == '')){
+      this.codeLocked = true
+    }
+  }
+
+  lockAll(){
+    this.barcodeLocked     = true
+    this.codeLocked        = true 
+    this.descriptionLocked = true
+    this.inputsLocked      = true
+  }
+
   createShortCut(shortCutName : string, link : string){
     if(confirm('Create shortcut for this page?')){
       this.shortcut.createShortCut(shortCutName, link)
@@ -352,8 +413,9 @@ export class MaterialMasterComponent implements OnInit {
 }
 
 export interface IMaterial{
-  id                  : any
-  code                : string
-  description         : string
-  uom                 : string
+  id               : any
+  code             : string
+  description      : string
+  shortDescription : string
+  uom              : string
 }

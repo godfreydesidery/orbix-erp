@@ -13,6 +13,13 @@ const API_URL = environment.apiUrl;
   styleUrls: ['./category.component.scss']
 })
 export class CategoryComponent implements OnInit {
+
+  public inputsLocked      : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   id: any;
   name: string;
   categories : ICategory[] = []
@@ -43,8 +50,7 @@ export class CategoryComponent implements OnInit {
       .then(
         data => {
           this.id   = data?.id
-          this.name = data!.name
-          
+          this.name = data!.name        
           alert('Category created successifully')
           this.getAll()
           this.clearData()
@@ -62,6 +68,7 @@ export class CategoryComponent implements OnInit {
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           this.id   = data?.id
           this.name = data!.name 
           alert('Category updated successifully')
@@ -75,6 +82,7 @@ export class CategoryComponent implements OnInit {
       )
     }
   }
+
   async getAll() {
     this.categories = []
     let options = {
@@ -104,6 +112,7 @@ export class CategoryComponent implements OnInit {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.id = data?.id
         this.name = data!.name
       }
@@ -125,6 +134,7 @@ export class CategoryComponent implements OnInit {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.showCategory(data)
       }
     )
@@ -167,6 +177,7 @@ export class CategoryComponent implements OnInit {
   clearData(){
     this.id   = ''
     this.name = ''
+    this.unlockAll()
   }
 
   
@@ -189,6 +200,14 @@ export class CategoryComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load categories')
       }
     )
+  }
+
+  unlockAll(){
+    this.inputsLocked      = false   
+  }
+
+  lockAll(){
+    this.inputsLocked      = true
   }
 
   createShortCut(shortCutName : string, link : string){

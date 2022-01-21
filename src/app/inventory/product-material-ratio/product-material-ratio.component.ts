@@ -116,6 +116,7 @@ export class ProductMaterialRatioComponent implements OnInit {
       .toPromise()
       .then(data => {
         this.loadRatios()
+        alert('Ratio  created successifully')
       })
       .catch(error => {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'could not create ratio')
@@ -126,6 +127,7 @@ export class ProductMaterialRatioComponent implements OnInit {
       .toPromise()
       .then(data => {
         this.loadRatios()
+        alert('Ratio  updated successifully')
       })
       .catch(error => {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'could not update ratio')

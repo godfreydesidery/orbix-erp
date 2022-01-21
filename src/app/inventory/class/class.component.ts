@@ -15,6 +15,8 @@ const API_URL = environment.apiUrl;
 })
 export class ClassComponent implements OnInit, IClass {
 
+  public inputsLocked      : boolean = true
+
   id              : any
   name            : string
   classes!        : IClass[];
@@ -75,6 +77,7 @@ export class ClassComponent implements OnInit, IClass {
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           this.id   = data?.id
           this.name = data!.name 
           alert('Class updated successifully')
@@ -123,6 +126,7 @@ export class ClassComponent implements OnInit, IClass {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.id = data?.id
         this.name = data!.name
         this.departmentName = data!.department.name
@@ -148,6 +152,7 @@ export class ClassComponent implements OnInit, IClass {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.id = data?.id
         this.name = data!.name
         this.departmentName = data!.department.name
@@ -194,6 +199,7 @@ export class ClassComponent implements OnInit, IClass {
     this.id = ''
     this.name = ''
     this.departmentName = ''
+    this.unlockAll()
   }
 
   async loadDepartmentNames(){
@@ -220,6 +226,14 @@ export class ClassComponent implements OnInit, IClass {
     )
   }
 
+  unlockAll(){
+    this.inputsLocked      = false   
+  }
+
+  lockAll(){
+    this.inputsLocked      = true
+  }
+
   createShortCut(shortCutName : string, link : string){
     if(confirm('Create shortcut for this page?')){
       this.shortcut.createShortCut(shortCutName, link)
@@ -227,7 +241,6 @@ export class ClassComponent implements OnInit, IClass {
   }
 
 }
-
 
 export interface IClass {
   id         : any

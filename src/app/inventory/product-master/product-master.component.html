@@ -20,7 +20,7 @@
                                                 <label>Barcode*</label>                               
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" [(ngModel)]="barcode" name="username" list="users" required class="form-control input-sm special" autocomplete="off">                               
+                                                <input type="text" [(ngModel)]="barcode" name="username" list="users" required class="form-control input-sm special" [readonly]="barcodeLocked" autocomplete="off">                               
                                             </div>
                                         </div>
                                         <div class="row">
@@ -28,7 +28,7 @@
                                                 <label>Code*</label>                               
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" [(ngModel)]="code" name="username" list="users" required class="form-control input-sm special" autocomplete="off">                               
+                                                <input type="text" [(ngModel)]="code" name="username" list="users" required class="form-control input-sm special" [readonly]="codeLocked" autocomplete="off">                               
                                             </div>
                                         </div>
                                     </div>
@@ -41,7 +41,10 @@
                                         <label>Description*</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="description" name="password" required class="form-control input-sm special" autocomplete="new-password">                               
+                                        <input type="text" [(ngModel)]="description" name="description" list="descriptions" required class="form-control input-sm special" [readonly]="descriptionLocked" autocomplete="off">   
+                                        <datalist id="descriptions" style="padding: 0px;">
+                                            <option *ngFor="let d of descriptions" [ngValue]="d">{{d}}</option>
+                                        </datalist>                            
                                     </div>
                                 </div>
                                 <br>
@@ -50,7 +53,7 @@
                                         <label>Short Description</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="shortDescription" name="confirmPassword" required class="form-control input-sm special" autocomplete="off">                               
+                                        <input type="text" [(ngModel)]="shortDescription" name="confirmPassword" required class="form-control input-sm special" [readonly]="inputsLocked" autocomplete="off">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -58,20 +61,20 @@
                                         <label>Common Name</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="commonName" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="commonName" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <br>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;"></div>
                                     <div class="col-8">
-                                        <input type="checkbox"><label>Sellable</label>                              
+                                        <input type="checkbox" [(ngModel)]="sellable"><label>Sellable</label>                              
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-4 float-end" style="text-align: right;"></div>
                                     <div class="col-8">
-                                        <input type="checkbox"><label>Active</label>                               
+                                        <input type="checkbox" [(ngModel)]="active"><label>Active</label>                               
                                     </div>
                                 </div>
                                 <br>
@@ -80,7 +83,7 @@
                                         <label>Supplier</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="supplierName" class="form-control">
+                                        <select [(ngModel)]="supplierName" class="form-control" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let n of supplierNames">{{n}}</option>
                                         </select>                             
@@ -92,7 +95,7 @@
                                         <label>Department</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="departmentName" (ngModelChange)="loadClassNames(departmentName)" class="form-control">
+                                        <select [(ngModel)]="departmentName" ngModel (ngModelChange)="loadClassNames(departmentName)" class="form-control" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let d of departmentNames">{{d}}</option>
                                         </select>                                
@@ -103,10 +106,11 @@
                                         <label>Class</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="className" (ngModelChange)="loadSubClassNames(className)" class="form-control">
+                                        <select [(ngModel)]="className" ngModel (ngModelChange)="loadSubClassNames(className)" class="form-control" [disabled]="inputsLocked">
+                                            <option>{{className}}</option>
                                             <option></option>
                                             <option *ngFor="let c of classNames">{{c}}</option>
-                                        </select>                                
+                                        </select>                                   
                                     </div>
                                 </div>
                                 <div class="row">
@@ -114,7 +118,8 @@
                                         <label>Sub Class</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="subClassName" class="form-control">
+                                        <select [(ngModel)]="subClassName" class="form-control" [disabled]="inputsLocked">
+                                            <option>{{subClassName}}</option>
                                             <option></option>
                                             <option *ngFor="let sb of subClassNames">{{sb}}</option>
                                         </select>                             
@@ -126,7 +131,7 @@
                                         <label>Category</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="categoryName" (ngModelChange)="loadSubCategoryNames(categoryName)" class="form-control">
+                                        <select [(ngModel)]="categoryName" (ngModelChange)="loadSubCategoryNames(categoryName)" class="form-control" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let c of categoryNames">{{c}}</option>
                                         </select>                                
@@ -137,7 +142,8 @@
                                         <label>Sub Category</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="subCategoryName" class="form-control">
+                                        <select [(ngModel)]="subCategoryName" class="form-control" [disabled]="inputsLocked">
+                                            <option>{{subCategoryName}}</option>
                                             <option></option>
                                             <option *ngFor="let c of subCategoryNames">{{c}}</option>
                                         </select>                               
@@ -149,7 +155,7 @@
                                         <label>Group Level 1</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="levelOneName" class="form-control">
+                                        <select [(ngModel)]="levelOneName" class="form-control" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let o of levelOneNames">{{o}}</option>
                                         </select>                               
@@ -160,7 +166,7 @@
                                         <label>Group Level 2</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="levelTwoName" class="form-control">
+                                        <select [(ngModel)]="levelTwoName" class="form-control" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let t of levelTwoNames">{{t}}</option>
                                         </select>                                
@@ -171,7 +177,7 @@
                                         <label>Group Level 3</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="levelThreeName" class="form-control">
+                                        <select [(ngModel)]="levelThreeName" class="form-control" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let e of levelThreeNames">{{e}}</option>
                                         </select>                                
@@ -182,7 +188,7 @@
                                         <label>Group Level 4</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <select [(ngModel)]="levelFourName" class="form-control">
+                                        <select [(ngModel)]="levelFourName" class="form-control" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let f of levelFourNames">{{f}}</option>
                                         </select>                                
@@ -194,7 +200,7 @@
                                         <label>Discount %</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="discount" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="discount" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -202,7 +208,7 @@
                                         <label>VAT %</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="vat" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="vat" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -210,7 +216,7 @@
                                         <label>Profit Margin %</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="profitMargin" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="profitMargin" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <hr>
@@ -219,7 +225,7 @@
                                         <label>Cost Price VAT-Incl</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="costPriceVatIncl" name="rollNo" required class="form-control input-sm special" style="text-align: right;">                               
+                                        <input type="text" [(ngModel)]="costPriceVatIncl" name="rollNo" required class="form-control input-sm special" style="text-align: right;" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -227,7 +233,7 @@
                                         <label>Cost Price VAT-Excl</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="costPriceVatExcl" name="rollNo" required class="form-control input-sm special" style="text-align: right;">                               
+                                        <input type="text" [(ngModel)]="costPriceVatExcl" name="rollNo" required class="form-control input-sm special" style="text-align: right;" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -235,7 +241,7 @@
                                         <label>Selling Price VAT-Incl</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="sellingPriceVatIncl" name="rollNo" required class="form-control input-sm special" style="text-align: right;">                               
+                                        <input type="text" [(ngModel)]="sellingPriceVatIncl" name="rollNo" required class="form-control input-sm special" style="text-align: right;" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -243,7 +249,7 @@
                                         <label>Selling Price VAT-Excl</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="sellingPriceVatExcl" name="rollNo" required class="form-control input-sm special" style="text-align: right;">                               
+                                        <input type="text" [(ngModel)]="sellingPriceVatExcl" name="rollNo" required class="form-control input-sm special" style="text-align: right;" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <hr>
@@ -252,7 +258,7 @@
                                         <label>UOM</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="uom" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="uom" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -260,7 +266,7 @@
                                         <label>Pack Size</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="packSize" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="packSize" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -268,7 +274,7 @@
                                         <label>Stock</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="stock" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="stock" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -276,7 +282,7 @@
                                         <label>Minimum Inventory</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="minimumInventory" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="minimumInventory" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -284,7 +290,7 @@
                                         <label>Maximum Inventory</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="maximumInventory" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="maximumInventory" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -292,7 +298,7 @@
                                         <label>Default Reorder Level</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="defaultReorderLevel" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="defaultReorderLevel" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <div class="row">
@@ -300,7 +306,7 @@
                                         <label>Default Reorder Qty</label>                               
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" [(ngModel)]="defaultReorderQty" name="rollNo" required class="form-control input-sm special">                               
+                                        <input type="text" [(ngModel)]="defaultReorderQty" name="rollNo" required class="form-control input-sm special" [readonly]="inputsLocked">                               
                                     </div>
                                 </div>
                                 <hr>
@@ -309,7 +315,7 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <button (click)="clear()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                        <button class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
+                                        <button (click)="unlockAll()" class="btn btn-secondary" style="margin: 2px; width: 25mm;">Edit</button><br>
                                         <button (click)="delete(id)" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
                                         <button (click)="save()" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                     </div>

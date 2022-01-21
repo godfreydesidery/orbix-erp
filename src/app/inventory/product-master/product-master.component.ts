@@ -24,6 +24,15 @@ const API_URL = environment.apiUrl;
 })
 export class ProductMasterComponent implements OnInit, IProduct {
 
+  public barcodeLocked     : boolean = true
+  public codeLocked        : boolean = true
+  public descriptionLocked : boolean = true
+  public inputsLocked      : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   id                  : any
   barcode             : string
   code                : string
@@ -68,6 +77,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
   levelThreeName  : string
   levelFourName   : string
 
+  descriptions : string[]
   supplierNames    : string[]
   departmentNames  : string[]
   classNames       : string[]
@@ -78,6 +88,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
   levelTwoNames    : string[]
   levelThreeNames  : string[]
   levelFourNames   : string[]
+
 
   
 
@@ -128,6 +139,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
     this.levelThreeName  = ''
     this.levelFourName   = ''
 
+    this.descriptions     = []
     this.supplierNames    = []  
     this.departmentNames  = []
     this.classNames       = []
@@ -142,6 +154,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
   
 
   ngOnInit(): void {
+    this.loadProductDescriptions()
     this.loadSupplierNames()
     this.loadDepartmentNames()
     this.loadCategoryNames()
@@ -217,13 +230,13 @@ export class ProductMasterComponent implements OnInit, IProduct {
       .toPromise()
       .then(
         data => {
-          
-          alert('Sub Class updated successifully')
+          this.lockAll()
+          alert('Product updated successifully')
         }
       )
       .catch(
         error => {
-          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update sub class')
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update product')
         }
       )
     }
@@ -242,88 +255,94 @@ export class ProductMasterComponent implements OnInit, IProduct {
     }
   }
 
-  get(id: any): void {
+  async get(id: any): Promise<void> {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>(API_URL+'/products/get?id='+id, options)
+    await this.http.get<IProduct>(API_URL+'/products/get?id='+id, options)
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.show(data)
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product could not be found')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product not found')
       }
     )
   }
-  getByBarcode(barcode: string): void {
+  async getByBarcode(barcode: string): Promise<void> {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+    await this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.show(data)
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product could not be found')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product not found')
       }
     )
   }
-  getByCode(code: string): void {
+  async getByCode(code: string): Promise<void> {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+    await this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
     .toPromise()
     .then(
       data => {
-        console.log(data)
+        this.lockAll()
         this.show(data)
       }
     )
     .catch(
       error => {
         console.log(error)
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product could not be found')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product not found')
       }
     )
   }
-  getByDescription(description: string): void {
+  async getByDescription(description: string): Promise<void> {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+    await this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.show(data)
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product could not be found')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested Product not found')
       }
     )
   }
-  delete(id: any): void {
+  async delete(id: any): Promise<void> {
+    if(id == null || id == ''){
+      return
+    }
     if(!window.confirm('Confirm deleting the selected product')){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.delete(API_URL+'/products/delete?id='+id, options)
+    await this.http.delete(API_URL+'/products/delete?id='+id, options)
     .toPromise()
     .then(
       () => {
-        alert('Record deleted successifully')
+        alert('Product deleted successifully')
         this.clear()
       }
     )
@@ -404,6 +423,8 @@ export class ProductMasterComponent implements OnInit, IProduct {
     this.levelTwoName    = ''
     this.levelThreeName  = ''
     this.levelFourName   = ''
+
+    this.unlockAll()
   }
 
   loadSupplierNames(){
@@ -458,7 +479,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
      * Gets a list of class names
      */
     this.classNames = []
-    this.subClassNames = []
+    this.subClassNames = []   
+    this.className = ''
+    this.subClassName = ''
     if(departmentName == ''){
       return
     }
@@ -486,6 +509,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
      * Gets a list of class names
      */
     this.subClassNames = []
+    this.subClassName = ''
     if(className == ''){
       return
     }
@@ -541,6 +565,7 @@ export class ProductMasterComponent implements OnInit, IProduct {
      * Gets a list of sub category names
      */
     this.subCategoryNames = []
+    this.subCategoryName = ''
     if(categoryName == ''){
       return
     }
@@ -659,6 +684,44 @@ export class ProductMasterComponent implements OnInit, IProduct {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load groups')
       }
     )
+  }
+
+  async loadProductDescriptions(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .toPromise()
+    .then(
+      data => {
+        console.log(data)
+        this.descriptions = []
+        data?.forEach(element => {
+          this.descriptions.push(element)
+        })
+      },
+      error => {
+        console.log(error)
+        alert('Could not load product descriptions')
+      }
+    )
+  }
+
+  unlockAll(){
+    this.barcodeLocked     = false
+    this.codeLocked        = false 
+    this.descriptionLocked = false
+    this.inputsLocked      = false
+    if(!(this.id == null || this.id == '')){
+      this.codeLocked = true
+    }
+  }
+
+  lockAll(){
+    this.barcodeLocked     = true
+    this.codeLocked        = true 
+    this.descriptionLocked = true
+    this.inputsLocked      = true
   }
 
   createShortCut(shortCutName : string, link : string){

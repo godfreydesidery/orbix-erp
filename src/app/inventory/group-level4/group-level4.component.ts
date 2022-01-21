@@ -13,6 +13,13 @@ const API_URL = environment.apiUrl;
   styleUrls: ['./group-level4.component.scss']
 })
 export class GroupLevel4Component implements OnInit, ILevelFour {
+
+  public inputsLocked      : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   id: any;
   name: string;
   levelFours : ILevelFour[] = []
@@ -60,6 +67,7 @@ export class GroupLevel4Component implements OnInit, ILevelFour {
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           this.id   = data?.id
           this.name = data!.name 
           alert('Group updated successifully')
@@ -102,6 +110,7 @@ export class GroupLevel4Component implements OnInit, ILevelFour {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.id = data?.id
         this.name = data!.name
       }
@@ -123,6 +132,7 @@ export class GroupLevel4Component implements OnInit, ILevelFour {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.showGroup(data)
       }
     )
@@ -165,6 +175,7 @@ export class GroupLevel4Component implements OnInit, ILevelFour {
   clearData(){
     this.id   = ''
     this.name = ''
+    this.unlockAll()
   }
 
   
@@ -187,6 +198,14 @@ export class GroupLevel4Component implements OnInit, ILevelFour {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load groups')
       }
     )
+  }
+
+  unlockAll(){
+    this.inputsLocked      = false   
+  }
+
+  lockAll(){
+    this.inputsLocked      = true
   }
 
   createShortCut(shortCutName : string, link : string){

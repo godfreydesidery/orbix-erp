@@ -11,9 +11,33 @@
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
                         <div class="row">
-                                                                  
+                            <div class="col-2"></div>
+                            <div class="col-8">
+                                <br><br>
+                                <div class="alert alert-info" role="alert">
+                                    <span>Progress:  {{progressStatus}} {{currentRecord}} of {{totalRecords}}</span>
+                                    <hr>
+                                    <div class="alert alert-info" role="alert">Upload Materials from file
+                                        <input type="file" (change)="uploadMaterialFile($event)" multiple="false">
+                                    </div>
+                                    <hr>
+                                    <div class="alert alert-info" role="alert">Update Materials from file
+                                        <input type="file" (change)="updateMaterialFile($event)" multiple="false">
+                                    </div>
+                                    <hr>
+                                    <div class="alert alert-info" role="alert">Download Materials
+                                        <button (click)="exportMaterialToExcel()">Download</button>
+                                    </div>
+                                    <hr>
+                                    <div class="alert alert-info" role="alert">Download Material Template
+                                        <button (click)="exportTemplateToExcel()">Download</button>
+                                    </div>
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="col-2"></div>                                      
                         </div>
-                    </div>                   
+                    </div>               
                 </td>
             </tr>
         </table>

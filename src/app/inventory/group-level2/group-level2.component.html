@@ -18,11 +18,8 @@
                                         <label>Group Name</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" name="username" [(ngModel)]="name" required class="form-control input-sm special" autocomplete="off">   
+                                        <input type="text" name="username" [(ngModel)]="name" required class="form-control input-sm special" autocomplete="off" [readonly]="inputsLocked">   
                                     </div>
-                                    <!--<datalist id="role_names" style="padding: 0px;">
-                                        <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
-                                    </datalist>-->
                                     <div class="col-3">
                                         <button (click)="getByName(name)" class="btn btn-success form-control">Search</button>                               
                                     </div>
@@ -55,7 +52,7 @@
                                 <div class="row">
                                     <div class="col-8">
                                         <button (click)="clearData()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                        <button class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
+                                        <button (click)="unlockAll()" class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
                                         <button (click)="delete(id)" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
                                         <button (click)="save()" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                     </div>

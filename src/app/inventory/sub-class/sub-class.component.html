@@ -18,7 +18,7 @@
                                         <label>Sub-Class Name</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" [(ngModel)]="name" name="name" required class="form-control input-sm special" autocomplete="off">   
+                                        <input type="text" [(ngModel)]="name" name="name" required class="form-control input-sm special" autocomplete="off" [readonly]="inputsLocked">   
                                     </div>
                                     <!--<datalist id="role_names" style="padding: 0px;">
                                         <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
@@ -32,7 +32,7 @@
                                         <label>Department</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <select [(ngModel)]="departmentName" (ngModelChange)="loadClassNames(departmentName)" class="form-control input-sm">
+                                        <select [(ngModel)]="departmentName" (ngModelChange)="loadClassNames(departmentName)" class="form-control input-sm" [disabled]="inputsLocked">
                                             <option></option>
                                             <option *ngFor="let d of departmentNames">{{d}}</option>
                                         </select>
@@ -47,24 +47,13 @@
                                         <label>Class</label>                               
                                     </div>
                                     <div class="col-5">
-                                        <select [(ngModel)]="className" class="form-control input-sm">
+                                        <select [(ngModel)]="className" class="form-control input-sm" [disabled]="inputsLocked">
+                                            <option>{{className}}</option>
                                             <option></option>
                                             <option *ngFor="let c of classNames">{{c}}</option>
                                         </select>
-                                        <label>{{className}}</label>
                                     </div>
-                                    <!--<datalist id="role_names" style="padding: 0px;">
-                                        <option *ngFor="let role of roles" [ngValue]="role">{{role.name}}</option>
-                                    </datalist>-->
                                 </div>
-                                <!--<div class="row">
-                                    <div class="col-4 float-end" style="text-align: right;">
-                                        <label>Status</label>                               
-                                    </div>
-                                    <div class="col-8">
-                                        <input type="checkbox" id="active" name="active" value="active"><label for="active"> Active</label><br>
-                                    </div>
-                                </div>-->
                                 <br>
                                 <br>
                                 <div class="row">
@@ -96,9 +85,9 @@
                             <div class="col-3">
                                 <div class="row">
                                     <div class="col-8">
-                                        <button class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                        <button class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
-                                        <button class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                        <button (click)="clearData()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                        <button (click)="unlockAll()" class="btn btn-secondary"  style="margin: 2px; width: 25mm;">Edit</button><br>
+                                        <button (click)="delete(id)" class="btn btn-danger" style="margin: 2px; width: 25mm;">Delete</button><br>
                                         <button (click)="save()" class="btn btn-primary" style="margin: 2px; width: 25mm;">Save</button>
                                     </div>
                                 </div>

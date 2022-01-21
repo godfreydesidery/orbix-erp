@@ -14,6 +14,13 @@ const API_URL = environment.apiUrl;
   styleUrls: ['./department.component.scss']
 })
 export class DepartmentComponent implements OnInit, IDepartment {
+
+  public inputsLocked      : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   id          : any;
   name        : string;
   dapartments : IDepartment[] = []
@@ -45,8 +52,8 @@ export class DepartmentComponent implements OnInit, IDepartment {
       .toPromise()
       .then(
         data => {
-          this.id   = data?.id
-          this.name = data!.name         
+          this.lockAll()
+          this.showDepartment(data)     
           alert('Department created successifully')
           this.getAll()
           this.clearData()
@@ -66,8 +73,8 @@ export class DepartmentComponent implements OnInit, IDepartment {
       .toPromise()
       .then(
         data => {
-          this.id   = data?.id
-          this.name = data!.name 
+          this.lockAll()
+          this.showDepartment(data) 
           alert('Department updated successifully')
           this.getAll()
         }
@@ -114,8 +121,8 @@ export class DepartmentComponent implements OnInit, IDepartment {
     .toPromise()
     .then(
       data=>{
-        this.id = data?.id
-        this.name = data!.name
+        this.lockAll()
+        this.showDepartment(data)
       }
     )
     .catch(
@@ -138,6 +145,7 @@ export class DepartmentComponent implements OnInit, IDepartment {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.showDepartment(data)
       }
     )
@@ -186,6 +194,15 @@ export class DepartmentComponent implements OnInit, IDepartment {
      */
     this.id   = ''
     this.name = ''
+    this.unlockAll()
+  }
+
+  unlockAll(){
+    this.inputsLocked      = false   
+  }
+
+  lockAll(){
+    this.inputsLocked      = true
   }
 
   createShortCut(shortCutName : string, link : string){

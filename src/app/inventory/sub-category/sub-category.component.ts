@@ -14,6 +14,13 @@ const API_URL = environment.apiUrl;
   styleUrls: ['./sub-category.component.scss']
 })
 export class SubCategoryComponent implements OnInit {
+
+  public inputsLocked      : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   id         : any
   name       : string
   subCategories!: ISubCategory[];
@@ -69,6 +76,7 @@ export class SubCategoryComponent implements OnInit {
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           this.id   = data?.id
           this.name = data!.name 
           alert('Sub Category updated successifully')
@@ -113,6 +121,7 @@ export class SubCategoryComponent implements OnInit {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.id = data?.id
         this.name = data!.name
         this.categoryName = data!.category.name 
@@ -158,6 +167,7 @@ export class SubCategoryComponent implements OnInit {
     this.id = ''
     this.name = ''
     this.categoryName = ''
+    this.unlockAll()
   }
 
   async loadCategoryNames(){
@@ -179,6 +189,14 @@ export class SubCategoryComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load categories')
       }
     )
+  }
+
+  unlockAll(){
+    this.inputsLocked      = false   
+  }
+
+  lockAll(){
+    this.inputsLocked      = true
   }
 
   createShortCut(shortCutName : string, link : string){

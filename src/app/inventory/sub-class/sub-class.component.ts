@@ -16,6 +16,8 @@ const API_URL = environment.apiUrl;
 })
 export class SubClassComponent implements OnInit, ISubClass {
 
+  public inputsLocked      : boolean = true
+
   id              : any
   name            : string
   subClasses!     : ISubClass[];
@@ -81,6 +83,7 @@ export class SubClassComponent implements OnInit, ISubClass {
       .toPromise()
       .then(
         data => {
+          this.lockAll()
           this.id   = data?.id
           this.name = data!.name 
           alert('Sub Class updated successifully')
@@ -130,6 +133,7 @@ export class SubClassComponent implements OnInit, ISubClass {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.id = data?.id
         this.name = data!.name
         this.departmentName = data!.class_.department.name
@@ -156,6 +160,7 @@ export class SubClassComponent implements OnInit, ISubClass {
     .toPromise()
     .then(
       data=>{
+        this.lockAll()
         this.id             = data?.id
         this.name           = data!.name
         this.className      = data!.class_.name
@@ -205,6 +210,7 @@ export class SubClassComponent implements OnInit, ISubClass {
     this.name           = ''
     this.className      = ''
     this.departmentName = ''
+    this.unlockAll()
   }
 
   async loadDepartmentNames(){
@@ -236,6 +242,7 @@ export class SubClassComponent implements OnInit, ISubClass {
      * Gets a list of class names
      */
     this.classNames = []
+    this.className = ''
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
@@ -253,6 +260,14 @@ export class SubClassComponent implements OnInit, ISubClass {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load classes')
       }
     )
+  }
+
+  unlockAll(){
+    this.inputsLocked      = false   
+  }
+
+  lockAll(){
+    this.inputsLocked      = true
   }
 
   createShortCut(shortCutName : string, link : string){

@@ -21,7 +21,7 @@
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
     "@auth0/angular-jwt": "^5.0.2",
-    "@fingerprintjs/fingerprintjs": "^3.3.1",
+    "@fingerprintjs/fingerprintjs": "^3.3.2",
     "@ng-bootstrap/ng-bootstrap": "^11.0.0",
     "@ngrx/store": "^13.0.1",
     "@types/xlsx": "^0.0.36",
