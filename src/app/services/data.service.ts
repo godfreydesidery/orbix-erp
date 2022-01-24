@@ -32,6 +32,16 @@ export class DataService {
     }) 
     return logo
   }
+
+  getAddress(){
+    return [
+      {text : 'Bumaco Holdings Ltd', fontSize : 12, bold : true},
+      {text : 'Kinondoni, Dar es Salaam', fontSize : 9},
+      {text : 'P.O. Box 200, Dar es Salaam', fontSize : 9},
+      {text : 'Tel: 0712765360', fontSize : 9},
+      {text : 'Email: desideryg@gmail.com', fontSize : 9, italic : true},
+    ]
+  }
 }
 
 export interface ICompany{

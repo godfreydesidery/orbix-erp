@@ -205,7 +205,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
       {path : 'customer-cr-note', component: CustomerCreditNoteComponent},
       {path : 'supplier-master', component: SupplierMasterComponent},
       {path : 'customer-master', component: CustomerMasterComponent},
-      {path : 'employee-registetr', component: EmployeeRegisterComponent},
+      {path : 'employee-register', component: EmployeeRegisterComponent},
       {path : 'group-level1', component: GroupLevel1Component},
       {path : 'group-level2', component: GroupLevel2Component},
       {path : 'group-level3', component: GroupLevel3Component},

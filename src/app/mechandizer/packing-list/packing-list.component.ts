@@ -40,7 +40,7 @@ export class PackingListComponent implements OnInit {
   public enableDelete : boolean = false
   public enableSave   : boolean = false
 
-  logo!              : any
+  logo!              : any 
   closeResult        : string = ''
   disablePriceChange : any = false
 
@@ -52,10 +52,10 @@ export class PackingListComponent implements OnInit {
   customerId     : any
   customerNo!    : string
   customerName!  : string
-  //personnel!     : IPersonnel
-  //personnelId    : any
-  //personnelNo!   : string
-  //personnelName! : string
+  employee!     : IEmployee
+  employeeId    : any
+  employeeNo!   : string
+  employeeName! : string
   status         : string
   issueDate!     : Date
   comments!      : string
@@ -82,6 +82,7 @@ export class PackingListComponent implements OnInit {
   totalCash            : number
 
   customerNames  : string[] = []
+  employeeNames  : string[] = []
 
   //detail
   detailId            : any
@@ -158,6 +159,7 @@ export class PackingListComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.loadPackingLists()
     this.loadCustomerNames()
+    this.loadEmployeeNames()
     this.loadProductDescriptions()
     this.logo = await this.data.getLogo()
   }
@@ -174,7 +176,7 @@ export class PackingListComponent implements OnInit {
       id           : this.id,
       issueDate  : this.issueDate,
       customer     : {no : this.customerNo, name : this.customerName},
-      //personnel    : {no : this.personnelNo, name : this.personnelName},
+      employee     : {no : this.employeeNo, alias : this.employeeName},
       comments     : this.comments
     }
     if(this.id == null || this.id == ''){  
@@ -278,9 +280,9 @@ export class PackingListComponent implements OnInit {
         this.customerId      = data!.customer.id
         this.customerNo      = data!.customer.no
         this.customerName    = data!.customer.name
-        //this.personnelId     = data!.personnel.id
-        //this.personnelNo     = data!.personnel.no
-        //this.personnelName   = data!.personnel.name
+        this.employeeId     = data!.employee.id
+        this.employeeNo     = data!.employee.no
+        this.employeeName   = data!.employee.alias
         this.status               = data!.status
         this.comments             = data!.comments
         this.created              = data!.created
@@ -329,9 +331,9 @@ export class PackingListComponent implements OnInit {
         this.customerId    = data!.customer.id
         this.customerNo    = data!.customer.no
         this.customerName  = data!.customer.name  
-        //this.personnelId   = data!.personnel.id
-        //this.personnelNo   = data!.personnel.no
-        //this.personnelName = data!.personnel.name  
+        this.employeeId     = data!.employee.id
+        this.employeeNo     = data!.employee.no
+        this.employeeName   = data!.employee.alias
         this.status               = data!.status
         this.comments             = data!.comments
         this.created              = data!.created
@@ -648,6 +650,8 @@ export class PackingListComponent implements OnInit {
     this.packingListDetails   = []
     this.customerNo           = ''
     this.customerName         = ''
+    this.employeeNo           = ''
+    this.employeeName         = ''
     this.issueDate!
     this.totalPreviousReturns = 0
     this.totalAmountIssued    = 0
@@ -848,6 +852,28 @@ export class PackingListComponent implements OnInit {
     )
   }
 
+  async loadEmployeeNames(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    this.spinner.show()
+    await this.http.get<string[]>(API_URL+'/employees/get_aliases', options)
+    .pipe(finalize(() => this.spinner.hide()))
+    .toPromise()
+    .then(
+      data => {
+        this.employeeNames = []
+        data?.forEach(element => {
+          this.employeeNames.push(element)
+        })
+      },
+      error => {
+        console.log(error)
+        alert('Could not load employee names')
+      }
+    )
+  }
+
   async loadProductDescriptions(){
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
@@ -871,6 +897,12 @@ export class PackingListComponent implements OnInit {
   }
 
   async searchCustomer(name: string) {
+    if(name == ''){
+      this.customerId = ''
+      this.customerNo = ''
+      this.customerName = ''
+      return
+    }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
@@ -895,6 +927,37 @@ export class PackingListComponent implements OnInit {
     )
   }
 
+  async searchEmployee(name: string) {
+    if(name == ''){
+      this.employeeId   = ''
+      this.employeeNo   = ''
+      this.employeeName = ''
+      return
+    }
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    this.spinner.show()
+    await this.http.get<ICustomer>(API_URL+'/employees/get_by_alias?alias='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
+    .toPromise()
+    .then(
+      data=>{
+        this.employeeId = data?.id
+        this.employeeNo = data!.no
+      }
+    )
+    .catch(
+      error=>{
+        console.log(error)        
+        alert('Employee not found')
+        this.employeeId   = ''
+        this.employeeNo   = ''
+        this.employeeName = ''
+      }
+    )
+  }
+
   async calculateTotalPacked(){
     this.totalPacked =  +this.previousReturns + +this.qtyIssued
   }
@@ -908,6 +971,22 @@ export class PackingListComponent implements OnInit {
   }
 
   exportToPdf = () => {
+    var header = ''
+    var footer = ''
+    var title  = ''
+    var logo : any = ''
+    var address : any = ''
+    if(this.status == 'PENDING' || this.status == 'APPROVED' || this.status == 'CANCELED'){
+      title = 'Packing List and Returns'
+    }else{
+      title = 'Sales and Returns'
+    }
+    if(this.logo == ''){
+      logo = { text : '', width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }else{
+      logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }
+    address = this.data.getAddress()
     var report = [
       [
         {text : 'Code', fontSize : 9}, 
@@ -939,32 +1018,24 @@ export class PackingListComponent implements OnInit {
     })
     const docDefinition = {
       header: '',
-      watermark : { text : 'Packing List and Returns', color: 'blue', opacity: 0.1, bold: true, italics: false },
+      watermark : { text : title, color: 'blue', opacity: 0.1, bold: true, italics: false },
         content : [
           {
             columns : 
             [
-              {
-                image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}
-              },
+              logo,
               {width : 10, columns : [[]]},
               {
                 width : 300,
                 columns : [
-                  [
-                    {text : 'Bumaco Holdings Ltd', fontSize : 12, bold : true},
-                    {text : 'Kinondoni, Dar es Salaam', fontSize : 9},
-                    {text : 'P.O. Box 200, Dar es Salaam', fontSize : 9},
-                    {text : 'Tel: 0712765360', fontSize : 9},
-                    {text : 'Email: desideryg@gmail.com', fontSize : 9, italic : true},
-                  ]
+                  address
                 ]
               },
             ]
           },
           '  ',
           '  ',
-          {text : 'Packing List and Returns', fontSize : 12, bold : true},
+          {text : title, fontSize : 12, bold : true},
           '  ',
           {
             layout : 'noBorders',
@@ -981,7 +1052,7 @@ export class PackingListComponent implements OnInit {
                 ],
                 [
                   {text : 'Sales Officer', fontSize : 9}, 
-                  {text : 'Maganga Jumanne', fontSize : 9} 
+                  {text : this.employeeName, fontSize : 9} 
                 ],
                 [
                   {text : 'Customer', fontSize : 9}, 
@@ -1056,11 +1127,18 @@ export class PackingListComponent implements OnInit {
               ]
             ]
           }         
-        }       
+        },
+        ' ',
+        ' ',
+        ' ',
+        'Verified ____________________________________', 
+        ' ',
+        ' ',
+        'Approved __________________________________',             
       ]     
     };
-    pdfMake.createPdf(docDefinition).print();
-}
+    pdfMake.createPdf(docDefinition).open();
+  }
 
 }
 
@@ -1068,7 +1146,7 @@ interface IPackingList{
   id                 : any
   no                 : string
   customer           : ICustomer
-  personnel          : IPersonnel
+  employee           : IEmployee
   status             : string
   comments           : string
   issueDate          : Date
@@ -1151,8 +1229,8 @@ interface ICustomerName{
   names : string[]
 }
 
-interface IPersonnel{
+interface IEmployee{
   id                  : any
   no                  : string
-  name                : string
+  alias                : string
 }

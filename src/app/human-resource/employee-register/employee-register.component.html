@@ -3,7 +3,7 @@
         <table style="width: 100%;">
             <tr style="width: 100%; background-color: #eeeeee;">
                 <td style="width: 100mm; vertical-align: top;"><p class="h6">Human Resource / Employee Register</p></td>
-                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Personel Register', 'personnel-register')">Create Shortcut</span>]</td>
+                <td>[<a routerLink="/home">Home</a>]</td>
             </tr>
         </table>
         <table style="width: 100%;">
@@ -11,7 +11,81 @@
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
                         <div class="row">
-                                                                  
+                            <div class="col-5">
+                                <table class="table">
+                                    <tbody>
+                                        <span>Basic Inf</span>
+                                        <tr>
+                                            <input type="hidden" [(ngModel)]="id">
+                                            <td style="text-align: right; width: 50mm;">Employee No</td><td><input type="text" [(ngModel)]="no" [readonly]="noLocked" autocomplete="disabled" class="form-control special"></td>
+                                        </tr>
+                                        <tr>
+                                            <input type="hidden" [(ngModel)]="id">
+                                            <td style="text-align: right; width: 50mm;">Roll No</td><td><input type="text" [(ngModel)]="rollNo" [readonly]="inputsLocked" autocomplete="disabled" class="form-control special"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right; width: 50mm;">Alias</td>
+                                            <td>
+                                                <input type="text" [(ngModel)]="alias" list="aliases" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled">
+                                                <datalist id="aliases" style="padding: 0px;">
+                                                    <option *ngFor="let a of aliases" [ngValue]="a">{{a}}</option>
+                                                </datalist>
+                                            </td>
+                                        </tr>
+                                        <tr>                                      
+                                            <td style="text-align: right; width: 50mm;">First Name</td><td><input type="text" [(ngModel)]="firstName" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
+                                        </tr>
+                                        <tr>                                      
+                                            <td style="text-align: right; width: 50mm;">Second Name</td><td><input type="text" [(ngModel)]="secondName" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
+                                        </tr>
+                                        <tr>                                      
+                                            <td style="text-align: right; width: 50mm;">Last Name</td><td><input type="text" [(ngModel)]="lastName" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
+                                        </tr>
+                                        <tr>                                      
+                                            <td style="text-align: right; width: 50mm;"></td><td><input type="checkbox" [(ngModel)]="active"><label>Active</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right; width: 50mm;">Address</td><td><input type="text" [(ngModel)]="address" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right; width: 50mm;">Telephone</td><td><input type="tel" [(ngModel)]="telephone" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right; width: 50mm;">Email</td><td><input type="email" [(ngModel)]="email" class="form-control special" [readonly]="inputsLocked" autocomplete="disabled"></td>
+                                        </tr>  
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-1">
+                                <button (click)="getByNoOrName(no, alias)" class="btn btn-success form-control">Search</button> 
+                                <hr>
+                                <button class="btn btn-success" (click)="clearFields()" style="margin: 2px; width: 25mm;">New</button><br>
+                                <button class="btn btn-success" (click)="unlockAll()" style="margin: 2px; width: 25mm;">Edit</button><br>
+                                <button class="btn btn-danger"  (click)="delete()" style="margin: 2px; width: 25mm;">Delete</button><br>
+                                <button class="btn btn-primary" (click)="save()" style="margin: 2px; width: 25mm;">Save</button>
+                              </div> 
+                            <div class="col-6">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td>No</td>
+                                            <td>Roll No</td>
+                                            <td>Name</td>
+                                            <td>Active</td>
+                                            <td>Select</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let employee of employees">
+                                            <td>{{employee.no}}</td>
+                                            <td>{{employee.rollNo}}</td>
+                                            <td>{{employee.alias}}</td>
+                                            <td>{{employee.active}}</td>
+                                            <td><span (click)="get(employee.id)" style="cursor: pointer;">[Select]</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>                                   
                         </div>
                     </div>                   
                 </td>

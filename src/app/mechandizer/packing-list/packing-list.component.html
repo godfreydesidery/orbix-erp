@@ -29,6 +29,16 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <td style="text-align: right;">Sales Person</td>
+                                            <td style="padding: 0;">
+                                                <input type="text" [(ngModel)]="employeeNo" class="form-control special" placeholder="Employee No" readonly>
+                                                <select [(ngModel)]="employeeName" (ngModelChange)="searchEmployee(employeeName)" class="form-control input-sm" [disabled]="inputsLocked">
+                                                    <option></option>
+                                                    <option *ngFor="let e of employeeNames">{{e}}</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td style="text-align: right;">Issue Date</td>
                                             <td style="padding: 0;">
                                                 <table>
@@ -135,7 +145,7 @@
                                 <button class="btn btn-success" style="margin: 2px; width: 25mm;" (click)="open(content, '', '')">+Product</button>
                                 <button class="btn btn-success"style="margin: 2px; width: 25mm;" (click)="approve(id)">Approve</button>
                                 <button class="btn btn-success"style="margin: 2px; width: 35mm;" (click)="post(id)">Complete&Post</button>
-                                <button (click)="exportToPdf()" class="btn btn-success"style="margin: 2px; width: 25mm;">Print</button>
+                                <button (click)="exportToPdf()" class="btn btn-success"style="margin: 2px; width: 30mm;">Export-PDF</button>
                                 <button class="btn btn-danger"style="margin: 2px; width: 25mm;" (click)="cancel(id)">Cancel</button>
                                 <button (click)="archive(id)" class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
                                 <button (click)="archiveAll()" class="btn btn-success"style="margin: 2px; width: 30mm;">Archive All</button>

@@ -3,8 +3,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSpinnerService } from 'ngx-spinner';
+import * as pdfMake from 'pdfmake/build/pdfmake';
 import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
+import { DataService } from 'src/app/services/data.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { environment } from 'src/environments/environment';
@@ -48,6 +50,8 @@ export class GrnComponent implements OnInit {
 
   total          : number
 
+  logo!              : any 
+
   grnDetails     : IGrnDetail[]
   grns           : IGrn[]
 
@@ -66,7 +70,8 @@ export class GrnComponent implements OnInit {
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
               private modalService : NgbModal,
-              private spinner: NgxSpinnerService) {
+              private spinner: NgxSpinnerService,
+              private data : DataService) {
     this.id            = null
     this.no            = ''
     this.orderNo       = ''
@@ -96,8 +101,9 @@ export class GrnComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
-    this.loadGrns()  
+  async ngOnInit(): Promise<void> {
+    this.loadGrns() 
+    this.logo = await this.data.getLogo() 
   }
 
   async save() {   
@@ -523,6 +529,117 @@ export class GrnComponent implements OnInit {
     } else {
       return `with: ${reason}`;
     }
+  }
+
+  exportToPdf = () => {
+    var header = ''
+    var footer = ''
+    var title  = 'Goods Received Note'
+    var logo : any = ''
+    var address : any = ''
+    var total : number = 0
+    if(this.logo == ''){
+      logo = { text : '', width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }else{
+      logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }
+    address = this.data.getAddress()
+    var report = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9}, 
+        {text : 'Ordered', fontSize : 9}, 
+        {text : 'Received', fontSize : 9}, 
+        {text : 'Price', fontSize : 9},
+        {text : 'Total Cost', fontSize : 9}
+      ]
+    ]   
+    this.grnDetails.forEach((element) => {
+      total = total + element.qtyReceived*element.supplierPriceVatIncl
+      var detail = [
+        {text : element.product.code.toString(), fontSize : 9}, 
+        {text : element.product.description.toString(), fontSize : 9},
+        {text : element.qtyOrdered.toString(), fontSize : 9}, 
+        {text : element.qtyReceived.toString(), fontSize : 9}, 
+        {text : element.supplierPriceVatIncl.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},
+        {text : (element.qtyReceived*element.supplierPriceVatIncl).toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},        
+      ]
+      report.push(detail)
+    })
+    var detailSummary = [
+      {text : '', fontSize : 9}, 
+      {text : '', fontSize : 9},
+      {text : '', fontSize : 9}, 
+      {text : '', fontSize : 9},  
+      {text : 'Total', fontSize : 9},
+      {text : total.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},        
+    ]
+    report.push(detailSummary)
+    const docDefinition = {
+      header: '',
+      watermark : { text : title, color: 'blue', opacity: 0.1, bold: true, italics: false },
+        content : [
+          {
+            columns : 
+            [
+              logo,
+              {width : 10, columns : [[]]},
+              {
+                width : 300,
+                columns : [
+                  address
+                ]
+              },
+            ]
+          },
+          '  ',
+          '  ',
+          {text : title, fontSize : 12, bold : true},
+          '  ',
+          {
+            layout : 'noBorders',
+            table : {
+              widths : [75, 300],
+              body : [
+                [
+                  {text : 'GRN No', fontSize : 9}, 
+                  {text : this.no, fontSize : 9} 
+                ],
+                [
+                  {text : 'GRN Date', fontSize : 9}, 
+                  {text : this.grnDate, fontSize : 9} 
+                ],
+                [
+                  {text : 'Order No', fontSize : 9}, 
+                  {text : this.orderNo, fontSize : 9} 
+                ],
+                [
+                  {text : 'Status', fontSize : 9}, 
+                  {text : this.status, fontSize : 9} 
+                ],
+              ]
+            },
+          },
+          '  ',
+          {
+            table : {
+                headerRows : 1,
+                widths : ['auto', 200, 'auto', 'auto', 60, 60],
+                body : report
+            }
+        },
+        ' ',
+        ' ',   
+        ' ',
+        ' ',
+        ' ',
+        'Verified ____________________________________', 
+        ' ',
+        ' ',
+        'Approved __________________________________',             
+      ]     
+    };
+    pdfMake.createPdf(docDefinition).open(); 
   }
 }
 

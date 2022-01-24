@@ -191,6 +191,7 @@ export class BatchProductionComponent implements OnInit {
         this.closed         = data!.closed
         this.comments       = data!.comments
         this.loadProductions()
+        this.get(this.id)
       })
       .catch(error => {
         console.log(error)
@@ -219,7 +220,6 @@ export class BatchProductionComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update production')
       })
     }
-
   }
 
   refreshVisible(val : string){
@@ -1051,6 +1051,10 @@ export class BatchProductionComponent implements OnInit {
     this.opened         = ''
     this.closed         = ''
     this.comments       = ''
+    this.verifiedMaterials   = []
+    this.unverifiedMaterials = []
+    this.verifiedProducts    = []
+    this.unverifiedProducts  = []
   }
 
   async loadProductDescriptions(){

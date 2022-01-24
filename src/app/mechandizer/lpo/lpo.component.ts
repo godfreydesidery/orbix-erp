@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
 import { DatePipe } from '@angular/common';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import { DataService } from 'src/app/services/data.service';
 
 const API_URL = environment.apiUrl;
 
@@ -37,6 +39,8 @@ export class LpoComponent implements OnInit {
   closeResult    : string = ''
 
   blank : boolean = false
+
+  logo!              : any 
   
   id             : any;
   no             : string;
@@ -76,7 +80,8 @@ export class LpoComponent implements OnInit {
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
               private modalService: NgbModal,
-              private spinner: NgxSpinnerService) {
+              private spinner: NgxSpinnerService,
+              private data : DataService) {
     this.id           = ''
     this.no           = ''
     this.validityDays = 30
@@ -104,10 +109,11 @@ export class LpoComponent implements OnInit {
     this.descriptions     = []
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.loadLpos()
     this.loadSupplierNames()
     this.loadProductDescriptions()
+    this.logo = await this.data.getLogo()
   }
   
   async save() {
@@ -312,6 +318,7 @@ export class LpoComponent implements OnInit {
       () => {
         this.loadLpos()
         this.get(id)
+        this.exportToPdf()
       }
     )
     .catch(
@@ -320,6 +327,7 @@ export class LpoComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not print')
       }
     )
+    
   }
   cancel(id: any) {
     if(!window.confirm('Confirm canceling of the selected LPO')){
@@ -796,6 +804,110 @@ export class LpoComponent implements OnInit {
         this.supplierName = ''
       }
     )
+  }
+
+  exportToPdf = () => {
+    var header = ''
+    var footer = ''
+    var title  = 'Local Purchase Order'
+    var logo : any = ''
+    var address : any = ''
+    var total : number = 0
+    if(this.logo == ''){
+      logo = { text : '', width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }else{
+      logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }
+    address = this.data.getAddress()
+    var report = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9}, 
+        {text : 'Qty', fontSize : 9}, 
+        {text : 'Price', fontSize : 9}, 
+        {text : 'Total', fontSize : 9}
+      ]
+    ]   
+    this.lpoDetails.forEach((element) => {
+      total = total + element.qty*element.costPriceVatIncl
+      var detail = [
+        {text : element.product.code.toString(), fontSize : 9}, 
+        {text : element.product.description.toString(), fontSize : 9},
+        {text : element.qty.toString(), fontSize : 9},  
+        {text : element.costPriceVatIncl.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},
+        {text : (element.qty*element.costPriceVatIncl).toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},        
+      ]
+      report.push(detail)
+    })
+    var detailSummary = [
+      {text : '', fontSize : 9}, 
+      {text : '', fontSize : 9},
+      {text : '', fontSize : 9},  
+      {text : 'Total', fontSize : 9},
+      {text : total.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},        
+    ]
+    report.push(detailSummary)
+    const docDefinition = {
+      header: '',
+      watermark : { text : title, color: 'blue', opacity: 0.1, bold: true, italics: false },
+        content : [
+          {
+            columns : 
+            [
+              logo,
+              {width : 10, columns : [[]]},
+              {
+                width : 300,
+                columns : [
+                  address
+                ]
+              },
+            ]
+          },
+          '  ',
+          '  ',
+          {text : title, fontSize : 12, bold : true},
+          '  ',
+          {
+            layout : 'noBorders',
+            table : {
+              widths : [75, 300],
+              body : [
+                [
+                  {text : 'LPO No', fontSize : 9}, 
+                  {text : this.no, fontSize : 9} 
+                ],
+                [
+                  {text : 'Supplier', fontSize : 9}, 
+                  {text : this.supplierName, fontSize : 9} 
+                ],
+                [
+                  {text : 'Status', fontSize : 9}, 
+                  {text : this.status, fontSize : 9} 
+                ]
+              ]
+            },
+          },
+          '  ',
+          {
+            table : {
+                headerRows : 1,
+                widths : ['auto', 230, 'auto', 70, 80],
+                body : report
+            }
+        },
+        ' ',
+        ' ',   
+        ' ',
+        ' ',
+        ' ',
+        'Verified ____________________________________', 
+        ' ',
+        ' ',
+        'Approved __________________________________',             
+      ]     
+    };
+    pdfMake.createPdf(docDefinition).open(); 
   }
 }
 
