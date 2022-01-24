@@ -2,6 +2,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -23,6 +25,14 @@ const API_URL = environment.apiUrl;
   ]
 })
 export class SalesReceiptComponent implements OnInit {
+
+  public receiptNoLocked  : boolean = true
+  public inputsLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   closeResult    : string = ''
 
   blank          : boolean = false
@@ -34,7 +44,7 @@ export class SalesReceiptComponent implements OnInit {
   customerNo!    : string
   customerName!  : string
   status         : string
-  receiptDate    : Date
+  receiptDate!   : Date
   mode           : string
   amount         : number
   chequeNo       : string
@@ -49,10 +59,10 @@ export class SalesReceiptComponent implements OnInit {
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private spinner: NgxSpinnerService) {
     this.id               = ''
     this.no               = ''
-    this.receiptDate      = new Date()
     this.status           = ''
     this.mode             = ''
     this.amount           = 0
@@ -79,6 +89,10 @@ export class SalesReceiptComponent implements OnInit {
       alert('Receipt date required')
       return
     } 
+    if(this.mode == ''){
+      alert('Payment mode required')
+      return
+    }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
@@ -91,8 +105,10 @@ export class SalesReceiptComponent implements OnInit {
       amount       : this.amount,
       comments     : this.comments
     }
-    if(this.id == null || this.id == ''){   
+    if(this.id == null || this.id == ''){ 
+      this.spinner.show()  
       await this.http.post<ISalesReceipt>(API_URL+'/sales_receipts/create', sales_receipt, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -117,7 +133,9 @@ export class SalesReceiptComponent implements OnInit {
         }
       )
     }else{
+      this.spinner.show()
       await this.http.put<ISalesReceipt>(API_URL+'/sales_receipts/update', sales_receipt, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -148,12 +166,16 @@ export class SalesReceiptComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<ISalesReceipt>(API_URL+'/sales_receipts/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.id           = data?.id
         this.no           = data!.no
+        this.receiptDate  = data!.receiptDate
         this.customerId   = data!.customer.id
         this.customerNo   = data!.customer.no
         this.customerName = data!.customer.name
@@ -180,12 +202,16 @@ export class SalesReceiptComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<ISalesReceipt>(API_URL+'/sales_receipts/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.id           = data?.id
         this.no           = data!.no 
+        this.receiptDate  = data!.receiptDate
         this.customerId   = data!.customer.id
         this.customerNo   = data!.customer.no
         this.customerName = data!.customer.name  
@@ -215,7 +241,9 @@ export class SalesReceiptComponent implements OnInit {
     var receipt = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/sales_receipts/approve', receipt, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -241,7 +269,9 @@ export class SalesReceiptComponent implements OnInit {
     var receipt = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/sales_receipts/cancel', receipt, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -265,14 +295,14 @@ export class SalesReceiptComponent implements OnInit {
     throw new Error('Method not implemented.');
   }
 
-  
-
   loadReceipts(){
     this.receipts = []
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<ISalesReceipt[]>(API_URL+'/sales_receipts', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -297,7 +327,9 @@ export class SalesReceiptComponent implements OnInit {
     var receipt = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/sales_receipts/archive', receipt, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -321,8 +353,9 @@ export class SalesReceiptComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/sales_receipts/archive_all', null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -339,6 +372,16 @@ export class SalesReceiptComponent implements OnInit {
     )
   }
 
+  unlockAll(){
+    this.receiptNoLocked  = false
+    this.inputsLocked = false   
+  }
+
+  lockAll(){
+    this.receiptNoLocked  = true
+    this.inputsLocked = true
+  }
+
   clear(){
     this.id           = ''
     this.no           = ''
@@ -351,7 +394,7 @@ export class SalesReceiptComponent implements OnInit {
     this.approved     = ''
     this.customerNo = ''
     this.customerName = ''
-    this.receiptDate    = new Date()
+    this.receiptDate!
   }
 
   createShortCut(shortCutName : string, link : string){
@@ -360,13 +403,13 @@ export class SalesReceiptComponent implements OnInit {
     }
   }
 
-  open(content : any, productId : string, detailId : string) {
-    if(this.customerNo == '' || this.customerNo == null){
+  open(content: any, productId: string, detailId: string) {
+    if (this.customerNo == '' || this.customerNo == null) {
       alert('Please enter customer information')
       return
-    }  
-   
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+    }
+
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
@@ -386,7 +429,9 @@ export class SalesReceiptComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/customers/get_names', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -406,8 +451,9 @@ export class SalesReceiptComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ICustomer>(API_URL+'/customers/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -434,9 +480,9 @@ interface ISalesReceipt{
   status       : string
   comments     : string
   receiptDate  : Date
-  mode           : string
-  amount         : number
-  chequeNo       : string
+  mode         : string
+  amount       : number
+  chequeNo     : string
   created      : string
   approved     : string
 }

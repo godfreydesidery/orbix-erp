@@ -2,6 +2,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
@@ -24,6 +26,13 @@ const API_URL = environment.apiUrl;
   ]
 })
 export class BatchProductionComponent implements OnInit {
+
+  public noLocked     : boolean = true
+  public inputsLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
 
   closeResult : any
 
@@ -93,7 +102,8 @@ export class BatchProductionComponent implements OnInit {
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
               private modalService: NgbModal,
-              private data : DataService) {
+              private data : DataService,
+              private spinner : NgxSpinnerService) {
     this.id             = null
     this.no             = ''
     this.productionName = ''
@@ -147,6 +157,7 @@ export class BatchProductionComponent implements OnInit {
   ngOnInit(): void {
     this.loadProductions()
     this.loadMaterials()
+    this.loadProductDescriptions()
   }
 
   async save(){
@@ -163,7 +174,9 @@ export class BatchProductionComponent implements OnInit {
       comments       : this.comments
     }
     if(this.id == '' || this.id == null){
+      this.spinner.show()
       await this.http.post<IProduction>(API_URL+'/productions/create', production, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(data => {
         this.id             = data!.id
@@ -177,13 +190,16 @@ export class BatchProductionComponent implements OnInit {
         this.opened         = data!.opened
         this.closed         = data!.closed
         this.comments       = data!.comments
+        this.loadProductions()
       })
       .catch(error => {
         console.log(error)
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not create production')
       })
     }else{
+      this.spinner.show()
       await this.http.post<IProduction>(API_URL+'/productions/update', production, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(data => {
         this.id             = data!.id
@@ -277,7 +293,9 @@ export class BatchProductionComponent implements OnInit {
     if(mat.id == null || mat.id == ''){
       return
     }
+    this.spinner.show()
     await this.http.post<IMaterial>(API_URL+'/productions/register_material', material, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -312,7 +330,9 @@ export class BatchProductionComponent implements OnInit {
       alert('Invalid quantity in material')
       return
     }
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/add_material', material, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -344,7 +364,9 @@ export class BatchProductionComponent implements OnInit {
       alert('Invalid quantity in material')
       return
     }
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/deduct_material', material, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
 
@@ -372,8 +394,9 @@ export class BatchProductionComponent implements OnInit {
       alert('Please select material')
       return
     }
-
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/remove_material', material, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -411,8 +434,9 @@ export class BatchProductionComponent implements OnInit {
     }else{
       return
     }
-
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/verify_material', material, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -430,7 +454,9 @@ export class BatchProductionComponent implements OnInit {
     this.materialFilter   = ''
     this.materials        = []
     this.visibleMaterials = []
+    this.spinner.show()
     await this.http.get<IMaterial[]>(API_URL+'/materials', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       data!.forEach(element => {
@@ -455,7 +481,9 @@ export class BatchProductionComponent implements OnInit {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.unverifiedMaterials = []
+    this.spinner.show()
     await this.http.get<IMaterial[]>(API_URL+'/productions/get_unverified_materials?production_id='+productionId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       data!.forEach(element => {
@@ -477,7 +505,9 @@ export class BatchProductionComponent implements OnInit {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.verifiedMaterials = []
+    this.spinner.show()
     await this.http.get<IMaterial[]>(API_URL+'/productions/get_verified_materials?production_id='+productionId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       data!.forEach(element => {
@@ -514,7 +544,105 @@ export class BatchProductionComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduction>(API_URL+'/productions/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
+    .toPromise()
+    .then(
+      data => {
+        console.log(data)
+        this.id             = data!.id
+        this.no             = data!.no
+        this.productionName = data!.productionName
+        this.batchNo        = data!.batchNo
+        this.batchSize      = data!.batchSize
+        this.uom            = data!.uom
+        this.status         = data!.status
+        this.created        = data!.created
+        this.opened         = data!.opened
+        this.closed         = data!.closed
+        this.comments       = data!.comments
+
+        this.productionUnverifiedMaterials = data!.productionUnverifiedMaterials
+        this.productionMaterials           = data!.productionMaterials
+
+        this.productionUnverifiedProducts = data!.productionUnverifiedProducts
+        this.productionProducts           = data!.productionProducts
+
+        this.unverifiedMaterials = []
+        this.productionUnverifiedMaterials.forEach(element => {
+          var material = {
+            id          : element.material.id,
+            code        : element.material.code,
+            description : element.material.description,
+            qty         : element.qty
+          }
+          this.unverifiedMaterials.push(material)
+        })
+
+        this.verifiedMaterials = []
+        this.productionMaterials.forEach(element => {
+          var material = {
+            id          : element.material.id,
+            code        : element.material.code,
+            description : element.material.description,
+            qty         : element.qty
+          }
+          this.verifiedMaterials.push(material)
+        })
+
+        this.unverifiedProducts = []
+        this.productionUnverifiedProducts.forEach(element => {
+          var product = {
+            id                  : element.product.id,
+            barcode             : null,
+            code                : element.product.code,
+            description         : element.product.description,
+            qty                 : element.qty,
+            sellingPriceVatIncl : 0,
+            sellingPriceVatExcl : 0,
+            costPriceVatIncl    : 0,
+            costPriceVatExcl    : 0
+
+          }
+          this.unverifiedProducts.push(product)
+        })
+
+        this.verifiedProducts = []
+        this.productionProducts.forEach(element => {
+          var product = {
+            id                  : element.product.id,
+            barcode             : null,
+            code                : element.product.code,
+            description         : element.product.description,
+            qty                 : element.qty,
+            sellingPriceVatIncl : element.product.sellingPriceVatIncl,
+            sellingPriceVatExcl : element.product.sellingPriceVatExcl,
+            costPriceVatIncl    : element.product.costPriceVatIncl,
+            costPriceVatExcl    : element.product.costPriceVatExcl
+          }
+          this.verifiedProducts.push(product)
+        })
+      }
+    )
+    .catch(
+      error => {
+        console.log(error)
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load production')
+      }
+    )
+  }
+
+  async getByNo(no: string) {
+    if(no == ''){
+      return
+    }
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    this.spinner.show()
+    await this.http.get<IProduction>(API_URL+'/productions/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -685,7 +813,9 @@ export class BatchProductionComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -701,7 +831,9 @@ export class BatchProductionComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -719,7 +851,9 @@ export class BatchProductionComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -770,7 +904,9 @@ export class BatchProductionComponent implements OnInit {
       alert('Invalid quantity in product')
       return
     }
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/add_product', product, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -816,8 +952,9 @@ export class BatchProductionComponent implements OnInit {
     }else{
       return
     }
-
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/verify_product', product, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -853,8 +990,9 @@ export class BatchProductionComponent implements OnInit {
       alert('Please select product')
       return
     }
-
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/remove_product', product, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -877,8 +1015,9 @@ export class BatchProductionComponent implements OnInit {
     var production = {
       id : id
     }
-
+    this.spinner.show()
     await this.http.post<IProduction>(API_URL+'/productions/close', production, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.get(this.id)
@@ -886,9 +1025,18 @@ export class BatchProductionComponent implements OnInit {
       alert('Production closed successifully')
     })
     .catch(error => {
-      console.log(error)
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not close production batch')
     })
+  }
+
+  unlockAll(){
+    this.noLocked     = false 
+    this.inputsLocked = false
+  }
+
+  lockAll(){
+    this.noLocked     = true
+    this.inputsLocked = true
   }
 
   clear(){
@@ -903,6 +1051,28 @@ export class BatchProductionComponent implements OnInit {
     this.opened         = ''
     this.closed         = ''
     this.comments       = ''
+  }
+
+  async loadProductDescriptions(){
+    let options = {
+      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
+    }
+    this.spinner.show()
+    await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
+    .toPromise()
+    .then(
+      data => {
+        this.descriptions = []
+        data?.forEach(element => {
+          this.descriptions.push(element)
+        })
+      },
+      error => {
+        console.log(error)
+        alert('Could not load product descriptions')
+      }
+    )
   }
 
   createShortCut(shortCutName : string, link : string){

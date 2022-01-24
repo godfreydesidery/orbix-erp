@@ -5,6 +5,8 @@ import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { ICategory } from '../category/category.component';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -28,7 +30,10 @@ export class SubCategoryComponent implements OnInit {
   categoryNames : string[] = []
   class_! : ICategory
 
-  constructor(private shortcut : ShortCutHandlerService, private auth : AuthService, private http : HttpClient) {
+  constructor(private shortcut : ShortCutHandlerService, 
+              private auth : AuthService, 
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.id = ''
     this.name = ''
     this.categoryName = ''
@@ -52,7 +57,9 @@ export class SubCategoryComponent implements OnInit {
     }
     if(this.id == null || this.id == ''){
       //save a new till
+      this.spinner.show()
       await this.http.post<ISubCategory>(API_URL+'/sub_categories/create', subCategory, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -72,7 +79,9 @@ export class SubCategoryComponent implements OnInit {
 
     }else{
       //update an existing till
+      this.spinner.show()
       await this.http.put<ISubCategory>(API_URL+'/sub_categories/update', subCategory, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -95,7 +104,9 @@ export class SubCategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ISubCategory[]>(API_URL+'/sub_categories', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -116,8 +127,9 @@ export class SubCategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ISubCategory>(API_URL+'/sub_categories/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -125,8 +137,7 @@ export class SubCategoryComponent implements OnInit {
         this.id = data?.id
         this.name = data!.name
         this.categoryName = data!.category.name 
-      }
-      
+      }     
     )
     .catch(
       error=>{
@@ -143,7 +154,9 @@ export class SubCategoryComponent implements OnInit {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       await this.http.delete(API_URL+'/sub_categories/delete?id='+id, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -175,7 +188,9 @@ export class SubCategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ICategory[]>('/api/categories', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {

@@ -6,6 +6,8 @@ import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.servi
 import { IClass } from '../class/class.component';
 import { IDepartment } from '../department/department.component';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -30,7 +32,8 @@ export class SubClassComponent implements OnInit, ISubClass {
 
   constructor(private shortcut : ShortCutHandlerService, 
               private auth : AuthService, 
-              private http : HttpClient) {
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.id             = ''
     this.name           = ''
     this.className      = ''
@@ -57,7 +60,9 @@ export class SubClassComponent implements OnInit, ISubClass {
       /**
        * Save a new record
        */
+      this.spinner.show()
       await this.http.post<ISubClass>(API_URL+'/sub_classes/create', subClass, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -79,7 +84,9 @@ export class SubClassComponent implements OnInit, ISubClass {
       /**
        * Update an existing record
        */
+      this.spinner.show()
       await this.http.put<ISubClass>(API_URL+'/sub_classes/update', subClass, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -105,7 +112,9 @@ export class SubClassComponent implements OnInit, ISubClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ISubClass[]>(API_URL+'/sub_classes', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -128,8 +137,9 @@ export class SubClassComponent implements OnInit, ISubClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ISubClass>(API_URL+'/sub_classes/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -155,8 +165,9 @@ export class SubClassComponent implements OnInit, ISubClass {
      let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ISubClass>(API_URL+'/sub_classes/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -182,7 +193,9 @@ export class SubClassComponent implements OnInit, ISubClass {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       await this.http.delete(API_URL+'/sub_classes/delete?id='+id, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -221,7 +234,9 @@ export class SubClassComponent implements OnInit, ISubClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IDepartment[]>(API_URL+'/departments', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -246,7 +261,9 @@ export class SubClassComponent implements OnInit, ISubClass {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IClass[]>(API_URL+'/classes/get_by_department_name?department_name='+departmentName, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {

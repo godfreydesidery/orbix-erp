@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -47,7 +49,8 @@ export class ProductToMaterialComponent implements OnInit {
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private spinner: NgxSpinnerService) {
     this.id               = ''
     this.no               = ''
     this.status           = ''
@@ -86,8 +89,10 @@ export class ProductToMaterialComponent implements OnInit {
       id           : this.id,
       comments     : this.comments
     }
-    if(this.id == null || this.id == ''){   
+    if(this.id == null || this.id == ''){  
+      this.spinner.show() 
       await this.http.post<IProductToMaterial>(API_URL+'/product_to_materials/create', product_to_material, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -110,7 +115,9 @@ export class ProductToMaterialComponent implements OnInit {
         }
       )
     }else{
+      this.spinner.show()
       await this.http.put<IProductToMaterial>(API_URL+'/product_to_materials/update', product_to_material, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -138,7 +145,9 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProductToMaterial>(API_URL+'/product_to_materials/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -166,7 +175,9 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProductToMaterial>(API_URL+'/product_to_materials/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -196,7 +207,9 @@ export class ProductToMaterialComponent implements OnInit {
     var conversion = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/product_to_materials/approve', conversion, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -222,7 +235,9 @@ export class ProductToMaterialComponent implements OnInit {
     var conversion = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/product_to_materials/cancel', conversion, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -264,8 +279,9 @@ export class ProductToMaterialComponent implements OnInit {
         qty : this.qty,
         ratio : this.ratio
       }
-      console.log(this.ratio)
+      this.spinner.show()
       await this.http.post(API_URL+'/product_to_material_details/save', detail, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         () => {
@@ -294,7 +310,9 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.delete(API_URL+'/product_to_material_details/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -312,7 +330,9 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProductToMaterial[]>(API_URL+'/product_to_materials', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -337,7 +357,9 @@ export class ProductToMaterialComponent implements OnInit {
     var conversion = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/product_to_materials/archive', conversion, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -361,8 +383,9 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/product_to_materials/archive_all', null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -416,7 +439,9 @@ export class ProductToMaterialComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -435,7 +460,9 @@ export class ProductToMaterialComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -456,7 +483,9 @@ export class ProductToMaterialComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -477,12 +506,14 @@ export class ProductToMaterialComponent implements OnInit {
     }
   }
 
-  searchDetail(productId : any, detailId :any){    
+  async searchDetail(productId : any, detailId :any){    
     this.clearDetail()
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
+    this.spinner.show()
+    await this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -495,8 +526,9 @@ export class ProductToMaterialComponent implements OnInit {
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
-
-    this.http.get<IProductToMaterialDetail>(API_URL+'/product_to_material_details/get?id='+detailId, options)
+    this.spinner.show()
+    await this.http.get<IProductToMaterialDetail>(API_URL+'/product_to_material_details/get?id='+detailId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -535,7 +567,9 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -546,8 +580,7 @@ export class ProductToMaterialComponent implements OnInit {
         console.log(data)
       },
       error => {
-        console.log(error)
-        alert('Could not load product descriptions')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product descriptions')
       }
     )
   }
@@ -556,7 +589,9 @@ export class ProductToMaterialComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProductMaterialRatio>(API_URL+'/product_material_ratios/get_by_product?id='+productId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -567,8 +602,7 @@ export class ProductToMaterialComponent implements OnInit {
         this.ratio               = data!.ratio
       },
       error => {
-        console.log(error)
-        alert('Could not load ratio')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load ratio')
       }
     )
   }

@@ -1,5 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -95,7 +97,8 @@ export class ProductInquiryComponent implements OnInit {
 
   constructor(private shortcut : ShortCutHandlerService,
               private auth : AuthService,
-              private http : HttpClient) {
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.id               = ''
     this.barcode          = ''
     this.code             = ''
@@ -173,7 +176,9 @@ export class ProductInquiryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -190,7 +195,9 @@ export class ProductInquiryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -207,7 +214,9 @@ export class ProductInquiryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -225,7 +234,9 @@ export class ProductInquiryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -317,7 +328,9 @@ export class ProductInquiryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -339,5 +352,4 @@ export class ProductInquiryComponent implements OnInit {
       this.shortcut.createShortCut(shortCutName, link)
     }
   }
-
 }

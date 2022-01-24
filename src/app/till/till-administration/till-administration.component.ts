@@ -7,6 +7,8 @@ import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -38,7 +40,8 @@ export class TillAdministrationComponent implements OnInit, ITill {
     private auth : AuthService,
     private http :HttpClient,
     private shortcut : ShortCutHandlerService, 
-    private modalService: NgbModal) {
+    private modalService: NgbModal,
+    private spinner : NgxSpinnerService) {
     this.id           = ''
     this.tillNo       = ''
     this.computerName = ''
@@ -63,7 +66,9 @@ export class TillAdministrationComponent implements OnInit, ITill {
     }
     if(this.id == null || this.id == ''){
       //save a new till
+      this.spinner.show()
       await this.http.post<ITill>(API_URL+'/tills/create', till, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -84,7 +89,9 @@ export class TillAdministrationComponent implements OnInit, ITill {
 
     }else{
       //update an existing till
+      this.spinner.show()
       await this.http.put<ITill>(API_URL+'/tills/update', till, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -116,7 +123,9 @@ export class TillAdministrationComponent implements OnInit, ITill {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       await this.http.delete(API_URL+'/tills/delete?id='+id, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -141,7 +150,9 @@ export class TillAdministrationComponent implements OnInit, ITill {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       await this.http.post(API_URL+'/tills/activate?id='+id, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -165,7 +176,9 @@ export class TillAdministrationComponent implements OnInit, ITill {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       await this.http.post(API_URL+'/tills/deactivate?id='+id, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -186,7 +199,9 @@ export class TillAdministrationComponent implements OnInit, ITill {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ITill[]>(API_URL+'/tills', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -236,8 +251,9 @@ export class TillAdministrationComponent implements OnInit, ITill {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ITill>(API_URL+'/tills/get?id='+key, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{

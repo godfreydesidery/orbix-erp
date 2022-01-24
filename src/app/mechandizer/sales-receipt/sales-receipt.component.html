@@ -17,16 +17,28 @@
                                     <tbody>
                                         <tr>
                                             <input type="hidden" [(ngModel)]="id">
-                                            <td style="text-align: right;">Receipt No</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special"></td>
+                                            <td style="text-align: right;">Receipt No</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special" [readonly]="receiptNoLocked"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Receipt Date</td><td style="padding: 0;"><input type="date" [(ngModel)]="receiptDate" class="form-control special"></td>
+                                            <td style="text-align: right;">Receipt Date</td>
+                                            <td style="padding: 0;">
+                                                <table>
+                                                    <tr>
+                                                        <td style="width: 90%;">
+                                                            <input type="text" [(ngModel)]="receiptDate" class="form-control special"  readonly>
+                                                        </td>
+                                                        <td>
+                                                            <input type="date" [(ngModel)]="receiptDate" class="special" style="width: 14mm;" [readonly]="inputsLocked">                 
+                                                        </td>
+                                                    </tr>
+                                                </table>                                               
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Customer</td>
                                             <td style="padding: 0;">
                                                 <input type="text" [(ngModel)]="customerNo" class="form-control special" placeholder="Customer No" readonly>
-                                                <select [(ngModel)]="customerName" (ngModelChange)="searchCustomer(customerName)" class="form-control input-sm">
+                                                <select [(ngModel)]="customerName" (ngModelChange)="searchCustomer(customerName)" class="form-control input-sm" [disabled]="inputsLocked">
                                                     <option></option>
                                                     <option *ngFor="let c of customerNames">{{c}}</option>
                                                 </select>
@@ -35,7 +47,7 @@
                                         <tr>
                                             <td style="text-align: right;">Mode of Payment</td>
                                             <td style="padding: 0;">
-                                                <select [(ngModel)]="mode" class="form-control input-sm">
+                                                <select [(ngModel)]="mode" class="form-control input-sm" [disabled]="inputsLocked">
                                                     <option></option>
                                                     <option>Cash</option>
                                                     <option>Cheque</option>
@@ -43,10 +55,10 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Check No</td><td style="padding: 0;"><input type="text" [(ngModel)]="chequeNo" class="form-control special"></td>
+                                            <td style="text-align: right;">Check No</td><td style="padding: 0;"><input type="text" [(ngModel)]="chequeNo" class="form-control special" [readonly]="inputsLocked"></td>
                                         </tr> 
                                         <tr>
-                                            <td style="text-align: right;">Amount</td><td style="padding: 0;"><input type="text" [(ngModel)]="amount" class="form-control special" style="text-align: right; font-family: 'Courier New', Courier, monospace; font-weight: bold;"></td>
+                                            <td style="text-align: right;">Amount</td><td style="padding: 0;"><input type="text" [(ngModel)]="amount" class="form-control special" style="text-align: right; font-family: 'Courier New', Courier, monospace; font-weight: bold;" [readonly]="inputsLocked"></td>
                                         </tr>                                                             
                                         <tr>
                                             <td style="text-align: right;">Created</td><td>{{created}}</td>
@@ -68,8 +80,8 @@
                             </div>
                             <div class="col-1">
                                 <button class="btn btn-success" (click)="getByNo(no)" style="margin: 2px; width: 25mm;">Search</button><br><br>
-                                <button class="btn btn-success" (click)="clear()" style="margin: 2px; width: 25mm;">New</button><br>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Edit</button><br>
+                                <button class="btn btn-success" (click)="clear()" (click)="unlockAll()" style="margin: 2px; width: 25mm;">New</button><br>
+                                <button class="btn btn-success" (click)="unlockAll()" style="margin: 2px; width: 25mm;">Edit</button><br>
                                 <button (click)="save()" class="btn btn-success"style="margin: 2px; width: 25mm;">Save</button><br>
                             </div>
                             <div class="col-1"></div>

@@ -7,6 +7,8 @@ import { ISupplier } from 'src/app/supplier/supplier-master/supplier-master.comp
 import { ICategory } from '../category/category.component';
 import { ISubCategory } from '../sub-category/sub-category.component';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -58,7 +60,8 @@ export class MaterialMasterComponent implements OnInit {
 
   constructor(private shortcut : ShortCutHandlerService,
               private auth : AuthService,
-              private http : HttpClient) {
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.id               = ''
     this.barcode          = ''
     this.code             = ''
@@ -97,7 +100,9 @@ export class MaterialMasterComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.materials = []
+    this.spinner.show()
     await this.http.get<IMaterial[]>('/api/materials', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       data?.forEach(element => {
@@ -146,7 +151,9 @@ export class MaterialMasterComponent implements OnInit {
       /**
        * Save a new record
        */
+      this.spinner.show()
       await this.http.post<IMaterial>('/api/materials/create', material, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -166,7 +173,9 @@ export class MaterialMasterComponent implements OnInit {
       /**
        * Update an existing record
        */
+      this.spinner.show()
       await this.http.put<IMaterial>('/api/materials/update', material, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -197,7 +206,9 @@ export class MaterialMasterComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IMaterial>('/api/materials/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -216,7 +227,9 @@ export class MaterialMasterComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IMaterial>('/api/materials/get_by_code?code='+code, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -235,7 +248,9 @@ export class MaterialMasterComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IMaterial>('/api/materials/get_by_description?description='+description, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -256,7 +271,9 @@ export class MaterialMasterComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.delete('/api/materials/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -323,7 +340,9 @@ export class MaterialMasterComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ICategory[]>('/api/categories', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -350,7 +369,9 @@ export class MaterialMasterComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ISubCategory[]>('/api/sub_categories/get_by_category_name?category_name='+categoryName, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -371,7 +392,9 @@ export class MaterialMasterComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/materials/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {

@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Workbook } from 'exceljs';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { environment } from 'src/environments/environment';
@@ -25,7 +27,8 @@ export class MaterialMassManagerComponent implements OnInit {
   
   constructor(private shortcut : ShortCutHandlerService,
               private auth : AuthService,
-              private http : HttpClient) {
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.progress       = false
     this.progressStatus = ''
     this.totalRecords   = 0
@@ -61,7 +64,9 @@ export class MaterialMassManagerComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IMaterial[]>(API_URL+'/materials', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -291,8 +296,9 @@ export class MaterialMassManagerComponent implements OnInit {
         alert('End of file reached')
         return
       }
-
+      this.spinner.show()
       await this.http.post(API_URL+'/materials/create', material, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .catch(
         error => {
@@ -338,8 +344,9 @@ export class MaterialMassManagerComponent implements OnInit {
         alert('End of file reached')
         return
       }
-
+      this.spinner.show()
       await this.http.put(API_URL+'/materials/update_by_code', material, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .catch(
         error => {
@@ -394,10 +401,8 @@ export class MaterialMassManagerComponent implements OnInit {
     var object : any
     for(let i = 1; i < data.length; i++) {
       
-
     }
   }
-
 
   createShortCut(shortCutName : string, link : string){
     if(confirm('Create shortcut for this page?')){

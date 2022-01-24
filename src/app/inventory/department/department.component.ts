@@ -5,6 +5,8 @@ import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { IClass } from '../class/class.component';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -27,7 +29,8 @@ export class DepartmentComponent implements OnInit, IDepartment {
 
   constructor(private shortcut : ShortCutHandlerService, 
               private auth : AuthService, 
-              private http : HttpClient) {
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.id   = ''
     this.name = ''
   }
@@ -48,7 +51,9 @@ export class DepartmentComponent implements OnInit, IDepartment {
       /**
        * Save a new record
        */
+      this.spinner.show()
       await this.http.post<IDepartment>(API_URL+'/departments/create', department, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -69,7 +74,9 @@ export class DepartmentComponent implements OnInit, IDepartment {
       /**
        * Update an existing record
        */
+      this.spinner.show()
       await this.http.put<IDepartment>(API_URL+'/departments/update', department, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -94,7 +101,9 @@ export class DepartmentComponent implements OnInit, IDepartment {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IDepartment[]>(API_URL+'/departments', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -116,8 +125,9 @@ export class DepartmentComponent implements OnInit, IDepartment {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<IDepartment>(API_URL+'/departments/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -140,8 +150,9 @@ export class DepartmentComponent implements OnInit, IDepartment {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get(API_URL+'/departments/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -170,7 +181,9 @@ export class DepartmentComponent implements OnInit, IDepartment {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       await this.http.delete(API_URL+'/departments/delete?id='+id, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {

@@ -42,7 +42,7 @@ import { VendorCreditNoteComponent } from './mechandizer/vendor-credit-note/vend
 import { CustomerCreditNoteComponent } from './mechandizer/customer-credit-note/customer-credit-note.component';
 import { SupplierMasterComponent } from './supplier/supplier-master/supplier-master.component';
 import { CustomerMasterComponent } from './customer/customer-master/customer-master.component';
-import { PersonnelRegisterComponent } from './human-resource/personnel-register/personnel-register.component';
+import { EmployeeRegisterComponent } from './human-resource/employee-register/employee-register.component';
 import { GroupLevel1Component } from './inventory/group-level1/group-level1.component';
 import { GroupLevel2Component } from './inventory/group-level2/group-level2.component';
 import { GroupLevel3Component } from './inventory/group-level3/group-level3.component';
@@ -96,7 +96,7 @@ const routes: Routes = [
   {path: 'customer-cr-note', component: CustomerCreditNoteComponent, canActivate: [AuthGuard]},
   {path: 'supplier-master', component: SupplierMasterComponent, canActivate: [AuthGuard]},
   {path: 'customer-master', component: CustomerMasterComponent, canActivate: [AuthGuard]},
-  {path: 'personnel-register', component: PersonnelRegisterComponent, canActivate: [AuthGuard]},
+  {path: 'employee-register', component: EmployeeRegisterComponent, canActivate: [AuthGuard]},
   {path: 'group-level1', component: GroupLevel1Component, canActivate: [AuthGuard]},
   {path: 'group-level2', component: GroupLevel2Component, canActivate: [AuthGuard]},
   {path: 'group-level3', component: GroupLevel3Component, canActivate: [AuthGuard]},

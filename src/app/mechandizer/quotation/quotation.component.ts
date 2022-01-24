@@ -2,6 +2,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -23,6 +25,14 @@ const API_URL = environment.apiUrl;
   ]
 })
 export class QuotationComponent implements OnInit {
+
+  public quotationNoLocked  : boolean = true
+  public inputsLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   closeResult      : string = ''
 
   blank            : boolean = false
@@ -34,12 +44,14 @@ export class QuotationComponent implements OnInit {
   customerNo!      : string
   customerName!    : string
   status           : string
-  quotationDate    : Date
+  quotationDate!    : Date
   comments!        : string
   created          : string
   approved         : string
   quotationDetails : IQuotationDetail[]
   quotations       : IQuotation[]
+
+  total            : number
 
   customerNames    : string[] = []
 
@@ -58,16 +70,18 @@ export class QuotationComponent implements OnInit {
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private spinner: NgxSpinnerService) {
     this.id                  = ''
     this.no                  = ''
-    this.quotationDate       = new Date()
     this.status              = ''
     this.comments            = ''
     this.created             = ''
     this.approved            = ''
     this.quotationDetails    = []
     this.quotations          = []
+
+    this.total               = 0
 
     this.detailId            = ''
     this.barcode             = ''
@@ -104,8 +118,10 @@ export class QuotationComponent implements OnInit {
       customer     : {no : this.customerNo, name : this.customerName},
       comments     : this.comments
     }
-    if(this.id == null || this.id == ''){   
+    if(this.id == null || this.id == ''){ 
+      this.spinner.show()  
       await this.http.post<IQuotation>(API_URL+'/quotations/create', quotations, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -127,7 +143,9 @@ export class QuotationComponent implements OnInit {
         }
       )
     }else{
+      this.spinner.show()
       await this.http.put<IQuotation>(API_URL+'/quotations/update', quotations, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -151,14 +169,17 @@ export class QuotationComponent implements OnInit {
     }
   }
 
-  get(id: any) {
+  async get(id: any) {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IQuotation>(API_URL+'/quotations/get?id='+id, options)
+    this.spinner.show()
+    await this.http.get<IQuotation>(API_URL+'/quotations/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.id               = data?.id
         this.no               = data!.no
         this.customerId       = data!.customer.id
@@ -169,6 +190,8 @@ export class QuotationComponent implements OnInit {
         this.created          = data!.created
         this.approved         = data!.approved
         this.quotationDetails = data!.quotationDetails
+        this.refresh()
+
       }
     )
     .catch(
@@ -178,17 +201,20 @@ export class QuotationComponent implements OnInit {
     )
   }
 
-  getByNo(no: string) {
+  async getByNo(no: string) {
     if(no == ''){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<IQuotation>(API_URL+'/quotations/get_by_no?no='+no, options)
+    this.spinner.show()
+    await this.http.get<IQuotation>(API_URL+'/quotations/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.id           = data?.id
         this.no           = data!.no 
         this.customerId   = data!.customer.id
@@ -199,6 +225,7 @@ export class QuotationComponent implements OnInit {
         this.created      = data!.created
         this.approved     = data!.approved
         this.quotationDetails = data!.quotationDetails
+        this.refresh()
       }
     )
     .catch(
@@ -218,7 +245,9 @@ export class QuotationComponent implements OnInit {
     var quotation = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/quotations/approve', quotation, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -244,7 +273,9 @@ export class QuotationComponent implements OnInit {
     var quotation = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/quotations/cancel', quotation, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -289,7 +320,9 @@ export class QuotationComponent implements OnInit {
         sellingPriceVatIncl : this.sellingPriceVatIncl,
         sellingPriceVatExcl : this.sellingPriceVatExcl
       }
+      this.spinner.show()
       await this.http.post(API_URL+'/quotation_details/save', detail, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         () => {
@@ -310,33 +343,6 @@ export class QuotationComponent implements OnInit {
     }
   }
 
-  getDetailss(id: any) {
-    if(id == ''){
-      return
-    }
-    this.quotationDetails = []
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IQuotationDetail[]>(API_URL+'/quotation_details/get_by_quotation?id='+id, options)
-    .toPromise()
-    .then(
-      data => {
-        data?.forEach(element => {
-          this.quotationDetails.push(element)
-        })
-        
-      }
-    )
-    .catch(
-      error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load Quotation')
-      }
-    )
-
-    console.log(this.quotationDetails)
-  }
-
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
   }
@@ -345,7 +351,9 @@ export class QuotationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.delete(API_URL+'/quotation_details/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -363,7 +371,9 @@ export class QuotationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IQuotation[]>(API_URL+'/quotations', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -388,7 +398,9 @@ export class QuotationComponent implements OnInit {
     var quotation = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/quotations/archive', quotation, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -412,8 +424,9 @@ export class QuotationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/quotations/archive_all', null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -430,6 +443,23 @@ export class QuotationComponent implements OnInit {
     )
   }
 
+  refresh(){
+    this.total = 0
+    this.quotationDetails.forEach(element => {
+      this.total = this.total + element.sellingPriceVatIncl*element.qty
+    })
+  }
+
+  unlockAll(){
+    this.quotationNoLocked  = false
+    this.inputsLocked = false   
+  }
+
+  lockAll(){
+    this.quotationNoLocked  = true
+    this.inputsLocked = true
+  }
+
   clear(){
     this.id               = ''
     this.no               = ''
@@ -440,7 +470,7 @@ export class QuotationComponent implements OnInit {
     this.quotationDetails = []
     this.customerNo       = ''
     this.customerName     = ''
-    this.quotationDate    = new Date()
+    this.quotationDate!
   }
 
   clearDetail(){
@@ -467,7 +497,9 @@ export class QuotationComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -483,7 +515,9 @@ export class QuotationComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -501,7 +535,9 @@ export class QuotationComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -523,7 +559,9 @@ export class QuotationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -536,8 +574,9 @@ export class QuotationComponent implements OnInit {
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
-
+    this.spinner.show()
     this.http.get<IQuotationDetail>(API_URL+'/quotation_details/get?id='+detailId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -549,24 +588,6 @@ export class QuotationComponent implements OnInit {
     )
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load detail information')
-    })
-  }
-
-  getDetailByProductIdAndLpoId(productId : any){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IProduct>(API_URL+'/quotation_details/get_by_product_id_and_quotation_id?product_id='+productId+'quotation_id='+this.id, options)
-    .toPromise()
-    .then(
-      data => {
-        this.barcode = data!.barcode
-        this.code = data!.code
-        this.description = data!.description
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
   }
 
@@ -600,7 +621,9 @@ export class QuotationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/customers/get_names', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -620,7 +643,9 @@ export class QuotationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -641,8 +666,9 @@ export class QuotationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ICustomer>(API_URL+'/customers/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{

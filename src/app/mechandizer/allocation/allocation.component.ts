@@ -2,6 +2,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -40,7 +42,8 @@ export class AllocationComponent implements OnInit {
 
   constructor(private auth : AuthService,
               private http :HttpClient,
-              private shortcut : ShortCutHandlerService) {
+              private shortcut : ShortCutHandlerService,
+              private spinner: NgxSpinnerService) {
 
     this.invoices = [] 
   }
@@ -59,7 +62,9 @@ export class AllocationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/customers/get_names', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -76,11 +81,20 @@ export class AllocationComponent implements OnInit {
   }
 
   async searchCustomer(name: string) {
+    if (name == '') {
+      this.customerId = ''
+      this.customerNo = ''
+      this.customerBalance = 0
+      this.invoices = []
+      return
+    }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
 
+    this.spinner.show()
     await this.http.get<ICustomer>(API_URL+'/customers/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -106,7 +120,9 @@ export class AllocationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.hide()
     await this.http.get<ISalesInvoice[]>(API_URL+'/sales_invoices/customer?id='+customerId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -121,11 +137,13 @@ export class AllocationComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.post<boolean>(API_URL+'/allocations/allocate?customer_id='+customerId+'&sales_invoice_id='+invoiceId, null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
-        this.loadCustomerInvoices(this.customerId)
+        this.searchCustomer(this.customerName)
         alert('Allocated successifully')
       }
     )

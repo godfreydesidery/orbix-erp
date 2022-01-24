@@ -50,7 +50,9 @@ export class CustomerMasterComponent implements OnInit, ICustomer {
   customers           : ICustomer[] = []
   names     : string[] =[]
 
-  constructor(private auth : AuthService, private http :HttpClient, private spinner : NgxSpinnerService) {
+  constructor(private auth : AuthService, 
+              private http :HttpClient, 
+              private spinner : NgxSpinnerService) {
     this.id                  = null
     this.no                  = ''
     this.name                = ''

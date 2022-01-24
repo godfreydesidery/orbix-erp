@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize, firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -43,7 +44,8 @@ export class ProductMaterialRatioComponent implements OnInit {
 
   constructor(private auth : AuthService,
               private http :HttpClient,
-              private shortcut : ShortCutHandlerService) {
+              private shortcut : ShortCutHandlerService,
+              private spinner: NgxSpinnerService) {
 
       this.id    = null
       this.ratio = 0
@@ -112,7 +114,9 @@ export class ProductMaterialRatioComponent implements OnInit {
       ratio    : this.ratio
     }
     if(this.id == null || this.id == ''){
+      this.spinner.show()
       await this.http.post(API_URL+'/product_material_ratios/create', ratio, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(data => {
         this.loadRatios()
@@ -123,7 +127,9 @@ export class ProductMaterialRatioComponent implements OnInit {
       })
       
     }else{
+      this.spinner.show()
       await this.http.put(API_URL+'/product_material_ratios/update', ratio, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(data => {
         this.loadRatios()
@@ -142,7 +148,9 @@ export class ProductMaterialRatioComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -157,7 +165,9 @@ export class ProductMaterialRatioComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -174,7 +184,9 @@ export class ProductMaterialRatioComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -197,7 +209,9 @@ export class ProductMaterialRatioComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
    if(code != ''){
+      this.spinner.show()
       this.http.get<IMaterial>(API_URL+'/materials/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -213,7 +227,9 @@ export class ProductMaterialRatioComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IMaterial>(API_URL+'/materials/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -234,7 +250,9 @@ export class ProductMaterialRatioComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.ratios = []
+    this.spinner.show()
     await this.http.get<IProductMaterialRatio[]>(API_URL+'/product_material_ratios', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       data?.forEach(element => {
@@ -268,7 +286,9 @@ export class ProductMaterialRatioComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -287,7 +307,9 @@ export class ProductMaterialRatioComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/materials/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -307,7 +329,9 @@ export class ProductMaterialRatioComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProductMaterialRatio>(API_URL+'/product_material_ratios/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
       this.id                  = data?.id
@@ -333,7 +357,9 @@ export class ProductMaterialRatioComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.delete(API_URL+'/product_material_ratios/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(() => {
       alert('Deleted ratio')

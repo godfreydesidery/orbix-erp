@@ -63,7 +63,7 @@ import { CustomerCreditNoteComponent } from './mechandizer/customer-credit-note/
 import { AllocationComponent } from './mechandizer/allocation/allocation.component';
 import { SupplierMasterComponent } from './supplier/supplier-master/supplier-master.component';
 import { CustomerMasterComponent } from './customer/customer-master/customer-master.component';
-import { PersonnelRegisterComponent } from './human-resource/personnel-register/personnel-register.component';
+import { EmployeeRegisterComponent } from './human-resource/employee-register/employee-register.component';
 import { GroupLevel1Component } from './inventory/group-level1/group-level1.component';
 import { GroupLevel2Component } from './inventory/group-level2/group-level2.component';
 import { GroupLevel3Component } from './inventory/group-level3/group-level3.component';
@@ -135,7 +135,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
     AllocationComponent,
     SupplierMasterComponent,
     CustomerMasterComponent,
-    PersonnelRegisterComponent,
+    EmployeeRegisterComponent,
     GroupLevel1Component,
     GroupLevel2Component,
     GroupLevel3Component,
@@ -205,7 +205,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
       {path : 'customer-cr-note', component: CustomerCreditNoteComponent},
       {path : 'supplier-master', component: SupplierMasterComponent},
       {path : 'customer-master', component: CustomerMasterComponent},
-      {path : 'personnel-registetr', component: PersonnelRegisterComponent},
+      {path : 'employee-registetr', component: EmployeeRegisterComponent},
       {path : 'group-level1', component: GroupLevel1Component},
       {path : 'group-level2', component: GroupLevel2Component},
       {path : 'group-level3', component: GroupLevel3Component},

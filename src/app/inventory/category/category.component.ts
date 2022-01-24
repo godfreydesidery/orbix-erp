@@ -1,5 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -26,7 +28,8 @@ export class CategoryComponent implements OnInit {
 
   constructor(private shortcut : ShortCutHandlerService, 
         private auth : AuthService, 
-        private http : HttpClient) {
+        private http : HttpClient,
+        private spinner: NgxSpinnerService) {
     this.id = ''
     this.name = ''
   }
@@ -45,7 +48,9 @@ export class CategoryComponent implements OnInit {
     }
     if(this.id == null || this.id == ''){
       //save a new till
+      this.spinner.show()
       await this.http.post<ICategory>(API_URL+'/categories/create', category, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -64,7 +69,9 @@ export class CategoryComponent implements OnInit {
 
     }else{
       //update an existing till
+      this.spinner.show()
       await this.http.put<ICategory>(API_URL+'/categories/update', category, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -88,7 +95,9 @@ export class CategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ICategory[]>(API_URL+'/categories', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -107,8 +116,9 @@ export class CategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ICategory>(API_URL+'/categories/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -129,8 +139,9 @@ export class CategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get(API_URL+'/categories/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -156,7 +167,9 @@ export class CategoryComponent implements OnInit {
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       await this.http.delete(API_URL+'/categories/delete?id='+id, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -186,7 +199,9 @@ export class CategoryComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ICategory[]>(API_URL+'/categories', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {

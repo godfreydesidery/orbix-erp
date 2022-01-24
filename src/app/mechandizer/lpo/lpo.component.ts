@@ -6,6 +6,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { environment } from 'src/environments/environment';
+import { DatePipe } from '@angular/common';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -23,6 +26,14 @@ const API_URL = environment.apiUrl;
   ]
 })
 export class LpoComponent implements OnInit {
+
+  public lpoNoLocked  : boolean = true
+  public inputsLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   closeResult    : string = ''
 
   blank : boolean = false
@@ -35,14 +46,16 @@ export class LpoComponent implements OnInit {
   supplierName!  : string
   validityDays   : number;
   status         : string;
-  orderDate      : Date;
-  validUntil     : Date;
+  orderDate!: Date;
+  validUntil!: Date;
   comments!      : string
   created        : string;
   approved       : string;
   printed        : string;
   lpoDetails     : ILpoDetail[];
   lpos           : ILpo[]
+
+  total          : number
 
   supplierNames : string[] = []
 
@@ -62,11 +75,10 @@ export class LpoComponent implements OnInit {
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private spinner: NgxSpinnerService) {
     this.id           = ''
     this.no           = ''
-    this.orderDate = new Date()
-    this.validUntil = new Date()
     this.validityDays = 30
     this.status       = ''
     this.comments     = ''
@@ -75,6 +87,8 @@ export class LpoComponent implements OnInit {
     this.printed      = ''
     this.lpoDetails   = []
     this.lpos         = []
+
+    this.total        = 0
 
 
     this.detailId         = ''
@@ -120,8 +134,10 @@ export class LpoComponent implements OnInit {
       supplier     : {code : this.supplierCode, name : this.supplierName},
       comments     : this.comments
     }
-    if(this.id == null || this.id == ''){   
+    if(this.id == null || this.id == ''){  
+      this.spinner.show() 
       await this.http.post<ILpo>(API_URL+'/lpos/create', lpo, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -131,7 +147,7 @@ export class LpoComponent implements OnInit {
           this.supplierCode = data!.supplier.code
           this.supplierName = data!.supplier.name
           this.validityDays = data!.validityDays
-          this.orderDate    = data!.orderDate
+          this.orderDate    =  data!.orderDate
           this.validUntil   = data!.validUntil
           this.status       = data!.status
           this.comments     = data!.comments
@@ -150,10 +166,13 @@ export class LpoComponent implements OnInit {
         }
       )
     }else{
+      this.spinner.show()
       await this.http.put<ILpo>(API_URL+'/lpos/update', lpo, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
+          console.log(data)
           this.id           = data?.id
           this.no           = data!.no
           this.supplierId   = data!.supplier.id
@@ -179,11 +198,13 @@ export class LpoComponent implements OnInit {
       )
     }
   }
-  get(id: any) {
+  async get(id: any) {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpo>(API_URL+'/lpos/get?id='+id, options)
+    this.spinner.show()
+    await this.http.get<ILpo>(API_URL+'/lpos/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -205,18 +226,21 @@ export class LpoComponent implements OnInit {
     )
     .catch(
       error => {
+        console.log(error)
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load LPO')
       }
     )
   }
-  getByNo(no: string) {
+  async getByNo(no: string) {
     if(no == ''){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpo>(API_URL+'/lpos/get_by_no?no='+no, options)
+    this.spinner.show()
+    await this.http.get<ILpo>(API_URL+'/lpos/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -242,7 +266,7 @@ export class LpoComponent implements OnInit {
       }
     )
   }
-  approve(id: any) {
+  async approve(id: any) {
     if(!window.confirm('Confirm approval of the selected LPO')){
       return
     }
@@ -252,7 +276,9 @@ export class LpoComponent implements OnInit {
     var lpo = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/lpos/approve', lpo, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -268,7 +294,7 @@ export class LpoComponent implements OnInit {
     )
   }
 
-  print(id: any) {
+  async print(id: any) {
     if(!window.confirm('Confirm printing of the selected LPO')){
       return
     }
@@ -278,7 +304,9 @@ export class LpoComponent implements OnInit {
     var lpo = {
       id : this.id   
     }
-    this.http.put(API_URL+'/lpos/print', lpo, options)
+    this.spinner.show()
+    await this.http.put(API_URL+'/lpos/print', lpo, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -303,7 +331,9 @@ export class LpoComponent implements OnInit {
     var lpo = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/lpos/cancel', lpo, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -347,7 +377,9 @@ export class LpoComponent implements OnInit {
         costPriceVatIncl : this.costPriceVatIncl,
         costPriceVatExcl : this.costPriceVatExcl
       }
+      this.spinner.show()
       await this.http.post(API_URL+'/lpo_details/save', detail, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         () => {
@@ -368,7 +400,7 @@ export class LpoComponent implements OnInit {
     }
   }
 
-  getDetails(id: any) {
+  async getDetails(id: any) {
     if(id == ''){
       return
     }
@@ -376,23 +408,23 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ILpoDetail[]>(API_URL+'/lpo_details/get_by_lpo?id='+id, options)
+    this.spinner.show()
+    await this.http.get<ILpoDetail[]>(API_URL+'/lpo_details/get_by_lpo?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
         data?.forEach(element => {
           this.lpoDetails.push(element)
         })
-        
+        this.refresh()
       }
     )
     .catch(
       error => {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load LPO')
       }
-    )
-
-    console.log(this.lpoDetails)
+    ) 
   }
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
@@ -401,7 +433,9 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.delete(API_URL+'/lpo_details/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -419,7 +453,10 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+
+    this.spinner.show()
     this.http.get<ILpo[]>(API_URL+'/lpos', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -444,7 +481,9 @@ export class LpoComponent implements OnInit {
     var lpo = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/lpos/archive', lpo, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -468,8 +507,9 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/lpos/archive_all', null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -486,6 +526,17 @@ export class LpoComponent implements OnInit {
     )
   }
 
+  unlockAll(){
+    this.lpoNoLocked  = false
+    this.inputsLocked = false   
+  }
+
+  lockAll(){
+    this.lpoNoLocked  = true
+    this.inputsLocked = true
+  }
+
+
   clear(){
     this.id           = ''
     this.no           = ''
@@ -498,8 +549,8 @@ export class LpoComponent implements OnInit {
     this.lpoDetails   = []
     this.supplierCode = ''
     this.supplierName = ''
-    this.orderDate    = new Date()
-    this.validUntil   = new Date()
+    this.orderDate!
+    this.validUntil!
 
   }
 
@@ -514,13 +565,18 @@ export class LpoComponent implements OnInit {
     this.packSize         = 1
   }
 
+  refresh(){
+    this.total = 0
+    this.lpoDetails.forEach(element => {
+      this.total = this.total + element.costPriceVatIncl*element.qty
+    })
+  }
+
   createShortCut(shortCutName : string, link : string){
     if(confirm('Create shortcut for this page?')){
       this.shortcut.createShortCut(shortCutName, link)
     }
   }
-
-  
 
   searchProduct(barcode : string, code : string, description : string){
     let options = {
@@ -528,7 +584,9 @@ export class LpoComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -545,7 +603,9 @@ export class LpoComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -564,7 +624,9 @@ export class LpoComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -587,7 +649,9 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -601,8 +665,9 @@ export class LpoComponent implements OnInit {
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
-
+    this.spinner.show()
     this.http.get<ILpoDetail>(API_URL+'/lpo_details/get?id='+detailId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -621,7 +686,9 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProduct>(API_URL+'/lpo_details/get_by_product_id_and_lpo_id?product_id='+productId+'lpo_id='+this.id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -665,7 +732,9 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/suppliers/get_names', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -685,7 +754,9 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -706,8 +777,9 @@ export class LpoComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ISupplier>(API_URL+'/suppliers/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -725,7 +797,6 @@ export class LpoComponent implements OnInit {
       }
     )
   }
-
 }
 
 interface ILpo{

@@ -2,6 +2,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -24,11 +26,18 @@ const API_URL = environment.apiUrl;
 })
 export class GrnComponent implements OnInit {
 
+  public grnNoLocked     : boolean = true
+  public inputsLocked      : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   closeResult    : string = ''
   
   id             : any;
   no             : string;
-  grnDate        : Date;
+  grnDate!       : Date;
   orderNo        : string
   invoiceNo      : string
   invoiceAmount  : number
@@ -36,6 +45,8 @@ export class GrnComponent implements OnInit {
   comments!      : string
   created        : string;
   approved       : string;
+
+  total          : number
 
   grnDetails     : IGrnDetail[]
   grns           : IGrn[]
@@ -54,10 +65,10 @@ export class GrnComponent implements OnInit {
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService : NgbModal) {
+              private modalService : NgbModal,
+              private spinner: NgxSpinnerService) {
     this.id            = null
     this.no            = ''
-    this.grnDate       = new Date()
     this.orderNo       = ''
     this.invoiceNo     = ''
     this.invoiceAmount = 0
@@ -67,6 +78,8 @@ export class GrnComponent implements OnInit {
     this.approved      = ''
     this.grnDetails    = []
     this.grns          = []
+
+    this.total         = 0
 
     /**
      * Detail
@@ -106,8 +119,10 @@ export class GrnComponent implements OnInit {
       lpo           : { no : this.orderNo},
       comments      : this.comments
     }
-    if(this.id == null || this.id == ''){   
+    if(this.id == null || this.id == ''){  
+      this.spinner.show() 
       await this.http.post<IGrn>(API_URL+'/grns/create', grn, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -123,7 +138,9 @@ export class GrnComponent implements OnInit {
         }
       )
     }else{
+      this.spinner.show()
       await this.http.put<IGrn>(API_URL+'/grns/update', grn, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -145,10 +162,13 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IGrn>(API_URL+'/grns/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.show(data!)
       }
     )
@@ -166,10 +186,13 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IGrn>(API_URL+'/grns/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.show(data!)
       }
     )
@@ -192,6 +215,7 @@ export class GrnComponent implements OnInit {
     this.created      = data!.created
     this.approved     = data!.approved
     this.grnDetails   = data!.grnDetails
+    this.refresh()
   }
 
   async approve(id: any) {
@@ -204,7 +228,9 @@ export class GrnComponent implements OnInit {
     var grn = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put(API_URL+'/grns/approve', grn, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -231,7 +257,9 @@ export class GrnComponent implements OnInit {
     var grn = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put(API_URL+'/grns/cancel', grn, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -261,7 +289,9 @@ export class GrnComponent implements OnInit {
     var grn = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/grns/archive', grn, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -285,8 +315,9 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/grns/archive_all', null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -304,7 +335,7 @@ export class GrnComponent implements OnInit {
   }
 
   delete(id: any) {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
   
   async getDetailss(id: any) {
@@ -315,7 +346,9 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IGrnDetail[]>(API_URL+'/grn_details/get_by_grn?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -337,8 +370,9 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<IGrnDetail>(API_URL+'/grn_details/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -383,8 +417,9 @@ export class GrnComponent implements OnInit {
       supplierPriceVatIncl : this.supplierPriceVatIncl,
       grn                  : {id : this.id}
     }
-
+    this.spinner.show()
     this.http.post<IGrnDetail>(API_URL+'/grn_details/save', detail ,options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -408,8 +443,9 @@ export class GrnComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     this.http.get<IGrn[]>(API_URL+'/grns', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -421,12 +457,23 @@ export class GrnComponent implements OnInit {
     )
   }
 
+  unlockAll(){
+    this.grnNoLocked     = false
+    this.inputsLocked      = false   
+  }
+
+  lockAll(){
+    this.grnNoLocked     = true
+    this.inputsLocked      = true
+  }
+
   clear(){
     this.id           = null
     this.no           = ''
-    this.grnDate      = new Date()
+    this.grnDate!    
     this.orderNo      = ''
     this.invoiceNo    = ''
+    this.invoiceAmount= 0
     this.status       = ''
     this.comments     = ''
     this.created      = ''
@@ -444,6 +491,13 @@ export class GrnComponent implements OnInit {
     this.supplierPriceVatExcl = 0
     this.packSize             = 1
     this.product!
+  }
+
+  refresh(){
+    this.total = 0
+    this.grnDetails.forEach(element => {
+      this.total = this.total + element.qtyReceived*element.supplierPriceVatIncl
+    })
   }
 
   createShortCut(shortCutName : string, link : string){

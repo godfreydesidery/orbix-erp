@@ -12,6 +12,8 @@ const pdfFontsX = require('pdfmake-unicode/dist/pdfmake-unicode.js');
 pdfMakeX.vfs = pdfFontsX.pdfMake.vfs;
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import { DataService } from 'src/app/services/data.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -29,6 +31,15 @@ const API_URL = environment.apiUrl;
   ]
 })
 export class PackingListComponent implements OnInit {
+
+  public pclNoLocked  : boolean = true
+  public inputsLocked : boolean = true
+  public valuesLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   logo!              : any
   closeResult        : string = ''
   disablePriceChange : any = false
@@ -53,6 +64,8 @@ export class PackingListComponent implements OnInit {
   posted         : string
   packingListDetails : IPackingListDetail[]
   packingLists       : IPackingList[]
+
+  total            : number
 
   totalPreviousReturns : number
   totalAmountIssued    : number
@@ -95,7 +108,8 @@ export class PackingListComponent implements OnInit {
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
               private modalService: NgbModal,
-              private data : DataService) {
+              private data : DataService,
+              private spinner: NgxSpinnerService) {
     this.id               = ''
     this.no               = ''
     this.status           = ''
@@ -105,6 +119,8 @@ export class PackingListComponent implements OnInit {
     this.posted           = ''
     this.packingListDetails   = []
     this.packingLists         = []
+
+    this.total            = 0
 
     this.totalPreviousReturns = 0
     this.totalAmountIssued    = 0
@@ -161,8 +177,10 @@ export class PackingListComponent implements OnInit {
       //personnel    : {no : this.personnelNo, name : this.personnelName},
       comments     : this.comments
     }
-    if(this.id == null || this.id == ''){   
+    if(this.id == null || this.id == ''){  
+      this.spinner.show() 
       await this.http.post<IPackingList>(API_URL+'/packing_lists/create', packingList, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -197,7 +215,9 @@ export class PackingListComponent implements OnInit {
         }
       )
     }else{
+      this.spinner.show()
       await this.http.put<IPackingList>(API_URL+'/packing_lists/update', packingList, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -234,16 +254,27 @@ export class PackingListComponent implements OnInit {
     }
   }
 
+  refresh(){
+    if(this.status == 'APPROVED'){
+      this.valuesLocked = false
+    }else{
+      this.valuesLocked = true
+    }
+  }
+
   async get(id: any) {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IPackingList>(API_URL+'/packing_lists/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
         this.id              = data?.id
         this.no              = data!.no
+        this.issueDate       = data!.issueDate
         this.customerId      = data!.customer.id
         this.customerNo      = data!.customer.no
         this.customerName    = data!.customer.name
@@ -267,7 +298,7 @@ export class PackingListComponent implements OnInit {
         this.totalExpenditures     = data!.totalExpenditures
         this.totalBank            = data!.totalBank
         this.totalCash            = data!.totalCash
-
+        this.refresh()
         this.packingListDetails   = data!.packingListDetails
       }
     )
@@ -286,12 +317,15 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IPackingList>(API_URL+'/packing_lists/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
         this.id            = data?.id
         this.no            = data!.no 
+        this.issueDate     = data!.issueDate
         this.customerId    = data!.customer.id
         this.customerNo    = data!.customer.no
         this.customerName  = data!.customer.name  
@@ -315,7 +349,7 @@ export class PackingListComponent implements OnInit {
         this.totalExpenditures    = data!.totalExpenditures
         this.totalBank            = data!.totalBank
         this.totalCash            = data!.totalCash
-
+        this.refresh()
         this.packingListDetails   = data!.packingListDetails
       }
     )
@@ -326,7 +360,7 @@ export class PackingListComponent implements OnInit {
     )
   }
 
-  approve(id: any) {
+  async approve(id: any) {
     if(!window.confirm('Confirm approval of the selected Packing List')){
       return
     }
@@ -348,7 +382,9 @@ export class PackingListComponent implements OnInit {
       totalBank            : this.totalBank,            
       totalCash            : this.totalCash         
     }
-    this.http.put(API_URL+'/packing_lists/approve', pcl, options)
+    this.spinner.show()
+    await this.http.put(API_URL+'/packing_lists/approve', pcl, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -386,7 +422,9 @@ export class PackingListComponent implements OnInit {
       totalBank            : this.totalBank,            
       totalCash            : this.totalCash
     }
+    this.spinner.show()
     await this.http.put(API_URL+'/packing_lists/post', pcl, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -402,7 +440,7 @@ export class PackingListComponent implements OnInit {
     )
   }
 
-  cancel(id: any) {
+  async cancel(id: any) {
     if(!window.confirm('Confirm canceling of the selected Packing List')){
       return
     }
@@ -412,7 +450,9 @@ export class PackingListComponent implements OnInit {
     var pcl = {
       id : this.id   
     }
-    this.http.put(API_URL+'/packing_lists/cancel', pcl, options)
+    this.spinner.show()
+    await this.http.put(API_URL+'/packing_lists/cancel', pcl, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -465,7 +505,9 @@ export class PackingListComponent implements OnInit {
         sellingPriceVatIncl : this.sellingPriceVatIncl,
         sellingPriceVatExcl : this.sellingPriceVatExcl
       }
+      this.spinner.show()
       await this.http.post(API_URL+'/packing_list_details/save', detail, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         () => {
@@ -486,33 +528,6 @@ export class PackingListComponent implements OnInit {
     }
   }
 
-  getDetailss(id: any) {
-    if(id == ''){
-      return
-    }
-    this.packingListDetails = []
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IPackingListDetail[]>(API_URL+'/packing_list_details/get_by_packing_list?id='+id, options)
-    .toPromise()
-    .then(
-      data => {
-        data?.forEach(element => {
-          this.packingListDetails.push(element)
-        })
-        
-      }
-    )
-    .catch(
-      error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load Packing List')
-      }
-    )
-
-    console.log(this.packingListDetails)
-  }
-
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
   }
@@ -521,7 +536,9 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.delete(API_URL+'/packing_list_details/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -564,7 +581,9 @@ export class PackingListComponent implements OnInit {
     var pcl = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/packing_lists/archive', pcl, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -588,8 +607,9 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/packing_lists/archive_all', null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -604,6 +624,17 @@ export class PackingListComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not archive')
       }
     )
+  }
+
+  unlockAll(){
+    this.pclNoLocked  = false
+    this.inputsLocked = false
+    this.valuesLocked = true   
+  }
+
+  lockAll(){
+    this.pclNoLocked  = true
+    this.inputsLocked = true
   }
 
   clear(){
@@ -662,7 +693,9 @@ export class PackingListComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -680,7 +713,9 @@ export class PackingListComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -698,7 +733,9 @@ export class PackingListComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -720,7 +757,9 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -733,8 +772,9 @@ export class PackingListComponent implements OnInit {
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
-
+    this.spinner.show()
     this.http.get<IPackingListDetail>(API_URL+'/packing_list_details/get?id='+detailId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -756,24 +796,6 @@ export class PackingListComponent implements OnInit {
     )
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load detail information')
-    })
-  }
-
-  getDetailByProductIdAndLpoId(productId : any){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IProduct>(API_URL+'/packing_list_details/get_by_product_id_and_packing_list_id?product_id='+productId+'packing_list_id='+this.id, options)
-    .toPromise()
-    .then(
-      data => {
-        this.barcode = data!.barcode
-        this.code = data!.code
-        this.description = data!.description
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
   }
 
@@ -808,7 +830,9 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/customers/get_names', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -828,7 +852,9 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -848,8 +874,9 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ICustomer>(API_URL+'/customers/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{

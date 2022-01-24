@@ -173,8 +173,9 @@ export class UserProfileComponent implements OnInit, IUser {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<IRole[]>(API_URL+'/roles', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -195,8 +196,9 @@ export class UserProfileComponent implements OnInit, IUser {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<IUser[]>(API_URL+'/users', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -214,7 +216,6 @@ export class UserProfileComponent implements OnInit, IUser {
   }
   
   async getUser(key: string) {
-    this.spinner.show()
     this.searchKey = key
     this.clearFields()
     this.username = this.searchKey
@@ -222,8 +223,9 @@ export class UserProfileComponent implements OnInit, IUser {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get(API_URL+'/users/get_user?username='+this.searchKey, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
@@ -237,7 +239,6 @@ export class UserProfileComponent implements OnInit, IUser {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Requested user could not be found')
       }
     )
-    this.spinner.hide()
   }
 
   async deleteUser(){
@@ -253,12 +254,12 @@ export class UserProfileComponent implements OnInit, IUser {
     }
     this.spinner.show()
     await this.http.delete(API_URL+'/users/delete?id='+this.id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
         this.clearFields()
         alert('Record deleted succesifully')
-        this.spinner.hide()
         return true
       }
     )
@@ -266,7 +267,6 @@ export class UserProfileComponent implements OnInit, IUser {
       error => {
         console.log(error)
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not delete user profile')
-        this.spinner.hide()
         return false
       }
     )

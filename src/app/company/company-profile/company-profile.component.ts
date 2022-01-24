@@ -41,7 +41,10 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
 
   logoUrl     : any
 
-  constructor(private http : HttpClient, private auth : AuthService, private sanitizer: DomSanitizer, private data : DataService, private spinner : NgxSpinnerService) {
+  constructor(private http : HttpClient, 
+              private auth : AuthService, 
+              private sanitizer: DomSanitizer, 
+              private spinner : NgxSpinnerService) {
     this.id               = ''
     this.companyName      = ''
     this.contactName      = ''
@@ -75,7 +78,9 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ICompanyProfile>(API_URL+'/company_profile/get', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -211,7 +216,9 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
     const uploadImageData = new FormData();
     uploadImageData.append('logo', this.selectedFile, this.selectedFile.name);
     //Make a call to the Spring Boot Application to save the image
+    this.spinner.show()
     this.http.post(API_URL+'/company_profile/save_logo', uploadImageData, options)
+    .pipe(finalize(() => this.spinner.hide()))
       .subscribe(() => {
         alert('Upload succesiful')
       },
@@ -222,7 +229,9 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
   //Gets called when the user clicks on retieve image button to get the image from back end
   async getLogo() {
   //Make a call to Sprinf Boot to get the Image Bytes.
+  this.spinner.show()
   await this.http.get(API_URL+'/company_profile/get_logo')
+  .pipe(finalize(() => this.spinner.hide()))
   .toPromise()
     .then(
       res => {
@@ -236,13 +245,6 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
       console.log(error)
     })    
   }
-
-
-
-
-
-
-
 }
 
 export interface ICompanyProfile{

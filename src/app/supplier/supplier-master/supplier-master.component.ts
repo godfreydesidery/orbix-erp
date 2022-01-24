@@ -49,7 +49,10 @@ export class SupplierMasterComponent implements OnInit, ISupplier {
   suppliers : ISupplier[] = []
   names     : string[] =[]
 
-  constructor(private shortcut : ShortCutHandlerService, private http : HttpClient, private auth : AuthService, private spinner : NgxSpinnerService) {
+  constructor(private shortcut : ShortCutHandlerService, 
+              private http : HttpClient, 
+              private auth : AuthService, 
+              private spinner : NgxSpinnerService) {
     this.id                  = ''
     this.code                = ''
     this.name                = ''

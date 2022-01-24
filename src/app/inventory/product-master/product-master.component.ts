@@ -14,6 +14,8 @@ import { ILevelFour } from '../group-level4/group-level4.component';
 import { ISubCategory } from '../sub-category/sub-category.component';
 import { ISubClass } from '../sub-class/sub-class.component';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -94,7 +96,8 @@ export class ProductMasterComponent implements OnInit, IProduct {
 
   constructor(private shortcut : ShortCutHandlerService,
               private auth : AuthService,
-              private http : HttpClient) {
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.id               = ''
     this.barcode          = ''
     this.code             = ''
@@ -207,7 +210,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
       /**
        * Save a new record
        */
+      this.spinner.show()
       await this.http.post<IProduct>(API_URL+'/products/create', product, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -226,7 +231,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
       /**
        * Update an existing record
        */
+      this.spinner.show()
       await this.http.put<IProduct>(API_URL+'/products/update', product, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -259,7 +266,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -277,7 +286,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -295,7 +306,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -314,7 +327,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -338,7 +353,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.delete(API_URL+'/products/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -432,7 +449,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.subCategoryNames = []
+    this.spinner.show()
     this.http.get<string[]>(API_URL+'/suppliers/get_names', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -458,7 +477,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IDepartment[]>(API_URL+'/departments', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -488,7 +509,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IClass[]>(API_URL+'/classes/get_by_department_name?department_name='+departmentName, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -517,7 +540,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ISubClass[]>(API_URL+'/sub_classes/get_by_class_name?class_name='+className, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -544,7 +569,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ICategory[]>(API_URL+'/categories', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -572,7 +599,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ISubCategory[]>(API_URL+'/sub_categories/get_by_category_name?category_name='+categoryName, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -597,7 +626,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ILevelOne[]>(API_URL+'/group_level_ones', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -622,7 +653,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ILevelTwo[]>(API_URL+'/group_level_twos', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -646,7 +679,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ILevelThree[]>(API_URL+'/group_level_threes', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -670,7 +705,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<ILevelFour[]>(API_URL+'/group_level_fours', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -690,7 +727,9 @@ export class ProductMasterComponent implements OnInit, IProduct {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {

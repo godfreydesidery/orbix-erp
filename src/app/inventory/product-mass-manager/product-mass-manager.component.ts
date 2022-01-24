@@ -16,6 +16,8 @@ import { ILevelThree } from '../group-level3/group-level3.component';
 import { ILevelFour } from '../group-level4/group-level4.component';
 import { ISubCategory } from '../sub-category/sub-category.component';
 import { ISubClass } from '../sub-class/sub-class.component';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 const fs = require('file-saver');
 
 const API_URL = environment.apiUrl;
@@ -34,7 +36,8 @@ export class ProductMassManagerComponent implements OnInit {
   
   constructor(private shortcut : ShortCutHandlerService,
               private auth : AuthService,
-              private http : HttpClient) {
+              private http : HttpClient,
+              private spinner: NgxSpinnerService) {
     this.progress       = false
     this.progressStatus = ''
     this.totalRecords   = 0
@@ -86,11 +89,12 @@ export class ProductMassManagerComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<IProduct[]>(API_URL+'/products', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
-        console.log(data)
         data?.forEach(element => {         
           var supplierName    = ''
           var departmentName  = ''
@@ -170,6 +174,7 @@ export class ProductMassManagerComponent implements OnInit {
             },"n"
           )
         })
+        this.spinner.hide()
       }
     )
     .catch(
@@ -412,8 +417,9 @@ export class ProductMassManagerComponent implements OnInit {
         alert('End of file reached')
         return
       }
-
+      this.spinner.show()
       await this.http.post(API_URL+'/products/create', product, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .catch(
         error => {
@@ -475,8 +481,9 @@ export class ProductMassManagerComponent implements OnInit {
         alert('End of file reached')
         return
       }
-
+      this.spinner.show()
       await this.http.put(API_URL+'/products/update_by_code', product, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .catch(
         error => {

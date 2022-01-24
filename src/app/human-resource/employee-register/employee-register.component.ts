@@ -6,9 +6,9 @@ import { environment } from 'src/environments/environment';
 const API_URL = environment.apiUrl;
 
 @Component({
-  selector: 'app-personnel-register',
-  templateUrl: './personnel-register.component.html',
-  styleUrls: ['./personnel-register.component.scss'],
+  selector: 'app-employee-register',
+  templateUrl: './employee-register.component.html',
+  styleUrls: ['./employee-register.component.scss'],
   animations: [
     trigger('fadeInOut', [
       state('void', style({
@@ -18,7 +18,7 @@ const API_URL = environment.apiUrl;
     ]),
   ]
 })
-export class PersonnelRegisterComponent implements OnInit {
+export class EmployeeRegisterComponent implements OnInit {
 
   constructor(private shortcut : ShortCutHandlerService) { }
 
@@ -30,4 +30,21 @@ export class PersonnelRegisterComponent implements OnInit {
       this.shortcut.createShortCut(shortCutName, link)
     }
   }
+}
+
+export interface IEmployee {
+  /**
+   * Basic Inf
+   */
+  id          : any
+  no          : string
+  rollNo : string
+  firstName  : string
+  secondName : string
+  lastName   : string
+  alias      : string
+  address     : string
+  telephone : string
+  email : string
+  active      : boolean 
 }

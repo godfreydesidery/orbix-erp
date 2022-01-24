@@ -3,6 +3,8 @@ import { ListKeyManager } from '@angular/cdk/a11y';
 import { KeyValue } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, Pipe} from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { IObject } from 'src/app/models/object';
 import { IOperation } from 'src/app/models/operation';
@@ -47,7 +49,8 @@ export class AccessContolComponent implements OnInit {
 
   constructor(
       private http : HttpClient,
-      private auth :AuthService) {
+      private auth :AuthService,
+      private spinner : NgxSpinnerService) {
     this.object       = ''
     this.operation    = ''
     this.objects      = []
@@ -74,8 +77,9 @@ export class AccessContolComponent implements OnInit {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/objects', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -100,8 +104,9 @@ export class AccessContolComponent implements OnInit {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/operations', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -124,8 +129,10 @@ export class AccessContolComponent implements OnInit {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
- 
+
+    this.spinner.show()
     await this.http.get<IRole[]>(API_URL+'/roles', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -160,8 +167,10 @@ export class AccessContolComponent implements OnInit {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
- 
+
+    this.spinner.show()
     await this.http.get<IPrivilege[]>(API_URL+'/privileges?role='+role, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -259,8 +268,9 @@ export class AccessContolComponent implements OnInit {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.post(API_URL+'/privileges/addtorole', accessForm, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -296,8 +306,9 @@ export class AccessContolComponent implements OnInit {
     let options = {
       headers : new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     this.http.get<IIPrivilege[]>(API_URL+'/load_privilege_model', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {

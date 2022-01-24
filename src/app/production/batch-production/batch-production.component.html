@@ -16,19 +16,19 @@
                                     <tbody>
                                         <tr>
                                             <input type="hidden" [(ngModel)]="id">
-                                            <td style="text-align: right;">Production No</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special"></td>
+                                            <td style="text-align: right;">Production No</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special" [readonly]="noLocked"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Production Name</td><td style="padding: 0;"><input type="text" [(ngModel)]="productionName" class="form-control special"></td>
+                                            <td style="text-align: right;">Production Name</td><td style="padding: 0;"><input type="text" [(ngModel)]="productionName" class="form-control special" [readonly]="inputsLocked"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Batch No</td><td style="padding: 0;"><input type="text" [(ngModel)]="batchNo" class="form-control special"></td>
+                                            <td style="text-align: right;">Batch No</td><td style="padding: 0;"><input type="text" [(ngModel)]="batchNo" class="form-control special" [readonly]="inputsLocked"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Batch Size</td><td style="padding: 0;"><input type="text" [(ngModel)]="batchSize" class="form-control special"></td>
+                                            <td style="text-align: right;">Batch Size</td><td style="padding: 0;"><input type="text" [(ngModel)]="batchSize" class="form-control special" [readonly]="inputsLocked"></td>
                                         </tr>  
                                         <tr>
-                                            <td style="text-align: right;">Units</td><td style="padding: 0;"><input type="text"  [(ngModel)]="uom" class="form-control special"></td>
+                                            <td style="text-align: right;">Units</td><td style="padding: 0;"><input type="text"  [(ngModel)]="uom" class="form-control special" [readonly]="inputsLocked"></td>
                                         </tr>                               
                                         <tr>
                                             <td style="text-align: right;">Status</td><td>{{status}}</td>
@@ -44,15 +44,17 @@
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Comments</td>
-                                            <td style="padding: 0;"><textarea [(ngModel)]="comments" class="form-control special"></textarea></td>          
+                                            <td style="padding: 0;">
+                                                <textarea [(ngModel)]="comments" class="form-control special" [readonly]="inputsLocked"></textarea>
+                                            </td>          
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="col-1">
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;">Search</button><br><br>
-                                <button (click)="clear()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;">Edit</button><br>
+                                <button (click)="getByNo(no)" class="btn btn-success" style="margin: 2px; width: 25mm;">Search</button><br><br>
+                                <button (click)="clear()" (click)="unlockAll()" class="btn btn-success" style="margin: 2px; width: 25mm;">New</button><br>
+                                <button (click)="unlockAll()" class="btn btn-success"style="margin: 2px; width: 25mm;">Edit</button><br>
                                 <button (click)="save()" class="btn btn-success"style="margin: 2px; width: 25mm;">Save</button><br>
                             </div>
                             <div class="col-1"></div>

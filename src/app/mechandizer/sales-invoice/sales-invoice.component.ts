@@ -2,6 +2,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
@@ -23,6 +25,14 @@ const API_URL = environment.apiUrl;
   ]
 })
 export class SalesInvoiceComponent implements OnInit {
+
+  public invoiceNoLocked  : boolean = true
+  public inputsLocked : boolean = true
+
+  public enableSearch : boolean = false
+  public enableDelete : boolean = false
+  public enableSave   : boolean = false
+
   closeResult    : string = ''
 
   blank          : boolean = false
@@ -34,12 +44,14 @@ export class SalesInvoiceComponent implements OnInit {
   customerNo!    : string
   customerName!  : string
   status         : string
-  invoiceDate    : Date
+  invoiceDate!    : Date
   comments!      : string
   created        : string
   approved       : string
   invoiceDetails : ISalesInvoiceDetail[]
   invoices       : ISalesInvoice[]
+
+  total            : number
 
   customerNames  : string[] = []
 
@@ -58,16 +70,18 @@ export class SalesInvoiceComponent implements OnInit {
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private spinner: NgxSpinnerService) {
     this.id               = ''
     this.no               = ''
-    this.invoiceDate      = new Date()
     this.status           = ''
     this.comments         = ''
     this.created          = ''
     this.approved         = ''
     this.invoiceDetails   = []
     this.invoices         = []
+
+    this.total            = 0
 
     this.detailId            = ''
     this.barcode             = ''
@@ -105,7 +119,9 @@ export class SalesInvoiceComponent implements OnInit {
       comments     : this.comments
     }
     if(this.id == null || this.id == ''){   
+      this.spinner.show()
       await this.http.post<ISalesInvoice>(API_URL+'/sales_invoices/create', sales_invoices, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -127,7 +143,9 @@ export class SalesInvoiceComponent implements OnInit {
         }
       )
     }else{
+      this.spinner.show()
       await this.http.put<ISalesInvoice>(API_URL+'/sales_invoices/update', sales_invoices, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -151,14 +169,17 @@ export class SalesInvoiceComponent implements OnInit {
     }
   }
 
-  get(id: any) {
+  async get(id: any) {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ISalesInvoice>(API_URL+'/sales_invoices/get?id='+id, options)
+    this.spinner.show()
+    await this.http.get<ISalesInvoice>(API_URL+'/sales_invoices/get?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.id             = data?.id
         this.no             = data!.no
         this.customerId     = data!.customer.id
@@ -169,6 +190,7 @@ export class SalesInvoiceComponent implements OnInit {
         this.created        = data!.created
         this.approved       = data!.approved
         this.invoiceDetails = data!.salesInvoiceDetails
+        this.refresh()
       }
     )
     .catch(
@@ -178,17 +200,20 @@ export class SalesInvoiceComponent implements OnInit {
     )
   }
 
-  getByNo(no: string) {
+  async getByNo(no: string) {
     if(no == ''){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.http.get<ISalesInvoice>(API_URL+'/sales_invoices/get_by_no?no='+no, options)
+    this.spinner.show()
+    await this.http.get<ISalesInvoice>(API_URL+'/sales_invoices/get_by_no?no='+no, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
+        this.lockAll()
         this.id           = data?.id
         this.no           = data!.no 
         this.customerId   = data!.customer.id
@@ -199,6 +224,7 @@ export class SalesInvoiceComponent implements OnInit {
         this.created      = data!.created
         this.approved     = data!.approved
         this.invoiceDetails = data!.salesInvoiceDetails
+        this.refresh()
       }
     )
     .catch(
@@ -218,7 +244,9 @@ export class SalesInvoiceComponent implements OnInit {
     var invoice = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/sales_invoices/approve', invoice, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -244,7 +272,9 @@ export class SalesInvoiceComponent implements OnInit {
     var invoice = {
       id : this.id   
     }
+    this.spinner.show()
     this.http.put(API_URL+'/sales_invoices/cancel', invoice, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
@@ -289,7 +319,9 @@ export class SalesInvoiceComponent implements OnInit {
         sellingPriceVatIncl : this.sellingPriceVatIncl,
         sellingPriceVatExcl : this.sellingPriceVatExcl
       }
+      this.spinner.show()
       await this.http.post(API_URL+'/sales_invoice_details/save', detail, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         () => {
@@ -310,33 +342,6 @@ export class SalesInvoiceComponent implements OnInit {
     }
   }
 
-  getDetailss(id: any) {
-    if(id == ''){
-      return
-    }
-    this.invoiceDetails = []
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<ISalesInvoiceDetail[]>(API_URL+'/sales_invoice_details/get_by_invoice?id='+id, options)
-    .toPromise()
-    .then(
-      data => {
-        data?.forEach(element => {
-          this.invoiceDetails.push(element)
-        })
-        
-      }
-    )
-    .catch(
-      error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load Invoice')
-      }
-    )
-
-    console.log(this.invoiceDetails)
-  }
-
   getDetailByNo(no: string) {
     throw new Error('Method not implemented.');
   }
@@ -345,7 +350,9 @@ export class SalesInvoiceComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.delete(API_URL+'/sales_invoice_details/delete?id='+id, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -363,7 +370,9 @@ export class SalesInvoiceComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<ISalesInvoice[]>(API_URL+'/sales_invoices', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -388,7 +397,9 @@ export class SalesInvoiceComponent implements OnInit {
     var invoice = {
       id : id   
     }
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/sales_invoices/archive', invoice, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -412,8 +423,9 @@ export class SalesInvoiceComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    
+    this.spinner.show()
     await this.http.put<boolean>(API_URL+'/sales_invoices/archive_all', null, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -430,17 +442,27 @@ export class SalesInvoiceComponent implements OnInit {
     )
   }
 
+  unlockAll(){
+    this.invoiceNoLocked  = false
+    this.inputsLocked = false   
+  }
+
+  lockAll(){
+    this.invoiceNoLocked  = true
+    this.inputsLocked = true
+  }
+
   clear(){
-    this.id           = ''
-    this.no           = ''
-    this.status       = ''
-    this.comments     = ''
-    this.created      = ''
-    this.approved     = ''
-    this.invoiceDetails   = []
-    this.customerNo = ''
-    this.customerName = ''
-    this.invoiceDate    = new Date()
+    this.id             = ''
+    this.no             = ''
+    this.status         = ''
+    this.comments       = ''
+    this.created        = ''
+    this.approved       = ''
+    this.invoiceDetails = []
+    this.customerNo     = ''
+    this.customerName   = ''
+    this.invoiceDate!
   }
 
   clearDetail(){
@@ -451,6 +473,13 @@ export class SalesInvoiceComponent implements OnInit {
     this.qty              = 0
     this.sellingPriceVatIncl = 0
     this.sellingPriceVatExcl = 0
+  }
+
+  refresh(){
+    this.total = 0
+    this.invoiceDetails.forEach(element => {
+      this.total = this.total + element.sellingPriceVatIncl*element.qty
+    })
   }
 
   createShortCut(shortCutName : string, link : string){
@@ -465,7 +494,9 @@ export class SalesInvoiceComponent implements OnInit {
     }
     if(barcode != ''){
       //search by barcode
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_barcode?barcode='+barcode, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -481,7 +512,9 @@ export class SalesInvoiceComponent implements OnInit {
         ErrorHandlerService.showHttpErrorMessage(error, '', 'Product not found')
       })
     }else if(code != ''){
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_code?code='+code, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -499,7 +532,9 @@ export class SalesInvoiceComponent implements OnInit {
       })
     }else{
       //search by description
+      this.spinner.show()
       this.http.get<IProduct>(API_URL+'/products/get_by_description?description='+description, options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {
@@ -521,7 +556,9 @@ export class SalesInvoiceComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     this.http.get<IProduct>(API_URL+'/products/get?id='+productId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -534,8 +571,9 @@ export class SalesInvoiceComponent implements OnInit {
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
-
+    this.spinner.show()
     this.http.get<ISalesInvoiceDetail>(API_URL+'/sales_invoice_details/get?id='+detailId, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -547,24 +585,6 @@ export class SalesInvoiceComponent implements OnInit {
     )
     .catch(error => {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load detail information')
-    })
-  }
-
-  getDetailByProductIdAndLpoId(productId : any){
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IProduct>(API_URL+'/sales_invoice_details/get_by_product_id_and_invoice_id?product_id='+productId+'sales_invoice_id='+this.id, options)
-    .toPromise()
-    .then(
-      data => {
-        this.barcode = data!.barcode
-        this.code = data!.code
-        this.description = data!.description
-      }
-    )
-    .catch(error => {
-      ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
   }
 
@@ -598,7 +618,9 @@ export class SalesInvoiceComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/customers/get_names', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -618,7 +640,9 @@ export class SalesInvoiceComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
+    this.spinner.show()
     await this.http.get<string[]>(API_URL+'/products/get_descriptions', options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
@@ -639,8 +663,9 @@ export class SalesInvoiceComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-
+    this.spinner.show()
     await this.http.get<ICustomer>(API_URL+'/customers/get_by_name?name='+name, options)
+    .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data=>{
