@@ -76,6 +76,8 @@ export class LpoComponent implements OnInit {
 
   descriptions : string[]
 
+  address : any
+
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
@@ -95,7 +97,6 @@ export class LpoComponent implements OnInit {
 
     this.total        = 0
 
-
     this.detailId         = ''
     this.productId        = ''
     this.barcode          = ''
@@ -110,6 +111,7 @@ export class LpoComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.address = await this.data.getAddress()
     this.loadLpos()
     this.loadSupplierNames()
     this.loadProductDescriptions()
@@ -204,6 +206,7 @@ export class LpoComponent implements OnInit {
       )
     }
   }
+
   async get(id: any) {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
@@ -811,23 +814,21 @@ export class LpoComponent implements OnInit {
     var footer = ''
     var title  = 'Local Purchase Order'
     var logo : any = ''
-    var address : any = ''
     var total : number = 0
     if(this.logo == ''){
       logo = { text : '', width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
     }else{
       logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
     }
-    address = this.data.getAddress()
     var report = [
       [
         {text : 'Code', fontSize : 9}, 
-        {text : 'Description', fontSize : 9}, 
-        {text : 'Qty', fontSize : 9}, 
-        {text : 'Price', fontSize : 9}, 
+        {text : 'Description', fontSize : 9},
+        {text : 'Qty', fontSize : 9},
+        {text : 'Price', fontSize : 9},
         {text : 'Total', fontSize : 9}
       ]
-    ]   
+    ]    
     this.lpoDetails.forEach((element) => {
       total = total + element.qty*element.costPriceVatIncl
       var detail = [
@@ -859,7 +860,7 @@ export class LpoComponent implements OnInit {
               {
                 width : 300,
                 columns : [
-                  address
+                  this.address
                 ]
               },
             ]

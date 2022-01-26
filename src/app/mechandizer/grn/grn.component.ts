@@ -66,6 +66,8 @@ export class GrnComponent implements OnInit {
   packSize             : number
   product!             : IProduct
 
+  address : any
+
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
@@ -102,6 +104,7 @@ export class GrnComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.address = await this.data.getAddress()
     this.loadGrns() 
     this.logo = await this.data.getLogo() 
   }
@@ -536,14 +539,12 @@ export class GrnComponent implements OnInit {
     var footer = ''
     var title  = 'Goods Received Note'
     var logo : any = ''
-    var address : any = ''
     var total : number = 0
     if(this.logo == ''){
       logo = { text : '', width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
     }else{
       logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
     }
-    address = this.data.getAddress()
     var report = [
       [
         {text : 'Code', fontSize : 9}, 
@@ -587,7 +588,7 @@ export class GrnComponent implements OnInit {
               {
                 width : 300,
                 columns : [
-                  address
+                  this.address
                 ]
               },
             ]

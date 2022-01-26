@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSpinnerService } from 'ngx-spinner';
+import * as pdfMake from 'pdfmake/build/pdfmake';
 import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { DataService } from 'src/app/services/data.service';
@@ -35,6 +36,9 @@ export class BatchProductionComponent implements OnInit {
   public enableSave   : boolean = false
 
   closeResult : any
+
+  logo!              : any
+  address  : any 
 
   materialFilter : string
 
@@ -154,7 +158,9 @@ export class BatchProductionComponent implements OnInit {
     this.descriptions        = []
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.address = await this.data.getAddress()
+    this.logo = await this.data.getLogo()
     this.loadProductions()
     this.loadMaterials()
     this.loadProductDescriptions()
@@ -1083,6 +1089,186 @@ export class BatchProductionComponent implements OnInit {
     if(confirm('Create shortcut for this page?')){
       this.shortcut.createShortCut(shortCutName, link)
     }
+  }
+
+  exportToPdf = () => {
+    var header = ''
+    var footer = ''
+    var title  = 'Batch Production'
+    var logo : any = ''
+    var total : number = 0
+    if(this.logo == ''){
+      logo = { text : '', width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }else{
+      logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }
+    var unverifiedMaterial = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9},
+        {text : 'Qty', fontSize : 9},
+      ]
+    ]  
+    var verifiedMaterial = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9},
+        {text : 'Qty', fontSize : 9},
+      ]
+    ] 
+    var unverifiedProduct = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9},
+        {text : 'Qty', fontSize : 9},
+      ]
+    ]  
+    var verifiedProduct = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9},
+        {text : 'Qty', fontSize : 9},
+      ]
+    ]     
+    this.unverifiedMaterials.forEach((element) => {
+      var detail = [
+        {text : element.code.toString(), fontSize : 9}, 
+        {text : element.description.toString(), fontSize : 9},
+        {text : element.qty.toString(), fontSize : 9},  
+      ]
+      unverifiedMaterial.push(detail)
+    })
+
+    this.verifiedMaterials.forEach((element) => {
+      var detail = [
+        {text : element.code.toString(), fontSize : 9}, 
+        {text : element.description.toString(), fontSize : 9},
+        {text : element.qty.toString(), fontSize : 9},  
+      ]
+      verifiedMaterial.push(detail)
+    })
+    
+    this.unverifiedProducts.forEach((element) => {
+      var detail = [
+        {text : element.code.toString(), fontSize : 9}, 
+        {text : element.description.toString(), fontSize : 9},
+        {text : element.qty.toString(), fontSize : 9},  
+      ]
+      unverifiedProduct.push(detail)
+    })
+    this.verifiedProducts.forEach((element) => {
+      total = total + element.qty*element.costPriceVatIncl
+      var detail = [
+        {text : element.code.toString(), fontSize : 9}, 
+        {text : element.description.toString(), fontSize : 9},
+        {text : element.qty.toString(), fontSize : 9},  
+      ]
+      verifiedProduct.push(detail)
+    })
+   
+    const docDefinition = {
+      header: '',
+      watermark : { text : title, color: 'blue', opacity: 0.1, bold: true, italics: false },
+        content : [
+          {
+            columns : 
+            [
+              logo,
+              {width : 10, columns : [[]]},
+              {
+                width : 300,
+                columns : [
+                  this.address
+                ]
+              },
+            ]
+          },
+          '  ',
+          '  ',
+          {text : title, fontSize : 12, bold : true},
+          '  ',
+          {
+            layout : 'noBorders',
+            table : {
+              widths : [75, 300],
+              body : [
+                [
+                  {text : 'Production No', fontSize : 9}, 
+                  {text : this.no, fontSize : 9} 
+                ],
+                [
+                  {text : 'Production Name', fontSize : 9}, 
+                  {text : this.productionName, fontSize : 9} 
+                ],
+                [
+                  {text : 'Batch No', fontSize : 9}, 
+                  {text : this.batchNo.toString(), fontSize : 9} 
+                ],
+                [
+                  {text : 'Batch Size', fontSize : 9}, 
+                  {text : this.batchSize.toString()+' '+this.uom, fontSize : 9} 
+                ],
+                [
+                  {text : 'Status', fontSize : 9}, 
+                  {text : this.status, fontSize : 9} 
+                ]
+              ]
+            },
+          },
+          '  ',
+          'Unverified Materials',
+          {
+            layout : 'noBorders',
+            table : {
+              headerRows : 1,
+              widths : ['auto', 200, 'auto'],
+              body : 
+                unverifiedMaterial
+            }
+        },
+        ' ',
+        'Verified Materials',
+        {
+          layout : 'noBorders',
+          table : {
+            headerRows : 1,
+            widths : ['auto', 200, 'auto'],
+            body : 
+              verifiedMaterial
+          }
+      },
+      ' ',
+      'Unverified Products',
+      {
+        layout : 'noBorders',
+        table : {
+          headerRows : 1,
+          widths : ['auto', 200, 'auto'],
+          body : 
+            unverifiedProduct
+        }
+    },
+    ' ',
+    'Verified Products',
+    {
+      layout : 'noBorders',
+      table : {
+        headerRows : 1,
+        widths : ['auto', 200, 'auto'],
+        body : 
+          verifiedProduct
+      }
+  },
+        ' ',
+        ' ',
+        ' ',
+        'Verified ____________________________________', 
+        ' ',
+        ' ',
+        'Approved __________________________________',             
+      ]     
+    };
+    pdfMake.createPdf(docDefinition).open(); 
   }
 }
 

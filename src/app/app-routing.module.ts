@@ -56,6 +56,8 @@ import { MaterialToProductComponent } from './inventory/material-to-product/mate
 import { ProductMaterialRatioComponent } from './inventory/product-material-ratio/product-material-ratio.component';
 import { ProductToMaterialComponent } from './inventory/product-to-material/product-to-material.component';
 import { ProductToProductComponent } from './inventory/product-to-product/product-to-product.component';
+import { DebtReceiptComponent } from './mechandizer/debt-receipt/debt-receipt.component';
+import { DebtAllocationComponent } from './mechandizer/debt-allocation/debt-allocation.component';
 
 const routes: Routes = [
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
@@ -109,7 +111,9 @@ const routes: Routes = [
   {path : 'product-to-material', component:ProductToMaterialComponent, canActivate: [AuthGuard]},
   {path : 'material-to-product', component:MaterialToProductComponent, canActivate: [AuthGuard]},
   {path : 'product-to-product', component:ProductToProductComponent, canActivate: [AuthGuard]},
-  {path : 'material-to-material', component:MaterialToMaterialComponent, canActivate: [AuthGuard]}
+  {path : 'material-to-material', component:MaterialToMaterialComponent, canActivate: [AuthGuard]},
+  {path: 'debt-receipts', component: DebtReceiptComponent, canActivate: [AuthGuard]},
+  {path: 'debt-allocations', component: DebtAllocationComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

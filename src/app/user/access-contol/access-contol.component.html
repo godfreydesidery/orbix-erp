@@ -11,14 +11,14 @@
                 <td style="vertical-align: top; height: 75vh;">
                     <div class="container-fluid">
                         <div class="row">  
-                            <div class="col-3">
+                            <div class="col-2">
                                 <label>Select Role:</label><br>
                                 <select *ngIf="grant(['ROLE-CREATE','ROLE-UPDATE','ROLE-DELETE'])" [ngModel]="selectedRole" (ngModelChange)="selectRole($event)" class="form-control">
                                     <option></option>
                                     <option *ngFor="let role of roles">{{role}}</option>
                                 </select>
                             </div>     
-                            <div class="col-9">
+                            <div class="col-10">
                                 <label><b>{{selectedRoleMessage}}</b></label><br>
                                 <table class="table table-bordered">
                                     <thead>

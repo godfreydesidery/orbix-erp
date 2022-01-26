@@ -1,0 +1,52 @@
+<div class="row" [@fadeInOut]>
+    <div class="col">
+        <table style="width: 100%;">
+            <tr style="width: 100%; background-color: #eeeeee;">
+                <td style="width: 100mm; vertical-align: top;"><p class="h6">Mechandizing / Debt Allocation</p></td>
+                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Allocations', 'allocations')">Create Shortcut</span>]</td>                                   
+            </tr>
+        </table>
+        <table style="width: 100%;">
+            <tr style="width: 100%;">
+                <td style="vertical-align: top; height: 75vh;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-2"></div>
+                            <div class="col-6">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align: right;">Employee</td>
+                                            <td style="padding: 0;">
+                                                <input type="text" [(ngModel)]="employeeNo" class="form-control special" placeholder="Employee No" readonly>
+                                                <select [(ngModel)]="employeeName" (ngModelChange)="searchEmployee(employeeName)" class="form-control input-sm">
+                                                    <option></option>
+                                                    <option *ngFor="let c of employeeNames">{{c}}</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Balance</td><td style="text-align: right; font-family: Arial, Helvetica, sans-serif;">{{employeeBalance | currency :'':''}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <span>Allocate Unpaid/Partial Debts</span>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td>Debt No</td><td>Status</td><td>Balance</td><td>Action</td>
+                                        </tr>
+                                        <tr *ngFor="let i of debts">
+                                            <td>{{i.no}}</td><td>{{i.status}}</td><td style="text-align: right;">{{i.balance | currency:'':''}}</td><td><button (click)="allocate(employeeId, i.id)">Allocate</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-4"></div>                                      
+                        </div>
+                    </div>                   
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -3,8 +3,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSpinnerService } from 'ngx-spinner';
+import * as pdfMake from 'pdfmake/build/pdfmake';
 import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
+import { DataService } from 'src/app/services/data.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
 import { environment } from 'src/environments/environment';
@@ -36,6 +38,9 @@ export class QuotationComponent implements OnInit {
   closeResult      : string = ''
 
   blank            : boolean = false
+
+  logo!              : any
+  address  : any 
   
   id               : any
   no               : string
@@ -71,6 +76,7 @@ export class QuotationComponent implements OnInit {
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
               private modalService: NgbModal,
+              private data : DataService,
               private spinner: NgxSpinnerService) {
     this.id                  = ''
     this.no                  = ''
@@ -94,7 +100,9 @@ export class QuotationComponent implements OnInit {
     this.descriptions        = []
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.logo = await this.data.getLogo() 
+    this.address = await this.data.getAddress()
     this.loadQuotations()
     this.loadCustomerNames()
     this.loadProductDescriptions()
@@ -685,6 +693,108 @@ export class QuotationComponent implements OnInit {
         this.customerName = ''
       }
     )
+  }
+
+  exportToPdf = () => {
+    var header = ''
+    var footer = ''
+    var title  = 'Quotation'
+    var logo : any = ''
+    var total : number = 0
+    if(this.logo == ''){
+      logo = { text : '', width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }else{
+      logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
+    }
+    var report = [
+      [
+        {text : 'Code', fontSize : 9}, 
+        {text : 'Description', fontSize : 9},
+        {text : 'Qty', fontSize : 9},
+        {text : 'Price', fontSize : 9},
+        {text : 'Total', fontSize : 9}
+      ]
+    ]    
+    this.quotationDetails.forEach((element) => {
+      total = total + element.qty*element.sellingPriceVatIncl
+      var detail = [
+        {text : element.product.code.toString(), fontSize : 9}, 
+        {text : element.product.description.toString(), fontSize : 9},
+        {text : element.qty.toString(), fontSize : 9},  
+        {text : element.sellingPriceVatIncl.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},
+        {text : (element.qty*element.sellingPriceVatIncl).toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},        
+      ]
+      report.push(detail)
+    })
+    var detailSummary = [
+      {text : '', fontSize : 9}, 
+      {text : '', fontSize : 9},
+      {text : '', fontSize : 9},  
+      {text : 'Total', fontSize : 9},
+      {text : total.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},        
+    ]
+    report.push(detailSummary)
+    const docDefinition = {
+      header: '',
+      watermark : { text : title, color: 'blue', opacity: 0.1, bold: true, italics: false },
+        content : [
+          {
+            columns : 
+            [
+              logo,
+              {width : 10, columns : [[]]},
+              {
+                width : 300,
+                columns : [
+                  this.address
+                ]
+              },
+            ]
+          },
+          '  ',
+          '  ',
+          {text : title, fontSize : 12, bold : true},
+          '  ',
+          {
+            layout : 'noBorders',
+            table : {
+              widths : [75, 300],
+              body : [
+                [
+                  {text : 'Quotation No', fontSize : 9}, 
+                  {text : this.no, fontSize : 9} 
+                ],
+                [
+                  {text : 'Customer', fontSize : 9}, 
+                  {text : this.customerName, fontSize : 9} 
+                ],
+                [
+                  {text : 'Status', fontSize : 9}, 
+                  {text : this.status, fontSize : 9} 
+                ]
+              ]
+            },
+          },
+          '  ',
+          {
+            table : {
+                headerRows : 1,
+                widths : ['auto', 230, 'auto', 70, 80],
+                body : report
+            }
+        },
+        ' ',
+        ' ',   
+        ' ',
+        ' ',
+        ' ',
+        'Verified ____________________________________', 
+        ' ',
+        ' ',
+        'Approved __________________________________',             
+      ]     
+    };
+    pdfMake.createPdf(docDefinition).open(); 
   }
 }
 

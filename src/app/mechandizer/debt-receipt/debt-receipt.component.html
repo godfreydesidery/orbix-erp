@@ -2,8 +2,8 @@
     <div class="col">
         <table style="width: 100%;">
             <tr style="width: 100%; background-color: #eeeeee;">
-                <td style="width: 100mm; vertical-align: top;"><p class="h6">Mechandizing / Sales Receipt</p></td>
-                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Sales Receipts', 'sales-receipts')">Create Shortcut</span>]</td>                                  
+                <td style="width: 100mm; vertical-align: top;"><p class="h6">Mechandizing / Debt Receipt</p></td>
+                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Debt Receipts', 'debt-receipts')">Create Shortcut</span>]</td>                                  
             </tr>
         </table>
         <table style="width: 100%;">
@@ -35,12 +35,12 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: right;">Customer</td>
+                                            <td style="text-align: right;">Employee</td>
                                             <td style="padding: 0;">
-                                                <input type="text" [(ngModel)]="customerNo" class="form-control special" placeholder="Customer No" readonly>
-                                                <select [(ngModel)]="customerName" (ngModelChange)="searchCustomer(customerName)" class="form-control input-sm" [disabled]="inputsLocked">
+                                                <input type="text" [(ngModel)]="employeeNo" class="form-control special" placeholder="Employee No" readonly>
+                                                <select [(ngModel)]="employeeName" (ngModelChange)="searchEmployee(employeeName)" class="form-control input-sm" [disabled]="inputsLocked">
                                                     <option></option>
-                                                    <option *ngFor="let c of customerNames">{{c}}</option>
+                                                    <option *ngFor="let c of employeeNames">{{c}}</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -91,6 +91,7 @@
                                         <tr class="table-dark">
                                             <td>Receipt No</td>
                                             <td>Receipt Date</td>
+                                            <td>Employee</td>
                                             <td>Status</td>
                                             <td>Select</td>
                                         </tr>
@@ -99,6 +100,7 @@
                                         <tr *ngFor="let rec of receipts">
                                             <td>{{rec.no}}</td>
                                             <td>{{rec.receiptDate}}</td>
+                                            <td>{{rec.employee.alias}}</td>
                                             <td>{{rec.status}}</td>
                                             <td><span (click)="get(rec.id)" style="cursor: pointer;">[Select]</span></td>
                                         </tr>

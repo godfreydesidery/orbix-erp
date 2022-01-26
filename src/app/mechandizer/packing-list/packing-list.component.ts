@@ -105,6 +105,8 @@ export class PackingListComponent implements OnInit {
 
   descriptions : string[]
 
+  address : any
+
   constructor(private auth : AuthService,
               private http :HttpClient,
               private shortcut : ShortCutHandlerService, 
@@ -157,11 +159,12 @@ export class PackingListComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.address = await this.data.getAddress()
+    this.logo = await this.data.getLogo()
     this.loadPackingLists()
     this.loadCustomerNames()
     this.loadEmployeeNames()
     this.loadProductDescriptions()
-    this.logo = await this.data.getLogo()
   }
 
   async save() {   
@@ -975,7 +978,6 @@ export class PackingListComponent implements OnInit {
     var footer = ''
     var title  = ''
     var logo : any = ''
-    var address : any = ''
     if(this.status == 'PENDING' || this.status == 'APPROVED' || this.status == 'CANCELED'){
       title = 'Packing List and Returns'
     }else{
@@ -986,7 +988,6 @@ export class PackingListComponent implements OnInit {
     }else{
       logo = {image : this.logo, width : 70, height : 70, absolutePosition : {x : 40, y : 40}}
     }
-    address = this.data.getAddress()
     var report = [
       [
         {text : 'Code', fontSize : 9}, 
@@ -1028,7 +1029,7 @@ export class PackingListComponent implements OnInit {
               {
                 width : 300,
                 columns : [
-                  address
+                  this.address
                 ]
               },
             ]

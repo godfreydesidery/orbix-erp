@@ -80,6 +80,9 @@ import { MaterialToProductComponent } from './inventory/material-to-product/mate
 import { ProductToProductComponent } from './inventory/product-to-product/product-to-product.component';
 import { MaterialToMaterialComponent } from './inventory/material-to-material/material-to-material.component';
 import { NgxSpinnerModule } from "ngx-spinner";
+import { DebtReceiptComponent } from './mechandizer/debt-receipt/debt-receipt.component';
+import { DebtAllocationComponent } from './mechandizer/debt-allocation/debt-allocation.component';
+import { DebtTrackerComponent } from './mechandizer/debt-tracker/debt-tracker.component';
 
 
 @NgModule({
@@ -151,6 +154,9 @@ import { NgxSpinnerModule } from "ngx-spinner";
     MaterialToProductComponent,
     ProductToProductComponent,
     MaterialToMaterialComponent,
+    DebtReceiptComponent,
+    DebtAllocationComponent,
+    DebtTrackerComponent,
     //BatchProductionComponent,
     //CustomProductionComponent,
   ],
@@ -218,7 +224,10 @@ import { NgxSpinnerModule } from "ngx-spinner";
       {path : 'product-to-material', component:ProductToMaterialComponent},
       {path : 'material-to-product', component:MaterialToProductComponent},
       {path : 'product-to-product', component:ProductToProductComponent},
-      {path : 'material-to-material', component:MaterialToMaterialComponent}
+      {path : 'material-to-material', component:MaterialToMaterialComponent},
+      {path : 'debt-receipts', component: DebtReceiptComponent},
+      {path : 'debt-allocations', component: DebtAllocationComponent},
+      {path : 'debt-tracker', component: DebtTrackerComponent},
     ]),
     BrowserAnimationsModule,
   ],
