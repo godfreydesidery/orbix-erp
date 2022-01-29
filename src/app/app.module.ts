@@ -83,6 +83,13 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import { DebtReceiptComponent } from './mechandizer/debt-receipt/debt-receipt.component';
 import { DebtAllocationComponent } from './mechandizer/debt-allocation/debt-allocation.component';
 import { DebtTrackerComponent } from './mechandizer/debt-tracker/debt-tracker.component';
+import { DailySalesReportComponent } from './reports/sales-reports/daily-sales-report/daily-sales-report.component';
+import { ProductListingReportComponent } from './reports/sales-reports/product-listing-report/product-listing-report.component';
+import { SupplySalesReportComponent } from './reports/sales-reports/supply-sales-report/supply-sales-report.component';
+import { ZHistoryComponent } from './reports/sales-reports/z-history/z-history.component';
+import { FastMovingItemsComponent } from './reports/sales-reports/fast-moving-items/fast-moving-items.component';
+import { SlowMovingItemsComponent } from './reports/sales-reports/slow-moving-items/slow-moving-items.component';
+import { ProductionReportComponent } from './reports/production-reports/production-report/production-report.component';
 
 
 @NgModule({
@@ -157,6 +164,13 @@ import { DebtTrackerComponent } from './mechandizer/debt-tracker/debt-tracker.co
     DebtReceiptComponent,
     DebtAllocationComponent,
     DebtTrackerComponent,
+    DailySalesReportComponent,
+    ProductListingReportComponent,
+    SupplySalesReportComponent,
+    ZHistoryComponent,
+    FastMovingItemsComponent,
+    SlowMovingItemsComponent,
+    ProductionReportComponent,
     //BatchProductionComponent,
     //CustomProductionComponent,
   ],
@@ -228,6 +242,13 @@ import { DebtTrackerComponent } from './mechandizer/debt-tracker/debt-tracker.co
       {path : 'debt-receipts', component: DebtReceiptComponent},
       {path : 'debt-allocations', component: DebtAllocationComponent},
       {path : 'debt-tracker', component: DebtTrackerComponent},
+      {path : 'daily-sales-report', component: DailySalesReportComponent},
+      {path : 'z-history', component: ZHistoryComponent},
+      {path : 'product-listing-report', component: ProductListingReportComponent},
+      {path : 'supply-sales-report', component: SupplySalesReportComponent},
+      {path : 'fast-moving-items', component: FastMovingItemsComponent},
+      {path : 'slow-moving-items', component: SlowMovingItemsComponent},
+      {path : 'production-report', component: ProductionReportComponent},
     ]),
     BrowserAnimationsModule,
   ],

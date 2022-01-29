@@ -58,6 +58,13 @@ import { ProductToMaterialComponent } from './inventory/product-to-material/prod
 import { ProductToProductComponent } from './inventory/product-to-product/product-to-product.component';
 import { DebtReceiptComponent } from './mechandizer/debt-receipt/debt-receipt.component';
 import { DebtAllocationComponent } from './mechandizer/debt-allocation/debt-allocation.component';
+import { DailySalesReportComponent } from './reports/sales-reports/daily-sales-report/daily-sales-report.component';
+import { ZHistoryComponent } from './reports/sales-reports/z-history/z-history.component';
+import { ProductListingReportComponent } from './reports/sales-reports/product-listing-report/product-listing-report.component';
+import { SupplySalesReportComponent } from './reports/sales-reports/supply-sales-report/supply-sales-report.component';
+import { FastMovingItemsComponent } from './reports/sales-reports/fast-moving-items/fast-moving-items.component';
+import { SlowMovingItemsComponent } from './reports/sales-reports/slow-moving-items/slow-moving-items.component';
+import { ProductionReportComponent } from './reports/production-reports/production-report/production-report.component';
 
 const routes: Routes = [
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
@@ -113,7 +120,14 @@ const routes: Routes = [
   {path : 'product-to-product', component:ProductToProductComponent, canActivate: [AuthGuard]},
   {path : 'material-to-material', component:MaterialToMaterialComponent, canActivate: [AuthGuard]},
   {path: 'debt-receipts', component: DebtReceiptComponent, canActivate: [AuthGuard]},
-  {path: 'debt-allocations', component: DebtAllocationComponent, canActivate: [AuthGuard]}
+  {path: 'debt-allocations', component: DebtAllocationComponent, canActivate: [AuthGuard]},
+  {path: 'daily-sales-report', component: DailySalesReportComponent, canActivate: [AuthGuard]},
+  {path: 'z-history', component: ZHistoryComponent, canActivate: [AuthGuard]},
+  {path: 'product-listing-report', component: ProductListingReportComponent, canActivate: [AuthGuard]},
+  {path: 'supply-sales-report', component: SupplySalesReportComponent, canActivate: [AuthGuard]},
+  {path: 'fast-moving-items', component: FastMovingItemsComponent, canActivate: [AuthGuard]},
+  {path: 'slow-moving-items', component: SlowMovingItemsComponent, canActivate: [AuthGuard]},
+  {path: 'production-report', component: ProductionReportComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({

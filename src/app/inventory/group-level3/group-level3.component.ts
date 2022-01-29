@@ -49,7 +49,7 @@ export class GroupLevel3Component implements OnInit, ILevelThree {
     if(this.id == null || this.id == ''){
       //save a new till
       this.spinner.show()
-      await this.http.post<ILevelThree>('/api/group_level_threes/create', levelOne, options)
+      await this.http.post<ILevelThree>(API_URL+'/group_level_threes/create', levelOne, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -71,7 +71,7 @@ export class GroupLevel3Component implements OnInit, ILevelThree {
     }else{
       //update an existing till
       this.spinner.show()
-      await this.http.put<ILevelThree>('/api/group_level_threes/update', levelOne, options)
+      await this.http.put<ILevelThree>(API_URL+'/group_level_threes/update', levelOne, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -96,7 +96,7 @@ export class GroupLevel3Component implements OnInit, ILevelThree {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ILevelThree[]>('/api/group_level_threes', options)
+    await this.http.get<ILevelThree[]>(API_URL+'/group_level_threes', options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -117,7 +117,7 @@ export class GroupLevel3Component implements OnInit, ILevelThree {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ILevelThree>("api/group_level_threes/get?id="+id, options)
+    await this.http.get<ILevelThree>(API_URL+'/group_level_threes/get?id='+id, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -140,7 +140,7 @@ export class GroupLevel3Component implements OnInit, ILevelThree {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get("api/group_level_threes/get_by_name?name="+name, options)
+    await this.http.get(API_URL+'/group_level_threes/get_by_name?name='+name, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -168,7 +168,7 @@ export class GroupLevel3Component implements OnInit, ILevelThree {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
       this.spinner.show()
-      await this.http.delete('/api/group_level_threes/delete?id='+id, options)
+      await this.http.delete(API_URL+'/group_level_threes/delete?id='+id, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -200,7 +200,7 @@ export class GroupLevel3Component implements OnInit, ILevelThree {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ILevelThree[]>('/api/group_level_threes', options)
+    await this.http.get<ILevelThree[]>(API_URL+'/group_level_threes', options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(

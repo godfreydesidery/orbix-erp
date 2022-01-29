@@ -101,7 +101,7 @@ export class MaterialMasterComponent implements OnInit {
     }
     this.materials = []
     this.spinner.show()
-    await this.http.get<IMaterial[]>('/api/materials', options)
+    await this.http.get<IMaterial[]>(API_URL+'/materials', options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(data => {
@@ -152,7 +152,7 @@ export class MaterialMasterComponent implements OnInit {
        * Save a new record
        */
       this.spinner.show()
-      await this.http.post<IMaterial>('/api/materials/create', material, options)
+      await this.http.post<IMaterial>(API_URL+'/materials/create', material, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -174,7 +174,7 @@ export class MaterialMasterComponent implements OnInit {
        * Update an existing record
        */
       this.spinner.show()
-      await this.http.put<IMaterial>('/api/materials/update', material, options)
+      await this.http.put<IMaterial>(API_URL+'/materials/update', material, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -207,7 +207,7 @@ export class MaterialMasterComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    this.http.get<IMaterial>('/api/materials/get?id='+id, options)
+    this.http.get<IMaterial>(API_URL+'/materials/get?id='+id, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -228,7 +228,7 @@ export class MaterialMasterComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    this.http.get<IMaterial>('/api/materials/get_by_code?code='+code, options)
+    this.http.get<IMaterial>(API_URL+'/materials/get_by_code?code='+code, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -249,7 +249,7 @@ export class MaterialMasterComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    this.http.get<IMaterial>('/api/materials/get_by_description?description='+description, options)
+    this.http.get<IMaterial>(API_URL+'/materials/get_by_description?description='+description, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -272,7 +272,7 @@ export class MaterialMasterComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    this.http.delete('/api/materials/delete?id='+id, options)
+    this.http.delete(API_URL+'/materials/delete?id='+id, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -341,7 +341,7 @@ export class MaterialMasterComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ICategory[]>('/api/categories', options)
+    await this.http.get<ICategory[]>(API_URL+'/categories', options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -370,7 +370,7 @@ export class MaterialMasterComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ISubCategory[]>('/api/sub_categories/get_by_category_name?category_name='+categoryName, options)
+    await this.http.get<ISubCategory[]>(API_URL+'/sub_categories/get_by_category_name?category_name='+categoryName, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(

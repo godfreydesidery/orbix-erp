@@ -49,7 +49,7 @@ export class GroupLevel1Component implements OnInit, ILevelOne {
     if(this.id == null || this.id == ''){
       //save a new till
       this.spinner.show()
-      await this.http.post<ILevelOne>('/api/group_level_ones/create', levelOne, options)
+      await this.http.post<ILevelOne>(API_URL+'/group_level_ones/create', levelOne, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -71,7 +71,7 @@ export class GroupLevel1Component implements OnInit, ILevelOne {
     }else{
       //update an existing till
       this.spinner.show()
-      await this.http.put<ILevelOne>('/api/group_level_ones/update', levelOne, options)
+      await this.http.put<ILevelOne>(API_URL+'/group_level_ones/update', levelOne, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -96,7 +96,7 @@ export class GroupLevel1Component implements OnInit, ILevelOne {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ILevelOne[]>('/api/group_level_ones', options)
+    await this.http.get<ILevelOne[]>(API_URL+'/group_level_ones', options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -117,7 +117,7 @@ export class GroupLevel1Component implements OnInit, ILevelOne {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ILevelOne>("api/group_level_ones/get?id="+id, options)
+    await this.http.get<ILevelOne>(API_URL+'/group_level_ones/get?id='+id, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -140,7 +140,7 @@ export class GroupLevel1Component implements OnInit, ILevelOne {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get("api/group_level_ones/get_by_name?name="+name, options)
+    await this.http.get(API_URL+'/group_level_ones/get_by_name?name='+name, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -168,7 +168,7 @@ export class GroupLevel1Component implements OnInit, ILevelOne {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
       this.spinner.show()
-      await this.http.delete('/api/group_level_ones/delete?id='+id, options)
+      await this.http.delete(API_URL+'/group_level_ones/delete?id='+id, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -200,7 +200,7 @@ export class GroupLevel1Component implements OnInit, ILevelOne {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ILevelOne[]>('/api/group_level_ones', options)
+    await this.http.get<ILevelOne[]>(API_URL+'/group_level_ones', options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(

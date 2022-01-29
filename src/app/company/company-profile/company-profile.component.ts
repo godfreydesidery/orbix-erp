@@ -31,6 +31,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
   telephone       : string;
   mobile          : string;
   email           : string;
+  website         : string;
   fax             : string;
   bankAccountName : string;
   bankPhysicalAddress: string;
@@ -57,6 +58,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
     this.telephone        = ''
     this.mobile           = ''
     this.email            = ''
+    this.website          = ''
     this.fax              = ''
     this.bankAccountName  = ''
     this.bankPhysicalAddress = ''
@@ -96,6 +98,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
         this.telephone        = data!.telephone
         this.mobile           = data!.mobile
         this.email            = data!.email
+        this.website          = data!.website
         this.fax              = data!.fax
         this.bankAccountName  = data!.bankAccountName
         this.bankPhysicalAddress      = data!.bankPhysicalAddress
@@ -146,6 +149,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
       telephone        : this.telephone,
       mobile           : this.mobile,
       email            : this.email,
+      website          : this.website,
       fax              : this.fax,
       bankAccountName  : this.bankAccountName,
       bankPhysicalAddress      : this.bankPhysicalAddress,
@@ -172,6 +176,7 @@ export class CompanyProfileComponent implements OnInit, ICompanyProfile {
         this.telephone        = data!.telephone
         this.mobile           = data!.mobile
         this.email            = data!.email
+        this.website          = data!.website
         this.fax              = data!.fax
         this.bankAccountName  = data!.bankAccountName
         this.bankPhysicalAddress      = data!.bankPhysicalAddress
@@ -261,6 +266,7 @@ export interface ICompanyProfile{
   telephone       : string
   mobile          : string
   email           : string
+  website         : string
   fax             : string
   bankAccountName : string
   bankPhysicalAddress : string

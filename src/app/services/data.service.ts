@@ -25,6 +25,7 @@ export class DataService {
   telephone       : string;
   mobile          : string;
   email           : string;
+  website         : string
   fax             : string;
   bankAccountName : string;
   bankPhysicalAddress: string;
@@ -48,6 +49,7 @@ export class DataService {
     this.telephone        = ''
     this.mobile           = ''
     this.email            = ''
+    this.website          = ''
     this.fax              = ''
     this.bankAccountName  = ''
     this.bankPhysicalAddress = ''
@@ -95,6 +97,7 @@ export class DataService {
         this.telephone        = data!.telephone
         this.mobile           = data!.mobile
         this.email            = data!.email
+        this.website          = data!.website
         this.fax              = data!.fax
         this.bankAccountName  = data!.bankAccountName
         this.bankPhysicalAddress = data!.bankPhysicalAddress
@@ -120,14 +123,15 @@ export class DataService {
     var cMobile = 'Mob: '+this.mobile
     var cFax = 'Fax: '+this.fax
     var cEmail = 'Email: '+this.email
-    var cWebsite = ''
+    var cWebsite = this.website
     
     var address = [
       {text : cName, fontSize : 12, bold : true},
       {text : cPhysicalAddress, fontSize : 9},
       {text : cPostalAddress, fontSize : 9},
       {text : cTelephone, fontSize : 9},
-      {text : cEmail, fontSize : 9, italic : true}
+      {text : cEmail, fontSize : 9, italic : true},
+      {text : cWebsite, fontSize : 9, italic : true}
     ]
     return address
   }
@@ -151,6 +155,7 @@ export interface ICompanyProfile{
   telephone       : string
   mobile          : string
   email           : string
+  website         : string
   fax             : string
   bankAccountName : string
   bankPhysicalAddress : string

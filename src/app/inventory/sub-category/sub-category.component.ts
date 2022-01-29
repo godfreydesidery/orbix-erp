@@ -1,12 +1,12 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'src/app/auth.service';
-import { ErrorHandlerService } from 'src/app/services/error-handler.service';
-import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service';
-import { ICategory } from '../category/category.component';
-import { environment } from 'src/environments/environment';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { Component, OnInit } from '@angular/core'
+import { AuthService } from 'src/app/auth.service'
+import { ErrorHandlerService } from 'src/app/services/error-handler.service'
+import { ShortCutHandlerService } from 'src/app/services/short-cut-handler.service'
+import { ICategory } from '../category/category.component'
+import { environment } from 'src/environments/environment'
+import { NgxSpinnerService } from 'ngx-spinner'
+import { finalize } from 'rxjs'
 
 const API_URL = environment.apiUrl;
 
@@ -189,7 +189,7 @@ export class SubCategoryComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<ICategory[]>('/api/categories', options)
+    await this.http.get<ICategory[]>(API_URL+'/categories', options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(

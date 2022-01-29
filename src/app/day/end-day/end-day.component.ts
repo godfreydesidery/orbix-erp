@@ -1,6 +1,9 @@
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/internal/operators/finalize';
 import { AuthService } from 'src/app/auth.service';
 import { environment } from 'src/environments/environment';
 
@@ -9,14 +12,25 @@ const API_URL = environment.apiUrl;
 @Component({
   selector: 'app-end-day',
   templateUrl: './end-day.component.html',
-  styleUrls: ['./end-day.component.scss']
+  styleUrls: ['./end-day.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0
+      })),
+      transition('void <=> *', animate(1000)),
+    ]),
+  ]
 })
 export class EndDayComponent implements OnInit {
 
   systemDate!: string;
   bussinessDate!: string;
 
-  constructor(private http :HttpClient, private auth : AuthService, private router: Router) {
+  constructor(private http :HttpClient, 
+              private auth : AuthService, 
+              private router: Router,
+              private spinner: NgxSpinnerService) {
     
   }
 
@@ -35,7 +49,9 @@ export class EndDayComponent implements OnInit {
        let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }
+      this.spinner.show()
       this.http.get<boolean>(API_URL+'/days/end_day', options)
+      .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
         data => {

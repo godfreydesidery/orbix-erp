@@ -481,6 +481,9 @@ export class DebtReceiptComponent implements OnInit {
   }
 
   exportToPdf = () => {
+    if(this.id == '' || this.id == null){
+      return
+    }
     var header = ''
     var footer = ''
     var title  = 'Debt Receipt'
