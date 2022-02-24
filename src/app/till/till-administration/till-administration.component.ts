@@ -29,7 +29,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
   closeResult : string = ''
   
   public id           : any
-  public tillNo       : string
+  public     no       : string
   public computerName : string
   public active : boolean
 
@@ -43,7 +43,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
     private modalService: NgbModal,
     private spinner : NgxSpinnerService) {
     this.id           = ''
-    this.tillNo       = ''
+    this.no           = ''
     this.computerName = ''
     this.active       = false
 
@@ -60,7 +60,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
     }
     var till = {
       id           : this.id,
-      tillNo       : this.tillNo,
+      no       : this.no,
       computerName : this.computerName,
       active       : this.active
     }
@@ -73,7 +73,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
       .then(
         data => {
           this.id           = data?.id
-          this.tillNo       = data!.tillNo
+          this.no       = data!.no
           this.computerName = data!.computerName
           this.active       = data!.active
           alert('Till created successifully')
@@ -96,7 +96,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
       .then(
         data => {
           this.id           = data?.id
-          this.tillNo       = data!.tillNo
+          this.no       = data!.no
           this.computerName = data!.computerName
           this.active       = data!.active
           alert('Till updated successifully')
@@ -113,7 +113,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
 
   private clearData(){
     this.id           = ''
-    this.tillNo       = ''
+    this.no       = ''
     this.computerName = ''
     this.active       = false
   }
@@ -258,7 +258,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
     .then(
       data=>{
         this.id = data?.id
-        this.tillNo = data!.tillNo
+        this.no = data!.no
         this.computerName = data!.computerName
         this.active = data!.active
       }
@@ -275,7 +275,7 @@ export class TillAdministrationComponent implements OnInit, ITill {
 
 export interface ITill{
   id           : any
-  tillNo       : string
+  no           : string
   computerName : string
   active       : boolean
 
