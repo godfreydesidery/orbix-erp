@@ -90,6 +90,8 @@ import { ZHistoryComponent } from './reports/sales-reports/z-history/z-history.c
 import { FastMovingItemsComponent } from './reports/sales-reports/fast-moving-items/fast-moving-items.component';
 import { SlowMovingItemsComponent } from './reports/sales-reports/slow-moving-items/slow-moving-items.component';
 import { ProductionReportComponent } from './reports/production-reports/production-report/production-report.component';
+import { SalesListComponent } from './mechandizer/sales-list/sales-list.component';
+import { StockCardReportComponent } from './reports/inventory-reports/stock-card-report/stock-card-report.component';
 
 
 @NgModule({
@@ -171,6 +173,8 @@ import { ProductionReportComponent } from './reports/production-reports/producti
     FastMovingItemsComponent,
     SlowMovingItemsComponent,
     ProductionReportComponent,
+    SalesListComponent,
+    StockCardReportComponent,
     //BatchProductionComponent,
     //CustomProductionComponent,
   ],
@@ -218,6 +222,7 @@ import { ProductionReportComponent } from './reports/production-reports/producti
       {path : 'sales-journal', component: SalesJournalComponent},
       {path : 'bill-reprint', component: BillReprintComponent},
       {path : 'packing-list', component: PackingListComponent},
+      {path : 'sales-list', component: SalesListComponent},
       {path : 'customer-returns', component: CustomerReturnComponent},
       {path : 'customer-claims', component: CustomerClaimComponent},
       {path : 'return-to-vendor', component: ReturnToVendorComponent},
@@ -249,6 +254,7 @@ import { ProductionReportComponent } from './reports/production-reports/producti
       {path : 'fast-moving-items', component: FastMovingItemsComponent},
       {path : 'slow-moving-items', component: SlowMovingItemsComponent},
       {path : 'production-report', component: ProductionReportComponent},
+      {path : 'stock-card-report', component: StockCardReportComponent},
     ]),
     BrowserAnimationsModule,
   ],

@@ -1,6 +1,6 @@
+import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/auth.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
@@ -18,21 +18,12 @@ import { finalize } from 'rxjs';
 const API_URL = environment.apiUrl;
 
 @Component({
-  selector: 'app-packing-list',
-  templateUrl: './packing-list.component.html',
-  styleUrls: ['./packing-list.component.scss'],
-  animations: [
-    trigger('fadeInOut', [
-      state('void', style({
-        opacity: 0
-      })),
-      transition('void <=> *', animate(1000)),
-    ]),
-  ]
+  selector: 'app-sales-list',
+  templateUrl: './sales-list.component.html',
+  styleUrls: ['./sales-list.component.scss']
 })
-export class PackingListComponent implements OnInit {
-
-  public pclNoLocked  : boolean = true
+export class SalesListComponent implements OnInit {
+  public slstNoLocked  : boolean = true
   public inputsLocked : boolean = true
   public valuesLocked : boolean = true
 
@@ -60,15 +51,22 @@ export class PackingListComponent implements OnInit {
   comments!      : string
   created        : string
   approved       : string
-  posted         : string
-  packingListDetails : IPackingListDetail[]
-  packingLists       : IPackingList[]
+  salesListDetails : ISalesListDetail[]
+  salesLists       : ISalesList[]
 
   total            : number
 
-  totalPreviousReturns : number
-  totalAmountIssued    : number
   totalAmountPacked    : number
+  totalSales           : number
+  totalOffered         : number
+  totalReturns         : number
+  totalDamages         : number
+  totalDeficit         : number
+
+  totalDiscounts       : number
+  totalExpenditures     : number
+  totalBank            : number
+  totalCash            : number
 
   customerNames  : string[] = []
   employeeNames  : string[] = []
@@ -80,9 +78,11 @@ export class PackingListComponent implements OnInit {
   code                : string
   description         : string
   
-  previousReturns     : number
-  qtyIssued           : number
-  totalPacked         : number  
+  totalPacked         : number
+  qtySold             : number
+  qtyOffered          : number
+  qtyReturned         : number
+  qtyDamaged          : number   
   costPriceVatIncl    : number
   costPriceVatExcl    : number
   sellingPriceVatIncl : number
@@ -104,23 +104,32 @@ export class PackingListComponent implements OnInit {
     this.comments         = ''
     this.created          = ''
     this.approved         = ''
-    this.posted           = ''
-    this.packingListDetails   = []
-    this.packingLists         = []
+    this.salesListDetails   = []
+    this.salesLists         = []
 
     this.total            = 0
 
-    this.totalPreviousReturns = 0
-    this.totalAmountIssued    = 0
     this.totalAmountPacked    = 0
+    this.totalSales           = 0
+    this.totalOffered         = 0
+    this.totalReturns         = 0
+    this.totalDamages         = 0
+    this.totalDeficit         = 0
+
+    this.totalDiscounts       = 0
+    this.totalExpenditures     = 0
+    this.totalBank            = 0
+    this.totalCash            = 0
 
     this.detailId            = ''
     this.barcode             = ''
     this.code                = ''    
     this.description         = ''
-    this.previousReturns     = 0
-    this.qtyIssued           = 0
     this.totalPacked         = 0
+    this.qtySold             = 0
+    this.qtyOffered          = 0
+    this.qtyReturned         = 0
+    this.qtyDamaged          = 0
     this.costPriceVatIncl    = 0
     this.costPriceVatExcl    = 0
     this.sellingPriceVatIncl = 0
@@ -132,7 +141,7 @@ export class PackingListComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.address = await this.data.getAddress()
     this.logo = await this.data.getLogo()
-    this.loadPackingLists()
+    this.loadSalesLists()
     this.loadCustomerNames()
     this.loadEmployeeNames()
     this.loadProductDescriptions()
@@ -142,7 +151,7 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var packingList = {
+    var salesList = {
       id           : this.id,
       customer     : {no : this.customerNo, name : this.customerName},
       employee     : {no : this.employeeNo, alias : this.employeeName},
@@ -150,7 +159,7 @@ export class PackingListComponent implements OnInit {
     }
     if(this.id == null || this.id == ''){  
       this.spinner.show() 
-      await this.http.post<IPackingList>(API_URL+'/packing_lists/create', packingList, options)
+      await this.http.post<ISalesList>(API_URL+'/sales_lists/create', salesList, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -161,24 +170,30 @@ export class PackingListComponent implements OnInit {
           this.comments             = data!.comments
           this.created              = data!.created
           this.approved             = data!.approved
-          this.posted               = data!.posted
-          this.totalPreviousReturns = data!.totalPreviousReturns
-          this.totalAmountIssued    = data!.totalAmountIssued
           this.totalAmountPacked    = data!.totalAmountPacked
+          this.totalSales           = data!.totalSales
+          this.totalOffered         = data!.totalOffered
+          this.totalReturns         = data!.totalReturns
+          this.totalDamages         = data!.totalDamages
+          this.totalDeficit         = data!.totalDeficit
+          this.totalDiscounts       = data!.totalDiscounts
+          this.totalExpenditures     = data!.totalExpenditures
+          this.totalBank            = data!.totalBank
+          this.totalCash            = data!.totalCash
           this.get(this.id)
-          alert('Packing List created successifully')
+          alert('Sales List created successifully')
           this.blank = true
-          this.loadPackingLists()
+          this.loadSalesLists()
         }
       )
       .catch(
         error => {
-          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not save Packing List')
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not save Sales List')
         }
       )
     }else{
       this.spinner.show()
-      await this.http.put<IPackingList>(API_URL+'/packing_lists/update', packingList, options)
+      await this.http.put<ISalesList>(API_URL+'/sales_lists/update', salesList, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -189,26 +204,32 @@ export class PackingListComponent implements OnInit {
           this.comments             = data!.comments
           this.created              = data!.created
           this.approved             = data!.approved
-          this.posted               = data!.posted
-          this.totalPreviousReturns = data!.totalPreviousReturns
-          this.totalAmountIssued    = data!.totalAmountIssued
           this.totalAmountPacked    = data!.totalAmountPacked
+          this.totalSales           = data!.totalSales
+          this.totalOffered         = data!.totalOffered
+          this.totalReturns         = data!.totalReturns
+          this.totalDamages         = data!.totalDamages
+          this.totalDeficit         = data!.totalDeficit
+          this.totalDiscounts       = data!.totalDiscounts
+          this.totalExpenditures     = data!.totalExpenditures
+          this.totalBank            = data!.totalBank
+          this.totalCash            = data!.totalCash
           this.get(this.id)
-          alert('Packing List updated successifully')
-          this.loadPackingLists()
+          alert('Sales List updated successifully')
+          this.loadSalesLists()
         }
       )
       .catch(
         error => {
           console.log(error)
-          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update Packing List')
+          ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not update Sales List')
         }
       )
     }
   }
 
   refresh(){
-    if(this.status == 'APPROVED'){
+    if(this.status == 'PENDING'){
       this.valuesLocked = false
     }else{
       this.valuesLocked = true
@@ -220,7 +241,7 @@ export class PackingListComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<IPackingList>(API_URL+'/packing_lists/get?id='+id, options)
+    await this.http.get<ISalesList>(API_URL+'/sales_lists/get?id='+id, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -237,18 +258,24 @@ export class PackingListComponent implements OnInit {
         this.comments             = data!.comments
         this.created              = data!.created
         this.approved             = data!.approved
-        this.posted               = data!.posted
-        this.totalPreviousReturns = data!.totalPreviousReturns
-        this.totalAmountIssued    = data!.totalAmountIssued
         this.totalAmountPacked    = data!.totalAmountPacked
+        this.totalSales           = data!.totalSales
+        this.totalOffered         = data!.totalOffered
+        this.totalReturns         = data!.totalReturns
+        this.totalDamages         = data!.totalDamages
+        this.totalDeficit         = data!.totalDeficit
+        this.totalDiscounts       = data!.totalDiscounts
+        this.totalExpenditures     = data!.totalExpenditures
+        this.totalBank            = data!.totalBank
+        this.totalCash            = data!.totalCash
         this.refresh()
-        this.packingListDetails   = data!.packingListDetails
+        this.salesListDetails   = data!.salesListDetails
       }
     )
     .catch(
       error => {
         console.log(error)
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load Packing List')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load Sales List')
       }
     )
   }
@@ -261,7 +288,7 @@ export class PackingListComponent implements OnInit {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.get<IPackingList>(API_URL+'/packing_lists/get_by_no?no='+no, options)
+    await this.http.get<ISalesList>(API_URL+'/sales_lists/get_by_no?no='+no, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -278,72 +305,56 @@ export class PackingListComponent implements OnInit {
         this.comments             = data!.comments
         this.created              = data!.created
         this.approved             = data!.approved
-        this.posted               = data!.posted
-        this.totalPreviousReturns = data!.totalPreviousReturns
-        this.totalAmountIssued    = data!.totalAmountIssued
         this.totalAmountPacked    = data!.totalAmountPacked
+        this.totalSales           = data!.totalSales
+        this.totalOffered         = data!.totalOffered
+        this.totalReturns         = data!.totalReturns
+        this.totalDamages         = data!.totalDamages
+        this.totalDeficit         = data!.totalDeficit
+        this.totalDiscounts       = data!.totalDiscounts
+        this.totalExpenditures    = data!.totalExpenditures
+        this.totalBank            = data!.totalBank
+        this.totalCash            = data!.totalCash
         this.refresh()
-        this.packingListDetails   = data!.packingListDetails
+        this.salesListDetails   = data!.salesListDetails
       }
     )
     .catch(
       error => {
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load Packing List')
+        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load Sales List')
       }
     )
   }
+
+  
 
   async approve(id: any) {
-    if(!window.confirm('Confirm approval of the selected Packing List')){
+    if(!window.confirm('Confirm approval and post of the selected Sales List')){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var pcl = {
-      id                   : this.id,   
-      totalPreviousReturns : this.totalPreviousReturns, 
-      totalAmountIssued    : this.totalAmountIssued,   
-      totalAmountPacked    : this.totalAmountPacked          
+    var slst = {
+      id                   : this.id,     
+      totalAmountPacked    : this.totalAmountPacked,   
+      totalSales           : this.totalSales,           
+      totalOffered         : this.totalOffered,         
+      totalReturns         : this.totalReturns,         
+      totalDamages         : this.totalDamages,         
+      totalDeficit         : this.totalDeficit,         
+      totalDiscounts       : this.totalDiscounts,       
+      totalExpenditures    : this.totalExpenditures,     
+      totalBank            : this.totalBank,            
+      totalCash            : this.totalCash
     }
     this.spinner.show()
-    await this.http.put(API_URL+'/packing_lists/approve', pcl, options)
+    await this.http.put(API_URL+'/sales_lists/approve', slst, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
-        this.loadPackingLists()
-        this.get(id)
-      }
-    )
-    .catch(
-      error => {
-        console.log(error)
-        ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not approve')
-      }
-    )
-  }
-
-  async post(id: any) {
-    if(!window.confirm('Confirm posting of the selected Packing List')){
-      return
-    }
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    var pcl = {
-      id                   : this.id,   
-      totalPreviousReturns : this.totalPreviousReturns, 
-      totalAmountIssued    : this.totalAmountIssued,   
-      totalAmountPacked    : this.totalAmountPacked   
-    }
-    this.spinner.show()
-    await this.http.put(API_URL+'/packing_lists/post', pcl, options)
-    .pipe(finalize(() => this.spinner.hide()))
-    .toPromise()
-    .then(
-      () => {
-        this.loadPackingLists()
+        this.loadSalesLists()
         this.get(id)
       }
     )
@@ -356,23 +367,23 @@ export class PackingListComponent implements OnInit {
   }
 
   async cancel(id: any) {
-    if(!window.confirm('Confirm canceling of the selected Packing List')){
+    if(!window.confirm('Confirm canceling of the selected Sales List')){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var pcl = {
+    var slst = {
       id : this.id   
     }
     this.spinner.show()
-    await this.http.put(API_URL+'/packing_lists/cancel', pcl, options)
+    await this.http.put(API_URL+'/sales_lists/cancel', slst, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       () => {
         this.clear()
-        this.loadPackingLists()
+        this.loadSalesLists()
       }
     )
     .catch(
@@ -388,36 +399,34 @@ export class PackingListComponent implements OnInit {
   }
   
   async saveDetail() {
-    if(this.customerId == null || this.customerId == ''){
-      alert('Please enter customer information')
-      return
-    }
     if(this.id == '' || this.id == null){
       /**
-       * First Create a new Packing List
+       * First Create a new Sales List
        */
-      alert('Packing List not available, the system will create a new Packing List')
+      alert('Sales List not available, the system will create a new Sales List')
       this.save()
     }else{
       /**
-       * Enter Packing List Detail
+       * Enter Sales List Detail
        */
       let options = {
         headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
       }   
       var detail = {
-        packingList         : {id : this.id},
+        salesList           : {id : this.id},
         product             : {id : this.productId, code : this.code},
-        previousReturns     : this.previousReturns,
-        qtyIssued           : this.qtyIssued,
-        totalPacked         : this.totalPacked,  
+        totalPacked         : this.totalPacked,
+        qtySold             : this.qtySold,
+        qtyOffered          : this.qtyOffered,
+        qtyReturned         : this.qtyReturned,
+        qtyDamaged          : this.qtyDamaged,  
         costPriceVatIncl    : this.costPriceVatIncl,
         costPriceVatExcl    : this.costPriceVatExcl,
         sellingPriceVatIncl : this.sellingPriceVatIncl,
         sellingPriceVatExcl : this.sellingPriceVatExcl
-      }      
+      }
       this.spinner.show()
-      await this.http.post(API_URL+'/packing_list_details/save', detail, options)
+      await this.http.post(API_URL+'/sales_list_details/save', detail, options)
       .pipe(finalize(() => this.spinner.hide()))
       .toPromise()
       .then(
@@ -426,7 +435,7 @@ export class PackingListComponent implements OnInit {
           this.get(this.id)
           if(this.blank == true){
             this.blank = false
-            this.loadPackingLists()
+            this.loadSalesLists()
           }
         }
       )
@@ -443,36 +452,17 @@ export class PackingListComponent implements OnInit {
     throw new Error('Method not implemented.');
   }
 
-  deleteDetail(id: any) {
+  loadSalesLists(){
+    this.salesLists = []
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    this.spinner.show()
-    this.http.delete(API_URL+'/packing_list_details/delete?id='+id, options)
-    .pipe(finalize(() => this.spinner.hide()))
-    .toPromise()
-    .then(
-      data => {
-        this.get(this.id)
-      }
-    )
-    .catch(
-      error => {ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not remove detail')
-      }
-    )
-  }
-
-  loadPackingLists(){
-    this.packingLists = []
-    let options = {
-      headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
-    }
-    this.http.get<IPackingList[]>(API_URL+'/packing_lists', options)
+    this.http.get<ISalesList[]>(API_URL+'/sales_lists', options)
     .toPromise()
     .then(
       data => {
         data?.forEach(element => {
-          this.packingLists.push(element)
+          this.salesLists.push(element)
         })
       }
     )
@@ -489,18 +479,18 @@ export class PackingListComponent implements OnInit {
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
-    var pcl = {
+    var slst = {
       id : id   
     }
     this.spinner.show()
-    await this.http.put<boolean>(API_URL+'/packing_lists/archive', pcl, options)
+    await this.http.put<boolean>(API_URL+'/sales_lists/archive', slst, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
         this.clear()
-        this.loadPackingLists()
-        alert('Packing List archived successifully')
+        this.loadSalesLists()
+        alert('Sales List archived successifully')
       }
     )
     .catch(
@@ -512,20 +502,20 @@ export class PackingListComponent implements OnInit {
   }
 
   async archiveAll() {
-    if(!window.confirm('Confirm archiving Packing Lists. All Posted  and debt free documents will be archived')){
+    if(!window.confirm('Confirm archiving Sales Lists. All Posted  and debt free documents will be archived')){
       return
     }
     let options = {
       headers: new HttpHeaders().set('Authorization', 'Bearer '+this.auth.user.access_token)
     }
     this.spinner.show()
-    await this.http.put<boolean>(API_URL+'/packing_lists/archive_all', null, options)
+    await this.http.put<boolean>(API_URL+'/sales_lists/archive_all', null, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
       data => {
         this.clear()
-        this.loadPackingLists()
+        this.loadSalesLists()
         alert('All Posted and Debt free archived successifully')
       }
     )
@@ -538,13 +528,13 @@ export class PackingListComponent implements OnInit {
   }
 
   unlockAll(){
-    this.pclNoLocked  = false
+    this.slstNoLocked  = false
     this.inputsLocked = false
     this.valuesLocked = true   
   }
 
   lockAll(){
-    this.pclNoLocked  = true
+    this.slstNoLocked  = true
     this.inputsLocked = true
   }
 
@@ -555,15 +545,21 @@ export class PackingListComponent implements OnInit {
     this.comments             = ''
     this.created              = ''
     this.approved             = ''
-    this.posted               = ''
-    this.packingListDetails   = []
+    this.salesListDetails   = []
     this.customerNo           = ''
     this.customerName         = ''
     this.employeeNo           = ''
     this.employeeName         = ''
-    this.totalPreviousReturns = 0
-    this.totalAmountIssued    = 0
     this.totalAmountPacked    = 0
+    this.totalSales           = 0
+    this.totalOffered         = 0
+    this.totalReturns         = 0
+    this.totalDamages         = 0
+    this.totalDeficit         = 0
+    this.totalDiscounts       = 0
+    this.totalExpenditures    = 0
+    this.totalBank            = 0
+    this.totalCash            = 0
   }
 
   clearDetail(){
@@ -571,9 +567,11 @@ export class PackingListComponent implements OnInit {
     this.barcode             = ''
     this.code                = ''
     this.description         = ''
-    this.previousReturns     = 0
-    this.qtyIssued           = 0
     this.totalPacked         = 0
+    this.qtySold             = 0
+    this.qtyOffered          = 0
+    this.qtyReturned         = 0
+    this.qtyDamaged          = 0
     this.costPriceVatIncl    = 0
     this.costPriceVatExcl    = 0
     this.sellingPriceVatIncl = 0
@@ -622,8 +620,6 @@ export class PackingListComponent implements OnInit {
           this.barcode = data!.barcode
           this.code = data!.code
           this.description = data!.description
-          this.costPriceVatIncl = data!.costPriceVatIncl
-          this.costPriceVatExcl = data!.costPriceVatExcl
           this.sellingPriceVatIncl = data!.sellingPriceVatIncl
           this.sellingPriceVatExcl = data!.sellingPriceVatExcl
         }
@@ -644,8 +640,6 @@ export class PackingListComponent implements OnInit {
           this.barcode = data!.barcode
           this.code = data!.code
           this.description = data!.description
-          this.costPriceVatIncl = data!.costPriceVatIncl
-          this.costPriceVatExcl = data!.costPriceVatExcl
           this.sellingPriceVatIncl = data!.sellingPriceVatIncl
           this.sellingPriceVatExcl = data!.sellingPriceVatExcl
         }
@@ -676,7 +670,7 @@ export class PackingListComponent implements OnInit {
       ErrorHandlerService.showHttpErrorMessage(error, '', 'Could not load product')
     })
     this.spinner.show()
-    this.http.get<IPackingListDetail>(API_URL+'/packing_list_details/get?id='+detailId, options)
+    this.http.get<ISalesListDetail>(API_URL+'/sales_list_details/get?id='+detailId, options)
     .pipe(finalize(() => this.spinner.hide()))
     .toPromise()
     .then(
@@ -684,9 +678,11 @@ export class PackingListComponent implements OnInit {
         this.detailId = data!.id
         this.sellingPriceVatIncl = data!.sellingPriceVatIncl
         this.sellingPriceVatExcl = data!.sellingPriceVatExcl
-        this.previousReturns     = data!.previousReturns
-        this.qtyIssued           = data!.qtyIssued
         this.totalPacked         = data!.totalPacked
+        this.qtySold             = data!.qtySold
+        this.qtyOffered          = data!.qtyOffered
+        this.qtyReturned         = data!.qtyReturned
+        this.qtyDamaged          = data!.qtyDamaged
         this.costPriceVatIncl    = data!.costPriceVatIncl
         this.costPriceVatExcl    = data!.costPriceVatExcl
         this.sellingPriceVatIncl = data!.sellingPriceVatIncl
@@ -853,8 +849,8 @@ export class PackingListComponent implements OnInit {
     )
   }
 
-  async calculateTotalPacked(){
-    this.totalPacked =  +this.previousReturns + +this.qtyIssued
+  calculateTotalDeficit(){
+    this.totalDeficit = +this.totalSales - (+this.totalExpenditures + +this.totalDiscounts + +this.totalBank + +this.totalCash)
   }
 
   enablePriceChange(){
@@ -870,7 +866,7 @@ export class PackingListComponent implements OnInit {
     var title  = ''
     var logo : any = ''
     if(this.status == 'PENDING' || this.status == 'APPROVED' || this.status == 'CANCELED'){
-      title = 'Packing List and Returns'
+      title = 'Sales List and Returns'
     }else{
       title = 'Sales and Returns'
     }
@@ -884,19 +880,23 @@ export class PackingListComponent implements OnInit {
         {text : 'Code', fontSize : 9}, 
         {text : 'Description', fontSize : 9}, 
         {text : 'Price', fontSize : 9}, 
-        {text : 'Returns', fontSize : 9}, 
-        {text : 'Issued', fontSize : 9}, 
-        {text : 'Total', fontSize : 9} 
+        {text : 'Total', fontSize : 9}, 
+        {text : 'Sold', fontSize : 9}, 
+        {text : 'Offered', fontSize : 9}, 
+        {text : 'Returned', fontSize : 9}, 
+        {text : 'Damaged', fontSize : 9}
       ]
     ]   
-    this.packingListDetails.forEach((element) => {
+    this.salesListDetails.forEach((element) => {
       var detail = [
         {text : element.product.code.toString(), fontSize : 9}, 
         {text : element.product.description.toString(), fontSize : 9}, 
-        {text : element.sellingPriceVatIncl.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'}, 
-        {text : element.previousReturns.toString(), fontSize : 9}, 
-        {text : element.qtyIssued.toString(), fontSize : 9}, 
-        {text : element.totalPacked.toString(), fontSize : 9} 
+        {text : element.sellingPriceVatIncl.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'},  
+        {text : element.totalPacked.toString(), fontSize : 9}, 
+        {text : element.qtySold.toString(), fontSize : 9}, 
+        {text : element.qtyOffered.toString(), fontSize : 9}, 
+        {text : element.qtyReturned.toString(), fontSize : 9}, 
+        {text : element.qtyDamaged.toString(), fontSize : 9}
       ]
       report.push(detail)
     })
@@ -953,7 +953,7 @@ export class PackingListComponent implements OnInit {
           {
             table : {
                 headerRows : 1,
-                widths : ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                widths : ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                 body : report
             }
         },
@@ -972,6 +972,42 @@ export class PackingListComponent implements OnInit {
               [
                 {text : 'Total Packed', fontSize : 9}, 
                 {text : this.totalAmountPacked.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Sales', fontSize : 9}, 
+                {text : this.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Offer/Giveaway', fontSize : 9}, 
+                {text : this.totalOffered.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Returns', fontSize : 9}, 
+                {text : this.totalReturns.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Damages', fontSize : 9}, 
+                {text : this.totalDamages.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Discounts', fontSize : 9}, 
+                {text : this.totalDiscounts.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Expenditures', fontSize : 9}, 
+                {text : this.totalExpenditures.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Bank', fontSize : 9}, 
+                {text : this.totalBank.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Cash', fontSize : 9}, 
+                {text : this.totalCash.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
+              ],
+              [
+                {text : 'Total Deficit', fontSize : 9}, 
+                {text : this.totalDeficit.toLocaleString('en-US', { minimumFractionDigits: 2 }), fontSize : 9, alignment : 'right'} 
               ]
             ]
           }         
@@ -990,7 +1026,7 @@ export class PackingListComponent implements OnInit {
 
 }
 
-interface IPackingList{
+interface ISalesList{
   id                 : any
   no                 : string
   customer           : ICustomer
@@ -1000,17 +1036,29 @@ interface IPackingList{
   created            : string
   approved           : string
   posted             : string
-  packingListDetails : IPackingListDetail[]
+  salesListDetails : ISalesListDetail[]
 
-  totalPreviousReturns : number
-  totalAmountIssued    : number
   totalAmountPacked    : number
+  totalSales           : number
+  totalOffered         : number
+  totalReturns         : number
+  totalDamages         : number
+
+  totalDiscounts       : number
+  totalExpenditures     : number
+  totalBank            : number
+  totalCash            : number
+
+  totalDeficit         : number
 }
-interface IPackingListDetail{
+
+interface ISalesListDetail{
   id                  : any
-  previousReturns     : number
-  qtyIssued           : number
-  totalPacked         : number   
+  totalPacked         : number
+  qtySold             : number
+  qtyOffered          : number
+  qtyReturned         : number
+  qtyDamaged          : number   
   costPriceVatIncl    : number
   costPriceVatExcl    : number
   sellingPriceVatIncl : number

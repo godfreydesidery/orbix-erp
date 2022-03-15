@@ -2,8 +2,8 @@
     <div class="col">
         <table style="width: 100%;">
             <tr style="width: 100%; background-color: #eeeeee;">
-                <td style="width: 100mm; vertical-align: top;"><p class="h6">Mechandizing / Packing List</p></td>
-                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Packing List', 'packing-list')">Create Shortcut</span>]</td>                                   
+                <td style="width: 100mm; vertical-align: top;"><p class="h6">Mechandizing / Sales List</p></td>
+                <td>[<a routerLink="/home">Home</a>][<span class="short-cut" (click)="createShortCut('Sales List', 'sales-list')">Create Shortcut</span>]</td>                                   
             </tr>
         </table>
         <table style="width: 100%;">
@@ -16,28 +16,22 @@
                                 <table class="table table-bordered">
                                     <tbody>
                                         <tr>
-                                            <td style="text-align: right;">Packing List #</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special" [readonly]="pclNoLocked"></td>
+                                            <td style="text-align: right;">Sales List #</td><td style="padding: 0;"><input type="text" [(ngModel)]="no" class="form-control special" [readonly]="slstNoLocked"></td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Customer</td>
                                             <td style="padding: 0;">
-                                                <input type="text" [(ngModel)]="customerNo" class="form-control special" placeholder="Customer No" readonly>
-                                                <select [(ngModel)]="customerName" (ngModelChange)="searchCustomer(customerName)" class="form-control input-sm" [disabled]="inputsLocked">
-                                                    <option></option>
-                                                    <option *ngFor="let c of customerNames">{{c}}</option>
-                                                </select>
+                                                <input type="text" [(ngModel)]="customerNo" class="form-control special" readonly>
+                                                <input type="text" [(ngModel)]="customerName" class="form-control special" readonly>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Sales Person</td>
                                             <td style="padding: 0;">
-                                                <input type="text" [(ngModel)]="employeeNo" class="form-control special" placeholder="Employee No" readonly>
-                                                <select [(ngModel)]="employeeName" (ngModelChange)="searchEmployee(employeeName)" class="form-control input-sm" [disabled]="inputsLocked">
-                                                    <option></option>
-                                                    <option *ngFor="let e of employeeNames">{{e}}</option>
-                                                </select>
+                                                <input type="text" [(ngModel)]="employeeNo" class="form-control special" readonly>
+                                                <input type="text" [(ngModel)]="employeeName" class="form-control special" readonly>
                                             </td>
-                                        </tr>                                       
+                                        </tr>
                                         <tr>
                                             <td style="text-align: right;">Status</td><td>{{status}}</td>
                                         </tr>
@@ -46,7 +40,7 @@
                                         </tr>
                                         <tr>
                                             <td style="text-align: right;">Approved</td><td>{{approved}}</td>
-                                        </tr>                                       
+                                        </tr>
                                         <tr>
                                             <td style="text-align: right;">Comments</td>
                                             <td style="padding: 0;"><textarea [(ngModel)]="comments" class="form-control special" [readonly]="inputsLocked"></textarea></td>          
@@ -56,20 +50,40 @@
                                 <table class="table table-bordered">
                                     <tbody>
                                         <tr>
-                                            <td style="text-align: right; width: 5cm;">Total Previous Returns</td><td style="text-align: right;">{{totalPreviousReturns | currency:'':''}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align: right;">Total Amount Issued</td><td style="text-align: right;">{{totalAmountIssued | currency:'':''}}</td>
-                                        </tr>
-                                        <tr>
                                             <td style="text-align: right;">Total Amount Packed</td><td style="text-align: right;">{{totalAmountPacked | currency:'':''}}</td>
+                                        </tr>
+                                        <tr style="background-color: rgb(240, 240, 240);">
+                                            <td style="text-align: right;">Total Sales</td><td style="text-align: right;"><b>{{totalSales | currency:'':''}}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Total Offered</td><td style="text-align: right;">{{totalOffered | currency:'':''}}</td>
+                                        </tr> 
+                                        <tr>
+                                            <td style="text-align: right;">Total Returns</td><td style="text-align: right;">{{totalReturns | currency:'':''}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Total Damages</td><td style="text-align: right;">{{totalDamages | currency:'':''}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Total Discounts</td><td style="padding: 0;"><input type="text" [(ngModel)]="totalDiscounts" class="form-control special" style="text-align: right;" [readonly]="valuesLocked"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Total Expenses</td><td style="padding: 0;"><input type="text" [(ngModel)]="totalExpenditures" class="form-control special" style="text-align: right;" [readonly]="valuesLocked"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Total Bank</td><td style="padding: 0;"><input type="text" [(ngModel)]="totalBank" class="form-control special" style="text-align: right;" [readonly]="valuesLocked"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">Total Cash</td><td style="padding: 0;"><input type="text" [(ngModel)]="totalCash" class="form-control special" style="text-align: right;" [readonly]="valuesLocked"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;"><button (click)="calculateTotalDeficit()">Total Deficit</button></td><td style="text-align: right;">{{totalDeficit | currency:'':''}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="col-1">
                                 <button class="btn btn-success" (click)="getByNo(no)" style="margin: 2px; width: 25mm;">Search</button><br><br>
-                                <button class="btn btn-success" (click)="clear()" (click)="unlockAll()" style="margin: 2px; width: 25mm;">New</button><br>
                                 <button class="btn btn-success" (click)="unlockAll()" style="margin: 2px; width: 25mm;">Edit</button><br>
                                 <button (click)="save()" class="btn btn-success" style="margin: 2px; width: 25mm;">Save</button><br>
                             </div>
@@ -78,18 +92,18 @@
                                 <table class="table table-bordered">
                                     <thead style="position: sticky; top: 0;">
                                         <tr class="table-dark">
-                                            <td>Packing List#</td>
+                                            <td>Sales List#</td>
                                             <td>Issue Date</td>
                                             <td>Status</td>
                                             <td>Select</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let pcl of packingLists">
-                                            <td>{{pcl.no}}</td>
+                                        <tr *ngFor="let slst of salesLists">
+                                            <td>{{slst.no}}</td>
                                             <td></td>
-                                            <td>{{pcl.status}}</td>
-                                            <td><span (click)="get(pcl.id)" style="cursor: pointer;">[Select]</span></td>
+                                            <td>{{slst.status}}</td>
+                                            <td><span (click)="get(slst.id)" style="cursor: pointer;">[Select]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -97,8 +111,7 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <button class="btn btn-success" style="margin: 2px; width: 25mm;" (click)="open(content, '', '')">+Product</button>
-                                <button class="btn btn-success"style="margin: 2px; width: 25mm;" (click)="approve(id)">Approve</button>
+                                <button class="btn btn-success"style="margin: 2px; width: 35mm;" (click)="approve(id)">Approve&Post</button>
                                 <button (click)="exportToPdf()" class="btn btn-success"style="margin: 2px; width: 30mm;">Export-PDF</button>
                                 <button class="btn btn-danger"style="margin: 2px; width: 25mm;" (click)="cancel(id)">Cancel</button>
                                 <button (click)="archive(id)" class="btn btn-success"style="margin: 2px; width: 25mm;">Archive</button>
@@ -113,21 +126,25 @@
                                             <td>Code</td>
                                             <td>Description</td>
                                             <td>Price(Incl)</td>
-                                            <td>Returns</td>
-                                            <td>Issued</td>
                                             <td>Total Packed</td>
+                                            <td>Qty Sold</td>
+                                            <td>Qty Offered</td>
+                                            <td>Qty Returned</td>
+                                            <td>Qty Damaged</td>
                                             <td>Action</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let d of packingListDetails">
+                                        <tr *ngFor="let d of salesListDetails">
                                             <td>{{d.product.code}}</td>
                                             <td>{{d.product.description}}</td>
                                             <td style="text-align: right;">{{d.sellingPriceVatIncl | currency:'':''}}</td>
-                                            <td>{{d.previousReturns}}</td>
-                                            <td>{{d.qtyIssued}}</td>
                                             <td>{{d.totalPacked}}</td>
-                                            <td><span style="cursor: pointer;" (click)="deleteDetail(d.id)">[Remove]</span><span style="cursor: pointer;" (click)="open(content, d.product.id, d.id)">[Edit]</span></td>
+                                            <td>{{d.qtySold}}</td>
+                                            <td>{{d.qtyOffered}}</td>
+                                            <td>{{d.qtyReturned}}</td>
+                                            <td>{{d.qtyDamaged}}</td>
+                                            <td><span style="cursor: pointer;" (click)="open(content, d.product.id, d.id)">[Edit]</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -150,50 +167,38 @@
             <tbody>
                 <tr>
                     <td style="text-align: right;">Barcode</td>
-                    <td style="padding: 0;">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td><input type="text" [(ngModel)]="barcode" class="form-control special"></td><td><button (click)="searchProduct(barcode, code, description)" style="margin: 1mm;">Search</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
+                    <td>{{barcode}}</td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Code</td><td style="padding: 0;"><input type="text" [(ngModel)]="code" class="form-control special"></td>
+                    <td style="text-align: right;">Code</td>
+                    <td>{{code}}</td>
                 </tr>
                 <tr>
                     <td style="text-align: right;">Description</td>
-                    <td style="padding: 0;">
-                        <input type="text" [(ngModel)]="description" list="descriptions" class="form-control special">
-                        <datalist id="descriptions" style="padding: 0px;">
-                            <option *ngFor="let d of descriptions" [ngValue]="d">{{d}}</option>
-                        </datalist>
-                    </td>
+                    <td>{{description}}</td>
                 </tr> 
                 <tr>
                     <td style="text-align: right;">Price</td>
-                    <td style="padding: 0;">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td><input type="text" [(ngModel)]="sellingPriceVatIncl" class="form-control special" style="text-align: right;" [readonly]="disablePriceChange"></td><td><button (click)="enablePriceChange()" style="margin: 1mm;">Edit Price</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
+                    <td style="text-align: right; font-weight: bold;">{{sellingPriceVatIncl | currency:'':''}}</td>
                 </tr>
                 <hr>
                 <tr>
-                    <td style="text-align: right;">Previous Returns</td><td style="padding: 0;"><input type="text" [(ngModel)]="previousReturns" (input)="calculateTotalPacked()" class="form-control special"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;">Qty Issued</td><td style="padding: 0;"><input type="text" [(ngModel)]="qtyIssued" (input)="calculateTotalPacked()" class="form-control special"></td>
-                </tr>
-                <tr>
                     <td style="text-align: right;">Qty Packed</td><td style="padding: 0;"><input type="text" [(ngModel)]="totalPacked" class="form-control special" readonly></td>
                 </tr>
+                <hr>
+                <tr>
+                    <td style="text-align: right;">Qty Sold</td><td style="padding: 0;"><input type="text" [(ngModel)]="qtySold" class="form-control special"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">Qty Offered</td><td style="padding: 0;"><input type="text" [(ngModel)]="qtyOffered" class="form-control special"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">Qty Returned</td><td style="padding: 0;"><input type="text" [(ngModel)]="qtyReturned" class="form-control special"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">Qty Damaged</td><td style="padding: 0;"><input type="text" [(ngModel)]="qtyDamaged" class="form-control special"></td>
+                </tr>
+                
             </tbody>
         </table>
     </div>

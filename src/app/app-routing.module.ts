@@ -65,6 +65,8 @@ import { SupplySalesReportComponent } from './reports/sales-reports/supply-sales
 import { FastMovingItemsComponent } from './reports/sales-reports/fast-moving-items/fast-moving-items.component';
 import { SlowMovingItemsComponent } from './reports/sales-reports/slow-moving-items/slow-moving-items.component';
 import { ProductionReportComponent } from './reports/production-reports/production-report/production-report.component';
+import { SalesListComponent } from './mechandizer/sales-list/sales-list.component';
+import { StockCardReportComponent } from './reports/inventory-reports/stock-card-report/stock-card-report.component';
 
 const routes: Routes = [
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
@@ -98,6 +100,7 @@ const routes: Routes = [
   {path: 'sales-journal', component: SalesJournalComponent, canActivate: [AuthGuard]},
   {path: 'bill-reprint', component: BillReprintComponent, canActivate: [AuthGuard]},
   {path: 'packing-list', component: PackingListComponent, canActivate: [AuthGuard]},
+  {path: 'sales-list', component: SalesListComponent, canActivate: [AuthGuard]},
   {path: 'customer-returns', component: CustomerReturnComponent, canActivate: [AuthGuard]},
   {path: 'customer-claims', component: CustomerClaimComponent, canActivate: [AuthGuard]},
   {path: 'return-to-vendor', component: ReturnToVendorComponent, canActivate: [AuthGuard]},
@@ -114,11 +117,11 @@ const routes: Routes = [
   {path: 'custom-date', component: CustomDateComponent, canActivate: [AuthGuard]},
   {path: 'batch-production', component: BatchProductionComponent, canActivate: [AuthGuard]},
   {path: 'custom-production', component: CustomProductionComponent, canActivate: [AuthGuard]},
-  {path : 'product-material-ratio', component:ProductMaterialRatioComponent, canActivate: [AuthGuard]},
-  {path : 'product-to-material', component:ProductToMaterialComponent, canActivate: [AuthGuard]},
-  {path : 'material-to-product', component:MaterialToProductComponent, canActivate: [AuthGuard]},
-  {path : 'product-to-product', component:ProductToProductComponent, canActivate: [AuthGuard]},
-  {path : 'material-to-material', component:MaterialToMaterialComponent, canActivate: [AuthGuard]},
+  {path: 'product-material-ratio', component:ProductMaterialRatioComponent, canActivate: [AuthGuard]},
+  {path: 'product-to-material', component:ProductToMaterialComponent, canActivate: [AuthGuard]},
+  {path: 'material-to-product', component:MaterialToProductComponent, canActivate: [AuthGuard]},
+  {path: 'product-to-product', component:ProductToProductComponent, canActivate: [AuthGuard]},
+  {path: 'material-to-material', component:MaterialToMaterialComponent, canActivate: [AuthGuard]},
   {path: 'debt-receipts', component: DebtReceiptComponent, canActivate: [AuthGuard]},
   {path: 'debt-allocations', component: DebtAllocationComponent, canActivate: [AuthGuard]},
   {path: 'daily-sales-report', component: DailySalesReportComponent, canActivate: [AuthGuard]},
@@ -128,6 +131,7 @@ const routes: Routes = [
   {path: 'fast-moving-items', component: FastMovingItemsComponent, canActivate: [AuthGuard]},
   {path: 'slow-moving-items', component: SlowMovingItemsComponent, canActivate: [AuthGuard]},
   {path: 'production-report', component: ProductionReportComponent, canActivate: [AuthGuard]},
+  {path: 'stock-card-report', component: StockCardReportComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({
